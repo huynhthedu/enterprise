@@ -1,0 +1,25 @@
+<form method="post">
+    {% csrf_token %}
+    <label for="state">State:</label>
+    <select name="state" id="state">
+        {% for state in states %}
+            <option value="{{ state }}" {% if state == selected_state %}selected{% endif %}>{{ state }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="year1">Year 1:</label>
+    <select name="year1" id="year1">
+        {% for year in years %}
+            <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="year2">Year 2:</label>
+    <select name="year2" id="year2">
+        {% for year in years %}
+            <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Submit</button>
+</form>

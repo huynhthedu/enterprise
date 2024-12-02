@@ -1,0 +1,23 @@
+<h1>All Indicators</h1>
+<table border="1">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>State</th>
+            <th>Group</th>
+            <th>Indicator</th>
+            <th>Source</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for indicator in indicators %}
+        <tr>
+            <td>{{ indicator.id }}</td>
+            <td>{{ indicator.state }}</td>
+            <td>{{ indicator.group }}</td>
+            <td>{{ indicator.indicator }}</td>
+            <td>{{ indicator.source }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

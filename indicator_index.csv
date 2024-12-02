@@ -1,0 +1,35 @@
+group,indicator,weight
+E11,Population,1.08
+E13,Gross Domestic Product,0.04
+E21,Gross Domestic Product  per Capita,0.08
+E12,Employment,0.04
+E15,Employment (BLS),0.04
+E16,Personal Income,0.04
+E23,Personal Income per Capita,0.04
+E26,Personal Income per Capita,0.04
+E27,Labor Participation Rate,0.04
+E31,Economic Establishment,0.08
+E32,Skilled Labor,0.04
+E42,Personal Income Tax,0.04
+E43,SaleTax,0.04
+E44,Corporate Income Tax,0.04
+E45,Other Revenues,0.04
+E46,Federal Funding,0.04
+E47,Own Revenue,0.04
+E48,Tax Revenue,0.04
+E51,Expenditure,0.08
+E52,Capital Expenditure,0.04
+E53,Current Expenditure,0.04
+E54,Development Expenditure,0.04
+E55,Allocational Expenditure,0.04
+E56,Redistributive Expenditure,0.04
+E65,State Employment,0.04
+E22,Gross Domestic Product per Capita 2012 price,0.04
+E24,Personal Income per Capita at 2012 price,0.04
+E14,Gross Domestic Product at 2012 price,0.04
+E10,Size of the economy,0.0
+E20,Development level and efficiency,0.0
+E30,Economic foundation,0.0
+E40,Government revenue,0.0
+E50,Government expenditure,0.0
+E60,Burden,0.0

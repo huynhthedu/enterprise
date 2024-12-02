@@ -1,0 +1,29 @@
+<h1>Growth and Rankings for {{ state }} - Year {{ year1 }} vs {{ year2 }}</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Indicator</th>
+            <th>Group</th>
+            <th>Unit</th>
+            <th>Rank Year 1</th>
+            <th>Rank Growth</th>
+            <th>Rank Year 2</th>
+            <th>Value Year 2</th>
+            <th>Source</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for data in growth_data %}
+            <tr>
+                <td>{{ data.Indicator }}</td>
+                <td>{{ data.Group }}</td>
+                <td>{{ data.Unit }}</td>
+                <td>{{ data.RankYear1 }}</td>
+                <td>{{ data.RankGrowth }}</td>
+                <td>{{ data.RankYear2 }}</td>
+                <td>{{ data.ValueYear2 }}</td>
+                <td>{{ data.Source }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rankings Overview</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'rankings/styles.css' %}">
+</head>
+<body>
+    <h1>Rankings Overview</h1>
+    <form method="get">
+        <label for="state">State:</label>
+        <select name="state" id="state">
+            {% for state in states %}
+            <option value="{{ state }}" {% if state == selected_state %}selected{% endif %}>{{ state }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="year1">Year 1:</label>
+        <select name="year1" id="year1">
+            {% for year in years %}
+            <option value="{{ year }}" {% if year == year1 %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="year2">Year 2:</label>
+        <select name="year2" id="year2">
+            {% for year in years %}
+            <option value="{{ year }}" {% if year == year2 %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    {% if data %}
+    <h2>Results for {{ selected_state }} ({{ year1 }} to {{ year2 }})</h2>
+    <table>
+        <tr>
+            <th>Group</th>
+            <th>Indicator</th>
+            <th>Year 1 Rank</th>
+            <th>Growth (%)</th>
+            <th>Year 2 Value</th>
+            <th>Source</th>
+        </tr>
+        {% for row in data %}
+        <tr>
+            <td>{{ row.group }}</td>
+            <td>{{ row.indicator }}</td>
+            <td class="rank-{{ row.rank_color }}">{{ row.year1_rank }}</td>
+            <td>{{ row.growth|floatformat:2 }}</td>
+            <td>{{ row.year2_value }}</td>
+            <td>{{ row.source }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+</body>
+</html>
