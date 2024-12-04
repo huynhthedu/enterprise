@@ -496,6 +496,54 @@ def score_and_rankings(request):
         # Filter rankings_data to get only the entries for the current indicator
         indicator_rankings = [data for data in rankings_data if data['indicator'] == indicator]
     
+    # rankings individual indicators
+        year1_rank = sorted(indicator_rankings, key=lambda x: x['year1_value'], reverse=True)
+        year2_rank = sorted(indicator_rankings, key=lambda x: x['year2_value'], reverse=True)
+        growth_rank = sorted(indicator_rankings, key=lambda x: x['growth'], reverse=True)
+
+        for index, item in enumerate(year1_rank):
+            item['year1_rank'] = index + 1
+        for index, item in enumerate(year2_rank):
+            item['year2_rank'] = index + 1
+        for index, item in enumerate(growth_rank):
+            item['growth_rank'] = index + 1
+    
+    filtered_rankings = [data for data in rankings_data if data['state'] == selected_state]
+
+    sorted_rankings = sorted(filtered_rankings, key=lambda x: x['group'])
+
+    grouped_rankings = {}
+
+    for data in sorted_rankings:
+        group_key = data['group'][:2] if data['group'] else 'Other'
+        
+        # Try to get the group name from the GroupName model
+        group_names = GroupName.objects.filter(index=group_key)
+        if group_names.exists():
+            group_name = group_names.first().name  # Use the first matching object
+        else:
+            group_name = 'Other'
+        
+        # Check if the indicator matches any in the IndicatorIndex model
+        indicator_exists = IndicatorIndex.objects.filter(indicator=data['indicator']).exists()
+        
+        if indicator_exists:
+            if group_name not in grouped_rankings:
+                grouped_rankings[group_name] = []
+            grouped_rankings[group_name].append(data)
+    
+    rankings_detail = {
+        'grouped_rankings': grouped_rankings,
+        'rankings_data': sorted_rankings
+    }
+    # end of rankings individual indicators
+
+    # rankings groups of indicators
+
+    for indicator in all_indicators:
+        # Filter rankings_data to get only the entries for the current indicator
+        indicator_rankings = [data for data in rankings_data if data['indicator'] == indicator]
+
         # Extract values for year1, year2, and growth
         year1_values = [data['year1_value'] for data in indicator_rankings]
         year2_values = [data['year2_value'] for data in indicator_rankings]
@@ -512,6 +560,7 @@ def score_and_rankings(request):
             data['scores2'] = scores2[i]
             data['scoresgr'] = scoresgr[i]
     
+    # Calculate scores and rankings for each group
     grouped_data = {}
     weighted_sums_scores1 = {}
     weighted_sums_scores2 = {}
@@ -554,9 +603,6 @@ def score_and_rankings(request):
     
     average_scores = {
         (state, group): {
-            'avg_scores1': grouped_data[(state, group)]['total_scores1'] / grouped_data[(state, group)]['count'],
-            'avg_scores2': grouped_data[(state, group)]['total_scores2'] / grouped_data[(state, group)]['count'],
-            'avg_scoresgr': grouped_data[(state, group)]['total_scoresgr'] / grouped_data[(state, group)]['count'],
             'weighted_avg_scores1': weighted_sums_scores1[(state, group)] / total_weights_scores1[(state, group)] if total_weights_scores1[(state, group)] != 0 else 0,
             'weighted_avg_scores2': weighted_sums_scores2[(state, group)] / total_weights_scores2[(state, group)] if total_weights_scores2[(state, group)] != 0 else 0,
             'weighted_avg_scoresgr': weighted_sums_scoresgr[(state, group)] / total_weights_scoresgr[(state, group)] if total_weights_scoresgr[(state, group)] != 0 else 0,
@@ -570,9 +616,6 @@ def score_and_rankings(request):
         {
             'state': state,
             'group': group,
-            'avg_scores1': scores['avg_scores1'],
-            'avg_scores2': scores['avg_scores2'],
-            'avg_scoresgr': scores['avg_scoresgr'],
             'weighted_avg_scores1': scores['weighted_avg_scores1'],
             'weighted_avg_scores2': scores['weighted_avg_scores2'],
             'weighted_avg_scoresgr': scores['weighted_avg_scoresgr'],
@@ -585,18 +628,6 @@ def score_and_rankings(request):
     all_names = set(item['name'] for item in average_scores_list)
     for name in all_names:
         name_scores_list = [item for item in average_scores_list if item['name'] == name]
-
-        name_scores_list.sort(key=lambda x: x['avg_scores1'], reverse=True)
-        for rank, item in enumerate(name_scores_list, start=1):
-            item['rank_avg_scores1'] = rank
-
-        name_scores_list.sort(key=lambda x: x['avg_scores2'], reverse=True)
-        for rank, item in enumerate(name_scores_list, start=1):
-            item['rank_avg_scores2'] = rank
-
-        name_scores_list.sort(key=lambda x: x['avg_scoresgr'], reverse=True)
-        for rank, item in enumerate(name_scores_list, start=1):
-            item['rank_avg_scoresgr'] = rank
 
         name_scores_list.sort(key=lambda x: x['weighted_avg_scores1'], reverse=True)        
         for rank, item in enumerate(name_scores_list, start=1):
@@ -613,8 +644,15 @@ def score_and_rankings(request):
     # Filter the results to show only the selected state
     selected_state_scores = [item for item in average_scores_list if item['state'] == selected_state]
 
+    selected_state_scores  = sorted(selected_state_scores , key=lambda x: x['group'])
+    # Ending calculate scores and rankings for each group
+
+
+
     return render(request, 'rankings/scores.html', {
         'average_scores_list': selected_state_scores,
+        'grouped_rankings': grouped_rankings,
+        'rankings_data': sorted_rankings,
         'states': states,
         'years': years,
         'selected_state': selected_state,
@@ -623,8 +661,3 @@ def score_and_rankings(request):
         'warning_message': warning_message,
     })
 
-
-def test_numeric():
-    test_number =  Indicator.objects.filter(group = 'E15').values() 
-    print(test_number)
-    

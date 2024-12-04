@@ -32,7 +32,7 @@ def update_label():
 
 def validate_input(request):
     # Fetch available states, indicators, and years
-    states = Indicator.objects.values_list('state', flat=True).distinct()
+    states = Indicator.objects.values_list('state', flat=True).distinct().order_by('state')
     years = list(range(1999, 2024))
 
     selected_state = None
@@ -159,8 +159,8 @@ def calculate_growth_and_rankings(request):
             if group_name not in grouped_rankings:
                 grouped_rankings[group_name] = []
             grouped_rankings[group_name].append(data)
-
-    return render(request, 'rankings/rankings.html', {
+    
+    context = {
         'states': states,
         'years': years,
         'selected_state': selected_state,
@@ -169,7 +169,9 @@ def calculate_growth_and_rankings(request):
         'warning_message': warning_message,
         'grouped_rankings': grouped_rankings,
         'rankings_data': sorted_rankings
-    })
+    }
+
+    return render(request, 'rankings/rankings.html', context)
 
 def indicator_map(request):
     file_path = 'shapefiles/ne_110m_admin_1_states_provinces.shp'
@@ -329,7 +331,11 @@ def growth_chart(request):
             buf = io.BytesIO()
             plt.savefig(buf, format='png')
             buf.seek(0)
-            string = base64.b64encode(buf.read())
+            # string = base64.b64encode(buf.read())
+            string = base64.b64encode(buf.read()).decode('utf-8')
+            padding_needed = 4 - (len(string) % 4)
+            if padding_needed:
+                string += '=' * padding_needed
             uri = urllib.parse.quote(string)
 
     context = {
@@ -490,6 +496,54 @@ def score_and_rankings(request):
         # Filter rankings_data to get only the entries for the current indicator
         indicator_rankings = [data for data in rankings_data if data['indicator'] == indicator]
     
+    # rankings individual indicators
+        year1_rank = sorted(indicator_rankings, key=lambda x: x['year1_value'], reverse=True)
+        year2_rank = sorted(indicator_rankings, key=lambda x: x['year2_value'], reverse=True)
+        growth_rank = sorted(indicator_rankings, key=lambda x: x['growth'], reverse=True)
+
+        for index, item in enumerate(year1_rank):
+            item['year1_rank'] = index + 1
+        for index, item in enumerate(year2_rank):
+            item['year2_rank'] = index + 1
+        for index, item in enumerate(growth_rank):
+            item['growth_rank'] = index + 1
+    
+    filtered_rankings = [data for data in rankings_data if data['state'] == selected_state]
+
+    sorted_rankings = sorted(filtered_rankings, key=lambda x: x['group'])
+
+    grouped_rankings = {}
+
+    for data in sorted_rankings:
+        group_key = data['group'][:2] if data['group'] else 'Other'
+        
+        # Try to get the group name from the GroupName model
+        group_names = GroupName.objects.filter(index=group_key)
+        if group_names.exists():
+            group_name = group_names.first().name  # Use the first matching object
+        else:
+            group_name = 'Other'
+        
+        # Check if the indicator matches any in the IndicatorIndex model
+        indicator_exists = IndicatorIndex.objects.filter(indicator=data['indicator']).exists()
+        
+        if indicator_exists:
+            if group_name not in grouped_rankings:
+                grouped_rankings[group_name] = []
+            grouped_rankings[group_name].append(data)
+    
+    rankings_detail = {
+        'grouped_rankings': grouped_rankings,
+        'rankings_data': sorted_rankings
+    }
+    # end of rankings individual indicators
+
+    # rankings groups of indicators
+
+    for indicator in all_indicators:
+        # Filter rankings_data to get only the entries for the current indicator
+        indicator_rankings = [data for data in rankings_data if data['indicator'] == indicator]
+
         # Extract values for year1, year2, and growth
         year1_values = [data['year1_value'] for data in indicator_rankings]
         year2_values = [data['year2_value'] for data in indicator_rankings]
@@ -506,6 +560,7 @@ def score_and_rankings(request):
             data['scores2'] = scores2[i]
             data['scoresgr'] = scoresgr[i]
     
+    # Calculate scores and rankings for each group
     grouped_data = {}
     weighted_sums_scores1 = {}
     weighted_sums_scores2 = {}
@@ -607,8 +662,14 @@ def score_and_rankings(request):
     # Filter the results to show only the selected state
     selected_state_scores = [item for item in average_scores_list if item['state'] == selected_state]
 
+    # Ending calculate scores and rankings for each group
+
+
+
     return render(request, 'rankings/scores.html', {
         'average_scores_list': selected_state_scores,
+        'grouped_rankings': grouped_rankings,
+        'rankings_data': sorted_rankings,
         'states': states,
         'years': years,
         'selected_state': selected_state,
@@ -617,8 +678,3 @@ def score_and_rankings(request):
         'warning_message': warning_message,
     })
 
-
-def test_numeric():
-    test_number =  Indicator.objects.filter(group = 'E15').values() 
-    print(test_number)
-    

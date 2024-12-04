@@ -152,8 +152,10 @@
             </div>
         </div>
     </nav>
+    <br>
 
-    <h1>Indicator Rankings for {{ selected_state }}</h1>
+    <h1>Economic Rankings for {{ selected_state }}</h1>
+    <br>
 
     <div class="container">
         <form method="GET">
@@ -181,6 +183,7 @@
             <button type="submit">Submit</button>
         </form>
         <br>
+        <br>
 
         {% if warning_message %}
         <div class="flashing-text" role="alert">
@@ -191,44 +194,71 @@
         {% load custom_filters %}
         {% load humanize %}
                   
-        <h1>Average Scores by State and Group</h1>
         <table>
+            {% for score in average_scores_list %}    
             <tr>
-                <th>Group</th>
-                <th>Group Name</th>
-                <th>Average Score 1</th>
-                <th>Average Score 2</th>
-                <th>Average Growth Score</th>
-                <th>Weighted Average Score 1</th>
-                <th>Weighted Average Score 2</th>
-                <th>Weighted Average Growth Score</th>
-                <th>Ranking 1</th>
-                <th>Ranking 2</th>
-                <th>Ranking Growth</th>
-                <th>Weighted Ranking 1</th>
-                <th>Weighted Ranking 2</th>
-                <th>Weighted Ranking Growth</th>
-            </tr>
-            {% for score in average_scores_list %}
+                <thead class="bg-primary">
+                    <tr>
+                        <th class="bg-primary text-white col-group">{{ score.group }}</th>
+                        <th class="bg-primary text-white col-indicator" style="text-align: left;">{{ score.name }}</th>
+                        <th class="bg-primary text-white col-rank">{{ year1 }}</th>
+                        <th class="bg-primary text-white col-rank">Growth</th>
+                        <th class="bg-primary text-white col-rank">{{ year2 }}</th>
+                        <th class="bg-primary text-white col-value">Value {{ year2 }}</th>
+                        <th class="bg-primary text-white col-unit">Unit</th>
+                    </tr>
+                </thead>
+             
             <tr>
-                <td>{{ score.group }}</td>
-                <td>{{ score.name }}</td>
-                <td>{{ score.avg_scores1|floatformat:1 }}</td>
-                <td>{{ score.avg_scores2|floatformat:1 }}</td>
-                <td>{{ score.avg_scoresgr|floatformat:1 }}</td>
-                <td>{{ score.weighted_avg_scores1|floatformat:1 }}</td>
-                <td>{{ score.weighted_avg_scores2|floatformat:1 }}</td>
-                <td>{{ score.weighted_avg_scoresgr|floatformat:1 }}</td>
-                <td>{{ score.rank_avg_scores1 }}</td>
-                <td>{{ score.rank_avg_scores2 }}</td>
-                <td>{{ score.rank_avg_scoresgr }}</td>
-                <td>{{ score.rank_weighted_avg_scores1 }}</td>
-                <td>{{ score.rank_weighted_avg_scores2 }}</td>
-                <td>{{ score.rank_weighted_avg_scoresgr }}</td>
-            </tr>
-            {% endfor %}
-        </table>
 
+        <td ><strong></strong></td>
+        <td ><strong>Overall of the group</strong></td>
+        <td class="column-uniform col-rank {% if score.rank_weighted_avg_scores1 <= 10 %}rank-green{% elif score.rank_weighted_avg_scores1 <= 20 %}rank-light-green{% elif score.rank_weighted_avg_scores1 <= 30 %}rank-yellow{% elif score.rank_weighted_avg_scores1 <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+            <strong>{{ score.rank_weighted_avg_scores1 }}</strong>
+        </td>
+  
+        <td class="column-uniform col-rank {% if score.rank_weighted_avg_scoresgr <= 10 %}rank-green{% elif score.rank_weighted_avg_scoresgr <= 20 %}rank-light-green{% elif score.rank_weighted_avg_scoresgr <= 30 %}rank-yellow{% elif score.rank_weighted_avg_scoresgr <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+        <strong>{{ score.rank_weighted_avg_scoresgr }}</strong>
+
+        <td class="column-uniform col-rank {% if score.rank_weighted_avg_scores2 <= 10 %}rank-green{% elif score.rank_weighted_avg_scores2 <= 20 %}rank-light-green{% elif score.rank_weighted_avg_scores2 <= 30 %}rank-yellow{% elif score.rank_weighted_avg_scores2 <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+            <strong>{{ score.rank_weighted_avg_scores2 }}</strong>
+            </td>
+        </td>
+    </tr>
+
+
+        {% if grouped_rankings %}
+        {% for group_name, group_data in grouped_rankings.items %}
+            {% for data in group_data %}
+
+            <!-- {% if data.group|stringformat:"s"|slice:":2" == score.group|stringformat:"s" %} -->
+                <tr>
+                    <td class="col-group">{{ data.group }}</td>
+                    <td  style="padding-left: 2em; col-indicator">{{ data.indicator }}</td>
+                    
+                    <td class="column-uniform col-rank {% if data.year1_rank <= 10 %}rank-green{% elif data.year1_rank <= 20 %}rank-light-green{% elif data.year1_rank <= 30 %}rank-yellow{% elif data.year1_rank <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                        {{ data.year1_rank }}
+                    </td>
+                    <td class="column-uniform col-rank {% if data.growth_rank <= 10 %}rank-green{% elif data.growth_rank <= 20 %}rank-light-green{% elif data.growth_rank <= 30 %}rank-yellow{% elif data.growth_rank <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                        {{ data.growth_rank }}
+                    </td>                   
+
+                    <td class="column-uniform col-rank {% if data.year2_rank <= 10 %}rank-green{% elif data.year2_rank <= 20 %}rank-light-green{% elif data.year2_rank <= 30 %}rank-yellow{% elif data.year2_rank <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                        {{ data.year2_rank }}
+                    </td>
+
+                    <td class="right-align col-value">{{ data.year2_value|remove_decimal|intcomma }}</td>
+                    
+                    <td class="col-unit">{{ data.unit }}</td>
+                </tr>
+            <!-- {% endif %} -->
+            {% endfor %}
+        {% endfor %}
+        {% endif %}
+{% endfor %}
+
+</table>
+        
         <footer class="text-body-secondary py-5">
             <div class="container text-center">
                 <p>© Du Huynh {% now "Y" %}. 
