@@ -22,15 +22,15 @@ from django.shortcuts import get_object_or_404
 
 
 
-def update_label():
-    label.config(text="Updated Text")
-    root.after(2000, update_label)
+# def update_label():
+#     label.config(text="Updated Text")
+#     root.after(2000, update_label)
 
-    root = tk.Tk()
-    label = tk.Label(root, text="Initial Text")
-    label.pack()
-    root.after(2000, update_label)
-    root.mainloop()
+#     root = tk.Tk()
+#     label = tk.Label(root, text="Initial Text")
+#     label.pack()
+#     root.after(2000, update_label)
+#     root.mainloop()
 
 def validate_input(request):
     # Fetch available states, indicators, and valid years
