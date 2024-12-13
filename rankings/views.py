@@ -9,7 +9,7 @@ matplotlib.use('Agg')
 import geopandas as gpd
 import fiona
 import pandas as pd
-from django_pandas.io import read_frame
+# from django_pandas.io import read_frame
 import base64, urllib
 import matplotlib.pyplot as plt
 from django.shortcuts import render
@@ -828,7 +828,13 @@ def result(request):
     fields = ['group', 'state', 'year', 'value']
     queryset = Indicator.objects.filter(Q(year=year1) | Q(year=year2)).values(*fields)    
     print(f"Queryset count: {queryset.count()}")
-    df = read_frame(queryset)
+    
+    # Convert QuerySet to a list of dictionaries
+    data = list(queryset)
+
+    # Create a DataFrame
+    df = pd.DataFrame(data)
+    # df = read_frame(queryset)
     df = df.dropna()
     
  
