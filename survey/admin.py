@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import StrategyOperation
 
 from .models import GeneralInformation, Business, BusinessType, BusinessField, BusinessSize, StrategyOperation, GeneralFeedback
 

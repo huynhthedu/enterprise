@@ -15,3 +15,12 @@ class Framework(models.Model):
     
     def pub_date_pretty(self):
         return self.pub_date.strftime('%b %e %Y')
+
+
+class Image(models.Model):
+    title = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='images/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title

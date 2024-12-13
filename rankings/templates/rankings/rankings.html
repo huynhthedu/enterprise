@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
+{% load custom_filters %}
 <head>
-    <script src="/docs/5.3/assets/js/color-modes.js"></script>
+    <script src="{% static 'js/color-modes.js' %}"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Ranking Page">
     <title>State Rankings Dashboard</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="path/to/bootstrap.min.css">
-    <link rel="stylesheet" href="path/to/styles.css">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <style>
-      
         body {
             margin: 1;
             padding: 0;
@@ -21,6 +21,27 @@
         .container {
             margin-left: 1in;
             margin-right: 1in;
+        }
+
+
+        .table-container {
+            width: 100%;
+            height: 800px; /* Adjust the height as needed */
+            overflow-y: auto;
+        }
+
+
+        th, td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            background-color: #f2f2f2; /* Background color for the header */
+            z-index: 1; /* Ensure the header is above the table rows */
         }
 
         table {
@@ -71,9 +92,11 @@
         }
 
         .bg-blue {
-            background-color: blue; /*Blue */
+            background-color: blue; /* Blue */
         }
-
+        .grey-background {
+            background-color: lightgrey;
+        }
         .center-align {
             text-align: center;
         }
@@ -110,22 +133,22 @@
         .col-group { width: 3%; }
 
         footer {
-        margin-top: 50px;
-        padding: 20px;
-        background: #f8f9fa;
-        text-align: center;
-      }
+            margin-top: 50px;
+            padding: 20px;
+            background: #f8f9fa;
+            text-align: center;
+        }
 
-      .navbar-nav .nav-link, .navbar-brand {
-        color: white !important;
+        .navbar-nav .nav-link, .navbar-brand {
+            color: white !important;
         }
         .navbar-nav .nav-link:hover, .navbar-brand:hover {
             color: #ffcc00; /* Optional: Change color on hover */
         }
 
         .flashing-text {
-        color: red;
-        animation: flash 1s infinite;
+            color: red;
+            animation: flash 1s infinite;
         }
 
         @keyframes flash {
@@ -133,31 +156,64 @@
             50% { opacity: 0; }
             100% { opacity: 1; }
         }
+
+        .bar-container {
+            margin: 0 auto;            
+            display: flex;
+            width: 10in;
+            height: 40px; 
+            border: 2px solid black; 
+        }
+        .portion {
+            height: 100%;
+        }
+        .green { background-color: green; }
+        .light-green { background-color: lightgreen; }
+        .yellow { background-color: yellow; }
+        .orange { background-color: orange; }
+        .red { background-color: red; }
+
+        .centered-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center; /* Center-align text */
+        }
     </style>
 </head>
 <body>
-    <body>
-        <nav class="navbar navbar-expand-lg bg-blue">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="{% url 'home' %}">Home</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                    <div class="navbar-nav ml-auto">
-                        <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-                        <a class="nav-link" href="{% url 'rankings' %}">Rankings</a>
-                        <a class="nav-link" href="{% url 'survey' %}">Survey</a>
-                        <a class="nav-link" href="{% url 'index' %}">Framework</a>
-                        <a class="nav-link" href="https://www.linkedin.com/in/duh01/">Author</a>
-                    </div>
+    <nav class="navbar navbar-expand-lg bg-blue">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">Home</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav ml-auto">
+                    <!-- <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a> -->
+                    <a class="nav-link" href="{% url 'rankings' %}">Rankings</a>
+                    <a class="nav-link" href="{% url 'survey' %}">Survey</a>
+                    <a class="nav-link" href="{% url 'index' %}">Framework</a>
+                    <a class="nav-link" href="https://www.linkedin.com/in/duh01/">Author</a>
                 </div>
             </div>
-        </nav>
-    
+        </div>
+    </nav>
+    <br>
+    {% load humanize %}
     <h1>Economic Rankings for {{ selected_state }}</h1>
-
+    <br>
     
+    <div class="bar-container">
+        <div class="centered-content portion grey" >Rankings in color-coded ranges:   </div>
+        <div class="centered-content portion green" style="flex: 1;">1-10</div>
+        <div class="centered-content portion light-green" style="flex: 1;">11-20</div>
+        <div class="centered-content portion yellow" style="flex: 1;">21-30</div>
+        <div class="centered-content portion orange" style="flex: 1;">31-40</div>
+        <div class="centered-content portion red" style="flex: 1;">41-51</div>
+    </div>
+    <br>
+
     <div class="container">
         <form method="GET">
             <label for="state">Choose a state:</label>
@@ -173,71 +229,100 @@
                     <option value="{{ year }}" {% if year == year1 %}selected{% endif %}>{{ year }}</option>
                 {% endfor %}
             </select>
-    
+
             <label for="year2">Choose Year 2:</label>
             <select name="year2" id="year2">
                 {% for year in years reversed %}
                     <option value="{{ year }}" {% if year == year2 %}selected{% endif %}>{{ year }}</option>
                 {% endfor %}
             </select>
-    
+
             <button type="submit">Submit</button>
         </form>
-    <br>
+        <br>
+        <br>
 
-    {% if warning_message %}
-    <div class="flashing-text" role="alert">
-        {{ warning_message }}
-    </div>
-    {% endif %}
-      
-    {% load custom_filters %}
-    {% load humanize %}
-              
-  
-        {% if grouped_rankings %}
-        {% for group_name, group_data in grouped_rankings.items %}
-        <h3 style="background-color: #8B0000; color: white;">{{ group_name }}</h3>
-            <table>
-                <thead class="bg-primary">
-                    <tr>
-                        <th class="bg-primary text-white col-group">Group</th>
-                        <th class="bg-primary text-white col-indicator">Indicator</th>
-                        <th class="bg-primary text-white col-rank">{{ year1 }}</th>
-                        <th class="bg-primary text-white col-rank">Growth</th>
-                        <th class="bg-primary text-white col-rank">{{ year2 }}</th>
-                        <th class="bg-primary text-white col-value">Value {{ year2 }}</th>
-                        <th class="bg-primary text-white col-unit">Unit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for data in group_data %}
-                    <tr>
-                        <td class="col-group">{{ data.group }}</td>
-                        <td class="col-indicator">{{ data.indicator }}</td>
-                        
-                        <td class="column-uniform col-rank {% if data.year1_rank <= 10 %}rank-green{% elif data.year1_rank <= 20 %}rank-light-green{% elif data.year1_rank <= 30 %}rank-yellow{% elif data.year1_rank <= 40 %}rank-orange{% else %}rank-red{% endif %}">
-                            {{ data.year1_rank }}
-                        </td>
-                        
-                        <td class="column-uniform col-rank {% if data.growth_rank <= 10 %}rank-green{% elif data.growth_rank <= 20 %}rank-light-green{% elif data.growth_rank <= 30 %}rank-yellow{% elif data.growth_rank <= 40 %}rank-orange{% else %}rank-red{% endif %}">
-                            {{ data.growth_rank }}
-                        </td>
-                        
-                        <td class="column-uniform col-rank {% if data.year2_rank <= 10 %}rank-green{% elif data.year2_rank <= 20 %}rank-light-green{% elif data.year2_rank <= 30 %}rank-yellow{% elif data.year2_rank <= 40 %}rank-orange{% else %}rank-red{% endif %}">
-                            {{ data.year2_rank }}
-                        </td>
-                        <td class="right-align col-value">{{ data.year2_value|remove_decimal|intcomma }}</td>
-                        
-                        <td class="col-unit">{{ data.unit }}</td>
-                        
-                        
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        {% if warning_message %}
+        <div class="alert alert-danger flashing-text" role="alert">
+            {{ warning_message }}
+        </div>
+        {% endif %}
+   
+
+<div class="table-container">
+    <table border="1">
+        <thead class="bg-primary">
+        <tr>            
+            <th class="bg-primary text-white col-indicator" style="text-align: left;">Indicator</th>
+            <th class="bg-primary text-white col-rank">{{ year1 }}</th>
+            <th class="bg-primary text-white col-rank">Growth</th>
+            <th class="bg-primary text-white col-rank">{{ year2 }}</th>
+            <th class="bg-primary text-white col-value">Score {{ year2 }}</th>
+            <th class="bg-primary text-white col-value">Value {{ year2 }}</th>
+            <th class="bg-primary text-white col-unit">Unit</th>
+        </tr>
+        </thead>
+        {% for score in df3 %}
+        <tr>    
+                    
+            <td><strong> Overall Rankings</strong></td>            
+            <td class="column-uniform col-rank {% if score.weighted_state_rank1  <= 10 %}rank-green{% elif score.weighted_state_rank1  <= 20 %}rank-light-green{% elif score.weighted_state_rank1  <= 30 %}rank-yellow{% elif score.weighted_state_rank1  <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                <strong>{{ score.weighted_state_rank1|floatformat:0 }}</strong>
+            </td>
+            <td class="column-uniform col-rank {% if score.weighted_state_rank_gr  <= 10 %}rank-green{% elif score.weighted_state_rank_gr  <= 20 %}rank-light-green{% elif score.weighted_state_rank_gr <= 30 %}rank-yellow{% elif score.weighted_state_rank_gr  <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                <strong>{{ score.weighted_state_rank_gr|floatformat:0 }}</strong>
+            </td>
+            <td class="column-uniform col-rank {% if score.weighted_state_rank2  <= 10 %}rank-green{% elif score.weighted_state_rank2 <= 20 %}rank-light-green{% elif score.weighted_state_rank2  <= 30 %}rank-yellow{% elif score.weighted_state_rank2  <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                <strong>{{ score.weighted_state_rank2|floatformat:0 }}</strong>
+            </td>
+            <td class="center-align col-value">{{ score.weighted_avg_score2|floatformat:1|intcomma }}</td>
+            <td><strong></strong></td>
+            <td><strong></strong></td>
+        </tr>        
         {% endfor %}
-    {% endif %}
+        {% for item in df2 %}
+
+        </tr>
+        <tr>           
+            <td class="grey-background"><strong>{{ item.name }}</strong></td>
+            <td class="column-uniform col-rank {% if item.weighted_rank1 <= 10 %}rank-green{% elif item.weighted_rank1 <= 20 %}rank-light-green{% elif item.weighted_rank1 <= 30 %}rank-yellow{% elif item.weighted_rank1 <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                <strong>{{ item.weighted_rank1|floatformat:0 }}</strong>
+            </td>
+            <td class="column-uniform col-rank {% if item.weighted_rank_gr <= 10 %}rank-green{% elif item.weighted_rank_gr <= 20 %}rank-light-green{% elif item.weighted_rank_gr <= 30 %}rank-yellow{% elif item.weighted_rank_gr <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                <strong>{{ item.weighted_rank_gr|floatformat:0 }}</strong>
+            </td>
+            <td class="column-uniform col-rank {% if item.weighted_rank2 <= 10 %}rank-green{% elif item.weighted_rank2 <= 20 %}rank-light-green{% elif item.weighted_rank2 <= 30 %}rank-yellow{% elif item.weighted_rank2 <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                <strong>{{ item.weighted_rank2|floatformat:0 }}</strong>
+            </td> 
+            <td class="center-align col-value grey-background"> <strong>{{ item.weighted_avg_score2|floatformat:1|intcomma }} </strong></td>
+            <td class="grey-background"><strong></strong></td>
+            <td class="grey-background"><strong></strong></td>
+        </tr>
+
+        {% for data in df1 %}
+            {% if data.group|slice:":2" == item.index %}
+            <tr>                
+                <td  style="padding-left: 2em; col-indicator">{{ data.indicator }}</td>
+                <td class="column-uniform col-rank {% if data.rank1 <= 10 %}rank-green{% elif data.rank1 <= 20 %}rank-light-green{% elif data.rank1 <= 30 %}rank-yellow{% elif data.rank1 <= 40 %}rank-orange{% elif data.rank1 <= 51 %}rank-red{% else %}rank-white{% endif %}">
+                    {{ data.rank1|floatformat:0 }}
+                </td>
+                <td class="column-uniform col-rank {% if data.rankgr <= 10 %}rank-green{% elif data.rankgr <= 20 %}rank-light-green{% elif data.rankgr <= 30 %}rank-yellow{% elif data.rankgr <= 40 %}rank-orange{% elif data.rankgr <= 51 %}rank-red{% else %}rank-white{% endif %}">
+                    {{ data.rankgr|floatformat:0 }}
+                </td>
+                <td class="column-uniform col-rank {% if data.rank2 <= 10 %}rank-green{% elif data.rank2 <= 20 %}rank-light-green{% elif data.rank2 <= 30 %}rank-yellow{% elif data.rank2 <= 40 %}rank-orange{% elif data.rank2 <= 51 %}rank-red{% else %}rank-white{% endif %}">
+                    {{ data.rank2|floatformat:0 }}
+                </td>
+                <td class="center-align col-value">{{ data.score2|floatformat:1|intcomma }}</td>
+
+                <td class="right-align col-value">{{ data.value2|floatformat:1|intcomma }}</td>                
+                <td  style="padding-left: 2em; col-indicator">{{ data.unit }}</td>                
+            </tr>
+            {% endif %}
+        {% endfor %}
+        {% endfor %}
+    </table>
+    </div>
+</div>
 
     <footer class="text-body-secondary py-5">
         <div class="container text-center">
@@ -248,6 +333,6 @@
     </footer>
 </body>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>
-
-

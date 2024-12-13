@@ -1,0 +1,93 @@
+/* carousel.css */
+
+/* General styling for the carousel container */
+.carousel {
+    position: relative;
+    width: 100%;
+    height: 400px; /* Adjust based on your needs */
+    overflow: hidden;
+  }
+  
+  .carousel-inner {
+    display: flex;
+    width: 100%;
+    transition: transform 0.5s ease;
+  }
+  
+  .carousel-item {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures the images cover the space of the carousel */
+    position: relative;
+  }
+  
+  .carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* This will make sure the image covers the space while maintaining aspect ratio */
+  }
+  
+  /* Styling for the carousel controls (next/previous) */
+  .carousel-control-prev,
+  .carousel-control-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    border: none;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .carousel-control-prev {
+    left: 10px;
+  }
+  
+  .carousel-control-next {
+    right: 10px;
+  }
+  
+  /* Styling for carousel indicators (dots at the bottom) */
+  .carousel-indicators {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .carousel-indicators button {
+    border: none;
+    background-color: rgba(255, 255, 255, 0.5);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+    cursor: pointer;
+  }
+  
+  .carousel-indicators .active {
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+  
+  /* Optional: Fade effect for transitioning between slides */
+  .carousel-fade .carousel-item-next,
+  .carousel-fade .carousel-item-prev,
+  .carousel-fade .carousel-item.active {
+    transition: opacity 0.5s ease;
+  }
+  
+  .carousel-fade .carousel-item-next,
+  .carousel-fade .carousel-item-prev {
+    opacity: 0;
+  }
+  
+  .carousel-fade .carousel-item.active {
+    opacity: 1;
+  }
+  

@@ -156,7 +156,7 @@
 
     <h1>Economic Rankings for {{ selected_state }}</h1>
     <br>
-
+    
     <div class="container">
         <form method="GET">
             <label for="state">Choose a state:</label>
@@ -184,7 +184,7 @@
         </form>
         <br>
         <br>
-
+        <th class="bg-primary text-white col-group">{{ average_scores_list.group }}</th>
         {% if warning_message %}
         <div class="flashing-text" role="alert">
             {{ warning_message }}
@@ -195,6 +195,40 @@
         {% load humanize %}
                   
         <table>
+            <thead class="bg-primary">
+                <tr>
+                    <th class="bg-primary text-white col-group"></th>
+                    <th class="bg-primary text-white col-indicator" style="text-align: left;">State Overall Rankings</th>
+                    <th class="bg-primary text-white col-rank">{{ year1 }}</th>
+                    <th class="bg-primary text-white col-rank">Growth</th>
+                    <th class="bg-primary text-white col-rank">{{ year2 }}</th>
+                    <th class="bg-primary text-white col-value">Value {{ year2 }}</th>
+                    <th class="bg-primary text-white col-unit">Unit</th>
+                </tr>
+            </thead>
+         
+            <tbody>
+                {% for item in overall_state_scores %}
+                <tr>
+                    <td><strong></strong></td>
+                    <td><strong>State Overall Rankings</strong></td>
+                    <td class="column-uniform col-rank {% if item.rank_weighted_avg_scores1 <= 10 %}rank-green{% elif item.rank_weighted_avg_scores1 <= 20 %}rank-light-green{% elif item.rank_weighted_avg_scores1 <= 30 %}rank-yellow{% elif item.rank_weighted_avg_scores1 <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                        <strong>{{ item.rank_weighted_avg_scores1 }}</strong>
+                    </td>
+                    <td class="column-uniform col-rank {% if item.rank_weighted_avg_scoresgr <= 10 %}rank-green{% elif item.rank_weighted_avg_scoresgr <= 20 %}rank-light-green{% elif item.rank_weighted_avg_scoresgr <= 30 %}rank-yellow{% elif item.rank_weighted_avg_scoresgr <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                        <strong>{{ item.rank_weighted_avg_scoresgr }}</strong>
+                    </td>
+                    <td class="column-uniform col-rank {% if item.rank_weighted_avg_scores2 <= 10 %}rank-green{% elif item.rank_weighted_avg_scores2 <= 20 %}rank-light-green{% elif item.rank_weighted_avg_scores2 <= 30 %}rank-yellow{% elif item.rank_weighted_avg_scores2 <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                        <strong>{{ item.rank_weighted_avg_scores2 }}</strong>
+                    </td>
+                    <td><strong></strong></td>
+                    <td><strong></strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+            <table>
+            
             {% for score in average_scores_list %}    
             <tr>
                 <thead class="bg-primary">
@@ -213,16 +247,18 @@
 
         <td ><strong></strong></td>
         <td ><strong>Overall of the group</strong></td>
-        <td class="column-uniform col-rank {% if score.rank_weighted_avg_scores1 <= 10 %}rank-green{% elif score.rank_weighted_avg_scores1 <= 20 %}rank-light-green{% elif score.rank_weighted_avg_scores1 <= 30 %}rank-yellow{% elif score.rank_weighted_avg_scores1 <= 40 %}rank-orange{% else %}rank-red{% endif %}">
-            <strong>{{ score.rank_weighted_avg_scores1 }}</strong>
+        <td class="column-uniform col-rank {% if score.rank_avg_scores1 <= 10 %}rank-green{% elif score.rank_avg_scores1 <= 20 %}rank-light-green{% elif score.rank_avg_scores1 <= 30 %}rank-yellow{% elif score.rank_avg_scores1 <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+            <strong>{{ score.rank_avg_scores1 }}</strong>
         </td>
   
-        <td class="column-uniform col-rank {% if score.rank_weighted_avg_scoresgr <= 10 %}rank-green{% elif score.rank_weighted_avg_scoresgr <= 20 %}rank-light-green{% elif score.rank_weighted_avg_scoresgr <= 30 %}rank-yellow{% elif score.rank_weighted_avg_scoresgr <= 40 %}rank-orange{% else %}rank-red{% endif %}">
-        <strong>{{ score.rank_weighted_avg_scoresgr }}</strong>
+        <td class="column-uniform col-rank {% if score.rank_avg_scoresgr <= 10 %}rank-green{% elif score.rank_avg_scoresgr <= 20 %}rank-light-green{% elif score.rank_avg_scoresgr <= 30 %}rank-yellow{% elif score.rank_avg_scoresgr <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+        <strong>{{ score.rank_avg_scoresgr }}</strong>
 
-        <td class="column-uniform col-rank {% if score.rank_weighted_avg_scores2 <= 10 %}rank-green{% elif score.rank_weighted_avg_scores2 <= 20 %}rank-light-green{% elif score.rank_weighted_avg_scores2 <= 30 %}rank-yellow{% elif score.rank_weighted_avg_scores2 <= 40 %}rank-orange{% else %}rank-red{% endif %}">
-            <strong>{{ score.rank_weighted_avg_scores2 }}</strong>
+        <td class="column-uniform col-rank {% if score.rank_avg_scores2 <= 10 %}rank-green{% elif score.rank_avg_scores2 <= 20 %}rank-light-green{% elif score.rank_avg_scores2 <= 30 %}rank-yellow{% elif score.rank_avg_scores2 <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+            <strong>{{ score.rank_avg_scores2 }}</strong>
             </td>
+            <td><strong></strong></td>
+            <td><strong></strong></td>
         </td>
     </tr>
 
@@ -236,9 +272,15 @@
                     <td class="col-group">{{ data.group }}</td>
                     <td  style="padding-left: 2em; col-indicator">{{ data.indicator }}</td>
                     
-                    <td class="column-uniform col-rank {% if data.year1_rank <= 10 %}rank-green{% elif data.year1_rank <= 20 %}rank-light-green{% elif data.year1_rank <= 30 %}rank-yellow{% elif data.year1_rank <= 40 %}rank-orange{% else %}rank-red{% endif %}">
-                        {{ data.year1_rank }}
-                    </td>
+                <td class="column-uniform col-rank 
+                    {% if data.year1_rank <= 10 %}rank-green
+                    {% elif data.year1_rank <= 20 %}rank-light-green
+                    {% elif data.year1_rank <= 30 %}rank-yellow
+                    {% elif data.year1_rank <= 40 %}rank-orange
+                    {% elif data.year1_rank <= 51 %}rank-red
+                    {% else %}rank-white{% endif %}">
+                    {{ data.year1_rank }}
+                </td>
                     <td class="column-uniform col-rank {% if data.growth_rank <= 10 %}rank-green{% elif data.growth_rank <= 20 %}rank-light-green{% elif data.growth_rank <= 30 %}rank-yellow{% elif data.growth_rank <= 40 %}rank-orange{% else %}rank-red{% endif %}">
                         {{ data.growth_rank }}
                     </td>                   

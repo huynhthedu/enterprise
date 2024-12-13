@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 {% load static %}
+{% load custom_filters %}
 <head>
     <script src="/docs/5.3/assets/js/color-modes.js"></script>
     <meta charset="UTF-8">
@@ -18,8 +19,29 @@
         }
 
         .container {
-            margin-left: .5in;
-            margin-right: .5in;
+            margin-left: 1in;
+            margin-right: 1in;
+        }
+
+
+        .table-container {
+            width: 100%;
+            height: 800px; /* Adjust the height as needed */
+            overflow-y: auto;
+        }
+
+
+        th, td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            background-color: #f2f2f2; /* Background color for the header */
+            z-index: 1; /* Ensure the header is above the table rows */
         }
 
         table {
@@ -65,15 +87,16 @@
         }
 
         .bg-medium-crimson {
-            background-color: #C71585; /* Medium Crimson */
+            background-color: #1521c7; /* Medium Crimson */
             color: white; /* Optional: Set text color to white for better contrast */
         }
 
-        .bg-dark-crimson {
-          background-color: #8B0000; /* Dark Crimson */
-      }
-
-
+        .bg-blue {
+            background-color: blue; /* Blue */
+        }
+        .grey-background {
+            background-color: lightgrey;
+        }
         .center-align {
             text-align: center;
         }
@@ -116,33 +139,50 @@
             text-align: center;
         }
 
-        .framework {
-            margin-bottom: 20px;
+        .navbar-nav .nav-link, .navbar-brand {
+            color: white !important;
         }
-        .framework img {
-            float: left;
-            margin-right: 15px;
-            margin-bottom: 10px;
-            width: 100px; /* Fixed width */
-            height: 100px; /* Fixed height */
-            object-fit: cover; /* Ensure the image covers the area without distortion */
+        .navbar-nav .nav-link:hover, .navbar-brand:hover {
+            color: #ffcc00; /* Optional: Change color on hover */
         }
-        .framework-content {
-            overflow: hidden; /* Ensure the content wraps around the floated image */
+
+        .flashing-text {
+            color: red;
+            animation: flash 1s infinite;
         }
-        .truncate {
-            display: -webkit-box;
-            -webkit-line-clamp: 5; /* Number of lines to show */
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-height: 7.5em; /* Adjust based on line height */
-            line-height: 1.5em; /* Adjust line height */
+
+        @keyframes flash {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .bar-container {
+            margin: 0 auto;            
+            display: flex;
+            width: 10in;
+            height: 40px; 
+            border: 2px solid black; 
+        }
+        .portion {
+            height: 100%;
+        }
+        .green { background-color: green; }
+        .light-green { background-color: lightgreen; }
+        .yellow { background-color: yellow; }
+        .orange { background-color: orange; }
+        .red { background-color: red; }
+
+        .centered-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center; /* Center-align text */
         }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-md navbar-light fixed-top bg-dark-crimson text-white">
+    <nav class="navbar navbar-expand-lg bg-blue">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'home' %}">Home</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
@@ -150,7 +190,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav ml-auto">
-                    <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                    <!-- <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a> -->
                     <a class="nav-link" href="{% url 'rankings' %}">Rankings</a>
                     <a class="nav-link" href="{% url 'survey' %}">Survey</a>
                     <a class="nav-link" href="{% url 'index' %}">Framework</a>
@@ -158,7 +198,7 @@
                 </div>
             </div>
         </div>
-    </nav>
+    </nav>    
 
     <div class="container">
         <h1 class="text-center pt-3">Framework</h1>

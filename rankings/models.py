@@ -34,6 +34,8 @@ class IndicatorIndex(models.Model):
     group = models.CharField(max_length=20)
     indicator = models.CharField(max_length=200)
     weight = models.FloatField(default=1/25)
+    unit = models.CharField(max_length=200)
+    key = models.IntegerField()
 
     def __str__(self):
         return f"{self.group} - {self.indicator}"
