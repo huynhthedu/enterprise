@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 from django.shortcuts import render
 from .models import Indicator, IndicatorIndex, GroupName
 from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
-import tkinter as tk
+# import tkinter as tk
 import urllib.parse
 import matplotlib.ticker as ticker
 from django.shortcuts import get_object_or_404
