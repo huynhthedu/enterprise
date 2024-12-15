@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'dashboard',
     'survey',
-    'django_pandas',
+    # 'django_pandas',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
