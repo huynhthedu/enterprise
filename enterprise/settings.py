@@ -86,26 +86,7 @@ WSGI_APPLICATION = 'enterprise.wsgi.application'
 
 DATABASE_URL = os.getenv('DATABASE_URL', None)
 
-if not DATABASE_URL:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
-else:
-    db_info = urlparse(DATABASE_URL)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'rankings',
-            'USER': 'postgres',
-            'PASSWORD': '123456',
-            'HOST': 'localhost',
-            'PORT': '5432',   
-            'OPTIONS': {'sslmode': 'require'},
-        }
-    }
+
 
 DATABASES = {
     'default': {
