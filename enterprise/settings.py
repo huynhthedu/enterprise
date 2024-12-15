@@ -40,10 +40,10 @@ DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
 INSTALLED_APPS = [
     'homepage',
     'framework',
-    'rankings',
+    'rankings.apps.RankingsConfig',
     'django.contrib.humanize',
-    'dashboard',
-    'survey',
+    'dashboard.apps.DashboardConfig',
+    'survey.apps.SurveyConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
