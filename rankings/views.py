@@ -9,28 +9,15 @@ matplotlib.use('Agg')
 import geopandas as gpd
 import fiona
 import pandas as pd
-# from django_pandas.io import read_frame
 import base64, urllib
 import matplotlib.pyplot as plt
 from django.shortcuts import render
 from .models import Indicator, IndicatorIndex, GroupName
 from mpl_toolkits.axes_grid1.axes_divider import make_axes_locatable
-# import tkinter as tk
 import urllib.parse
 import matplotlib.ticker as ticker
 from django.shortcuts import get_object_or_404
 
-
-
-# def update_label():
-#     label.config(text="Updated Text")
-#     root.after(2000, update_label)
-
-#     root = tk.Tk()
-#     label = tk.Label(root, text="Initial Text")
-#     label.pack()
-#     root.after(2000, update_label)
-#     root.mainloop()
 
 def validate_input(request):
     # Fetch available states, indicators, and valid years
