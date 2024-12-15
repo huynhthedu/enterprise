@@ -84,9 +84,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'enterprise.wsgi.application'
 
-DATABASE_URL = os.getenv('DATABASE_URL', None)
-
-
 
 DATABASES = {
     'default': {
