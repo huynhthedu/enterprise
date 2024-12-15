@@ -16,7 +16,6 @@ import sys
 import dj_database_url
 from django.core.management.utils import get_random_secret_key
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -41,11 +40,10 @@ DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
 INSTALLED_APPS = [
     'homepage',
     'framework',
-    'rankings',
+    'rankings.apps.RankingsConfig',
     'django.contrib.humanize',
-    'dashboard',
-    'survey',
-    # 'django_pandas',
+    'dashboard.apps.DashboardConfig',
+    'survey.apps.SurveyConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -62,7 +60,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'enterprise.urls'
@@ -144,35 +141,18 @@ USE_L10N = True
 USE_TZ = True
 
 
-# # Static files (CSS, JavaScript, Images)
-# # https://docs.djangoproject.com/en/3.1/howto/static-files/
-
-# # Static files (CSS, JavaScript, Images)
-# STATIC_URL = '/static/'  # URL for accessing static files
-
-# # Directories to search for static files in development
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
-
-# # Directory to collect all static files for production
-# STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-
-# # Media files (uploads)
-# MEDIA_URL = '/media/'  # URL for accessing media files
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Directory for media file uploads
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = '/static/'  # URL for accessing static files
 
-# Other imports...
-BASE_DIR = Path(__file__).resolve().parent.parent
+# Directories to search for static files in development
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Directory to collect all static files for production
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-# Add Whitenoise storage backend for static files
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Media files (uploads)
+MEDIA_URL = '/media/'  # URL for accessing media files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Directory for media file uploads
