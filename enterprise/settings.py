@@ -15,7 +15,6 @@ import os
 import sys
 import dj_database_url
 from django.core.management.utils import get_random_secret_key
-from urllib.parse import urlparse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -103,21 +102,21 @@ else:
             'USER': 'postgres',
             'PASSWORD': '123456',
             'HOST': 'localhost',
-            'PORT': '5432',      
+            'PORT': '5432',   
             'OPTIONS': {'sslmode': 'require'},
         }
     }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'rankings',
-#         'USER': 'postgres',
-#         'PASSWORD': '123456',
-#         'HOST': 'localhost',
-#         'PORT': '5432',        
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'rankings',
+        'USER': 'postgres',
+        'PASSWORD': '123456',
+        'HOST': 'localhost',
+        'PORT': '5432',        
+    }
+}
 
 
 
