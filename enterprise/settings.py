@@ -16,7 +16,6 @@ import sys
 import dj_database_url
 from django.core.management.utils import get_random_secret_key
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -47,7 +46,6 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'dashboard',
     'survey',
-    'django_pandas',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -64,7 +62,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'enterprise.urls'
@@ -94,6 +91,19 @@ WSGI_APPLICATION = 'enterprise.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 
+# if DEVELOPMENT_MODE is True:
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.sqlite3",
+#             "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+#         }
+#     }
+# elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
+#     if os.getenv("DATABASE_URL", None) is None:
+#         raise Exception("DATABASE_URL environment variable not defined")
+#     DATABASES = {
+#         "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
+#     }
 
 DATABASES = {
     'default': {
@@ -154,16 +164,40 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+#STATIC_URL = '/static/'
 
 # Other imports...
-BASE_DIR = Path(__file__).resolve().parent.parent
+#BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# Example usage of os.path.join
+# STATICFILES_DIRS = [BASE_DIR / 'static']
+#STATICFILES_DIRS = (os.path.join(BASE_DIR, "static"),)
+#STATIC_ROOT = BASE_DIR / "staticfiles"
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-# Add Whitenoise storage backend for static files
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+#DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+#MEDIA_URL = '/media/'
+#MEDIA_ROOT = BASE_DIR / 'media'
+
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'enterprise/static/')]
+
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# STATIC_URL = '/static/'
+
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+# MEDIA_URL =  '/media/'
+
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = '/static/'  # URL for accessing static files
+
+# Directories to search for static files in development
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+
+# Directory to collect all static files for production
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+# Media files (uploads)
+MEDIA_URL = '/media/'  # URL for accessing media files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Directory for media file uploads
