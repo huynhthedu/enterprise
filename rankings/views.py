@@ -1,4 +1,4 @@
-from django.db.models import Sum, Q
+from django.db.models import Sum  
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from django.http import HttpResponse
 import io, os
@@ -826,7 +826,7 @@ def result(request):
     
     # 2. create a dataframe 
     fields = ['group', 'state', 'year', 'value']
-    queryset = Indicator.objects.filter(Q(year=year1) | Q(year=year2)).values(*fields)    
+    queryset = Indicator.objects.filter(year=year1).values(*fields) | Indicator.objects.filter(year=year2).values(*fields)
     print(f"Queryset count: {queryset.count()}")
     
     # Convert QuerySet to a list of dictionaries
