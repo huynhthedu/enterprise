@@ -814,14 +814,12 @@ def result(request):
     # 2. create a dataframe 
     fields = ['group', 'state', 'year', 'value']
     queryset = Indicator.objects.filter(year=year1).values(*fields) | Indicator.objects.filter(year=year2).values(*fields)
-    print(f"Queryset count: {queryset.count()}")
     
     # Convert QuerySet to a list of dictionaries
     data = list(queryset)
 
     # Create a DataFrame
-    df = pd.DataFrame(data)
-    # df = read_frame(queryset)
+    df = pd.DataFrame(data)    
     df = df.dropna()
     
  
@@ -837,14 +835,12 @@ def result(request):
     new_rows = []
     for (group1, group2), (new_group_id) in new_groups.items():
         df_group1 = df[df['group'] == group1]
-        df_group2 = df[df['group'] == group2]        
- 
+        df_group2 = df[df['group'] == group2]         
         
         if df_group1.empty or df_group2.empty:
             continue  # Skip if either group is empty
        
-        merged_df = pd.merge(df_group1, df_group2, on=['state',  'year'], suffixes=('_1', '_2'))         
-        print(f"New Groups Merged DataFrame: {merged_df}")       
+        merged_df = pd.merge(df_group1, df_group2, on=['state',  'year'], suffixes=('_1', '_2'))          
         
         if merged_df.empty:
             continue  # Skip if merge results in an empty DataFrame
@@ -867,10 +863,7 @@ def result(request):
 
     # 4. Calculate growth between the two selected years for each indicator
     df = df.pivot_table(index=['state', 'group' ], columns='year', values='value').reset_index()
-    # print("Pivot table created")
-    print(f"Pivot DataFrame columns: {df.columns}")
-
-    # Avoid division by zero when calculating growth
+  
     def calculate_growth(row):
             try:
                 if row[year1] != 0:
@@ -891,9 +884,7 @@ def result(request):
     group_name = GroupName.objects.all().values('index', 'name')
     group_name_df = pd.DataFrame(list(group_name))
     df = pd.merge(df, indicators_df, on=['group'])
-    column_names_list = df.columns.tolist()
-    print(column_names_list)
-    print(df.head)
+
 
     def calculate_scores(state_values, key_values):
         min_value = state_values.min()
@@ -917,11 +908,7 @@ def result(request):
 
     # Drop specific rows
     groups_to_drop = ['E65', 'E22', 'E24', 'E15']
-    df = df[~df['group'].isin(groups_to_drop)]
-
-    # Debugging: Print the DataFrame before applying the function
-    print("DataFrame before applying calculate_scores:")
-    print(df.head())
+    df = df[~df['group'].isin(groups_to_drop)]    
 
     # Apply the calculate_scores function with the key field
     try:
@@ -930,10 +917,6 @@ def result(request):
         df['score2'] = df.groupby(['group']).apply(lambda x: calculate_scores(x['value2'], x['key'])).reset_index(level=0, drop=True)
     except Exception as e:
         print("Error during groupby and apply operations:", e)
-
-    # Debugging: Print the DataFrame after applying the function
-    print("DataFrame after applying calculate_scores:")
-    print(df.head())
     
 
     df['rank1'] = df.groupby(['group'])['score1'].rank(ascending=False)
@@ -941,9 +924,7 @@ def result(request):
     df['rank2'] = df.groupby(['group'])['score2'].rank(ascending=False)
     
         
-    #6. Calculate weighted scores by groups of indicators, and overall then rankings
-
- 
+    #6. Calculate weighted scores by groups of indicators, and overall then rankings 
 
     df['index'] = df['group'].str[:2]
     df['index_main'] = df['group'].str[:1]
@@ -973,33 +954,21 @@ def result(request):
     # Calculate the overall weighted average score and growth score for each group and year
     try:
         weighted_avg_scores = df.groupby(['index', 'state']).apply(calculate_weighted_avg).reset_index()
-        weighted_avg_scores_state = df.groupby(['index_main', 'state']).apply(calculate_weighted_avg).reset_index()
-        # print(weighted_avg_scores_state)
+        weighted_avg_scores_state = df.groupby(['index_main', 'state']).apply(calculate_weighted_avg).reset_index()        
 
         # Merge with group_name_df to get the names
-        weighted_avg_scores = pd.merge(weighted_avg_scores, group_name_df, on='index')
-        # weighted_avg_scores_state = pd.merge(weighted_avg_scores_state, group_name_df, on='index_main')
+        weighted_avg_scores = pd.merge(weighted_avg_scores, group_name_df, on='index')        
         weighted_avg_scores['weighted_rank1'] = weighted_avg_scores.groupby(['index'])['weighted_avg_score1'].rank(ascending=False)
         weighted_avg_scores['weighted_rank_gr'] = weighted_avg_scores.groupby(['index'])['weighted_avg_score_gr'].rank(ascending=False)
         weighted_avg_scores['weighted_rank2'] = weighted_avg_scores.groupby(['index'])['weighted_avg_score2'].rank(ascending=False)
         weighted_avg_scores_state['weighted_state_rank1'] = weighted_avg_scores_state.groupby(['index_main'])['weighted_avg_score1'].rank(ascending=False)
         weighted_avg_scores_state['weighted_state_rank_gr'] = weighted_avg_scores_state.groupby(['index_main'])['weighted_avg_score_gr'].rank(ascending=False)
         weighted_avg_scores_state['weighted_state_rank2'] = weighted_avg_scores_state.groupby(['index_main'])['weighted_avg_score2'].rank(ascending=False)
-        # print(weighted_avg_scores_state)
-        # print(f"Final Weighted Scores: {weighted_avg_scores}")
+
 
         weighted_avg_scores = weighted_avg_scores[weighted_avg_scores['state'] == selected_state]
         weighted_avg_scores_state = weighted_avg_scores_state[weighted_avg_scores_state['state'] == selected_state]
         df = df[df['state'] == selected_state]
-        # print(weighted_avg_scores_state)
-
-
-        # column_names_list = weighted_avg_scores_state.columns.tolist()
-        # print(column_names_list)
-        # column_names_list = weighted_avg_scores.columns.tolist()
-        # print(column_names_list)
-        # column_names_list = df.columns.tolist()
-        # print(column_names_list)
 
     except Exception as e:
         print(f"An error occurred: {e}")
