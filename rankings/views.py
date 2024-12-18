@@ -998,7 +998,7 @@ def inputs(request, template_name):
     states = list(Indicator.objects.values_list('state', flat=True).distinct().order_by('state'))
     years = list(range(1999, 2024))  # Valid years range
     indicators = list(IndicatorIndex.objects.filter(weight__gt=0).values_list('indicator', flat=True).distinct().order_by('indicator'))
-    print(indicators)
+    # print(indicators)
 
     # Initialize variables
     selected_state = None
@@ -1321,45 +1321,43 @@ def doanhnghiep(request):
 
     return render(request, 'rankings/doanhnghiep.html', context)
 
-def all_states(request):    
+def state(request):    
     # Fetch inputs
-    input_data = inputs(request, 'all_states.html')
+    input_data = inputs(request, 'state.html')
     if isinstance(input_data, dict):
         states = input_data['states']
         years = input_data['years']
         indicators = input_data['indicators']
-        selected_state = input_data['selected_state']
         selected_indicators = input_data['selected_indicators']
+        selected_state = input_data['selected_state']
         year1 = input_data['year1']
         year2 = input_data['year2']
         warning_message = input_data['warning_message']
     else:
         return input_data  # Rendered response if there's a warning
-    
+
     # Perform calculations
     calculations_result = calculations(year1, year2)
     df = calculations_result['df']
-    print(df.columns.tolist())
-
-    # Filter the DataFrame for the selected indicators
-    filtered_df = df[df['indicator'].isin(selected_indicators)]
+    weighted_avg_scores = calculations_result['weighted_avg_scores']
+    weighted_avg_scores_state = calculations_result['weighted_avg_scores_state']
 
     # Order the DataFrame by group
-    filtered_df = filtered_df.sort_values(by='group')
+    df = df.sort_values(by='group')
 
-    # Draw separate horizontal bar charts for score2 of the selected indicators and sort them in descending order
+    # Draw separate horizontal bar charts for value2 of all indicators and sort them in descending order
     plot_urls = []
     for indicator in selected_indicators:
         plt.figure(figsize=(10, 15))
-        indicator_df = filtered_df[filtered_df['indicator'] == indicator].sort_values(by='score2', ascending=False)
+        indicator_df = df[df['indicator'] == indicator].sort_values(by='value2', ascending=True)
         
         # Create a new column combining state names and rank2 with no decimal
         indicator_df['state_rank'] = indicator_df.apply(lambda row: f"{row['state']} (Rank: {int(row['rank2'])})", axis=1)
         
-        bars = plt.barh(indicator_df['state_rank'], indicator_df['score2'], label=indicator)
+        bars = plt.barh(indicator_df['state_rank'], indicator_df['value2'], label=indicator)
         
         # Highlight the border of the selected state and show data in bars with one decimal
-        for bar, state, score2, rank2 in zip(bars, indicator_df['state'], indicator_df['score2'], indicator_df['rank2']):
+        for bar, state, value2, rank2 in zip(bars, indicator_df['state'], indicator_df['value2'], indicator_df['rank2']):
             if rank2 <= 10:
                 bar.set_color('green')
             elif rank2 <= 20:
@@ -1375,7 +1373,7 @@ def all_states(request):
                 bar.set_edgecolor('black')
                 bar.set_linewidth(2)
             
-            plt.text(bar.get_width(), bar.get_y() + bar.get_height()/2, f'{score2:.1f}', va='center', ha='left')
+            plt.text(bar.get_width(), bar.get_y() + bar.get_height()/2, f'{value2:.1f}', va='center', ha='left')
 
         plt.xlabel('Score')
         plt.ylabel('State')
@@ -1389,21 +1387,32 @@ def all_states(request):
         # Encode the plot as a base64 string
         plot_url = base64.b64encode(buf.getvalue()).decode('utf8')
         plot_urls.append(plot_url)
-        # print(plot_url)
-        print(df)
     
+        plt.close()
+
     # Prepare context for rendering
+    weighted_avg_scores_selected_state = weighted_avg_scores[weighted_avg_scores['state'] == selected_state]
+    weighted_avg_scores_state_selected_state = weighted_avg_scores_state[weighted_avg_scores_state['state'] == selected_state]
+    df_selected_state = df[df['state'] == selected_state]
+
+    df1_dict = df_selected_state.to_dict(orient='records')
+    df2_dict = weighted_avg_scores_selected_state.to_dict(orient='records')
+    df3_dict = weighted_avg_scores_state_selected_state.to_dict(orient='records')
+    
     context = {
         'df': df,
+        'df1': df1_dict,
+        'df2': df2_dict,
+        'df3': df3_dict,
         'states': states,
         'years': years,
         'indicators': indicators,
-        'selected_state': selected_state,
         'selected_indicators': selected_indicators,
+        'selected_state': selected_state,
         'year1': year1,
         'year2': year2,
         'warning_message': warning_message,
-        'plot_urls': plot_urls
+        'plot_urls': plot_urls,
     }
 
-    return render(request, 'rankings/all_states.html', context)
+    return render(request, 'rankings/state.html', context)
