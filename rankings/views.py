@@ -19,7 +19,7 @@ import matplotlib.ticker as ticker
 from django.shortcuts import get_object_or_404
 
 
-def validate_input(request):
+def validate_input(request, template_name):
     # Fetch available states, indicators, and valid years
     states = list(Indicator.objects.values_list('state', flat=True).distinct().order_by('state'))
     years = list(range(1999, 2024))  # Valid years range
@@ -54,7 +54,7 @@ def validate_input(request):
 
     # If there's a warning, return the input form with the warning message
     if warning_message:
-        return render(request, 'rankings/rankings.html', {
+        return render(request, template_name, {  # Use the template_name parameter
             'states': states,
             'years': years,
             'selected_state': selected_state,
@@ -800,7 +800,7 @@ def score_and_rankings(request):
 def result(request):
     
     # 1. Choose one state and two years with function validate_input(request)
-    validation_result = validate_input(request)
+    validation_result = validate_input(request, 'rankings.html' )
     if isinstance(validation_result, dict):
         states = validation_result['states']
         years = validation_result['years']
@@ -990,3 +990,420 @@ def result(request):
         'warning_message': warning_message
     }
     return render(request, 'rankings/rankings.html', context )
+
+
+
+def inputs(request, template_name):
+    # Fetch available states, indicators, and valid years
+    states = list(Indicator.objects.values_list('state', flat=True).distinct().order_by('state'))
+    years = list(range(1999, 2024))  # Valid years range
+    indicators = list(IndicatorIndex.objects.filter(weight__gt=0).values_list('indicator', flat=True).distinct().order_by('indicator'))
+    print(indicators)
+
+    # Initialize variables
+    selected_state = None
+    selected_indicators = []
+    year1 = None
+    year2 = None
+    warning_message = None
+
+    if request.method == 'GET':
+        # Fetch inputs with default values
+        selected_state = request.GET.get('state', None)
+        selected_indicators = request.GET.getlist('indicators', [])
+        year1 = request.GET.get('year1', None)
+        year2 = request.GET.get('year2', None)
+
+        # Validate state
+        # if selected_state not in states:
+        #     warning_message = "Invalid state selected. Please choose a valid state."
+        # else:
+            # Convert years to integers and validate
+        try:
+            year1 = int(year1) if year1 else min(years)
+            year2 = int(year2) if year2 else max(years)
+
+            if year1 not in years or year2 not in years:
+                warning_message = "Selected years are out of range. Please choose valid years."
+            elif year2 <= year1:
+                warning_message = "Year 2 must be greater than Year 1. Please choose another year."
+        except ValueError:
+            warning_message = "Invalid year format. Please enter valid numbers for years."
+
+    # If there's a warning, return the input form with the warning message
+    if warning_message:
+        return render(request, template_name, {
+            'states': states,
+            'indicators': indicators,
+            'years': years,
+            'selected_state': selected_state,
+            'selected_indicators': selected_indicators,
+            'year1': year1,
+            'year2': year2,
+            'warning_message': warning_message,
+            'grouped_rankings': None,
+            'rankings_data': None,
+        })
+
+    # Return validated data
+    return {
+        'states': states,
+        'indicators': indicators,
+        'years': years,
+        'selected_state': selected_state,
+        'selected_indicators': selected_indicators,
+        'year1': year1,
+        'year2': year2,
+        'warning_message': warning_message,
+    }
+
+
+def calculations(year1, year2):
+    
+    # 2. create a dataframe 
+    fields = ['group', 'state', 'year', 'value']
+    queryset = Indicator.objects.filter(year=year1).values(*fields) | Indicator.objects.filter(year=year2).values(*fields)
+    
+    # Convert QuerySet to a list of dictionaries
+    data = list(queryset)
+
+    # Create a DataFrame
+    df = pd.DataFrame(data)    
+    df = df.dropna()
+    
+ 
+    # 3. Canculate new indicatiors by ratios of existing indicators and add to the dataframe
+    new_groups = {
+        ('E47', 'E16'): ('E61'),
+        ('E42', 'E16'): ('E62'),
+        ('E47', 'E14'): ('E63'),
+        ('E51', 'E14'): ('E64'),
+        ('E65', 'E11'): ('E66'),
+    }
+
+    new_rows = []
+    for (group1, group2), (new_group_id) in new_groups.items():
+        df_group1 = df[df['group'] == group1]
+        df_group2 = df[df['group'] == group2]         
+        
+        if df_group1.empty or df_group2.empty:
+            continue  # Skip if either group is empty
+       
+        merged_df = pd.merge(df_group1, df_group2, on=['state',  'year'], suffixes=('_1', '_2'))          
+        
+        if merged_df.empty:
+            continue  # Skip if merge results in an empty DataFrame
+        
+        merged_df['value'] = merged_df.apply(
+            lambda row: row['value_1'] / row['value_2']*100 if row['value_2'] != 0 else float('nan'), axis=1)
+        
+        for _, row in merged_df.iterrows():
+            new_row = {
+                'group': new_group_id,
+                'state': row['state'],                
+                'year': row['year'],
+                'value': row['value']
+            }
+            new_rows.append(new_row)
+
+    new_rows_df = pd.DataFrame(new_rows)
+    df = pd.concat([df, new_rows_df], ignore_index=True)
+    df.loc[df['group'] == 'E66', 'value'] *= 100
+
+    # 4. Calculate growth between the two selected years for each indicator
+    df = df.pivot_table(index=['state', 'group' ], columns='year', values='value').reset_index()
+  
+    def calculate_growth(row):
+            try:
+                if row[year1] != 0:
+                    return ((row[year2] - row[year1]) / row[year1]) * 100
+                else:
+                    return float('nan')
+            except KeyError as e:
+                print(f"KeyError: {e}")
+                return float('nan')
+
+    df['growth'] = df.apply(calculate_growth, axis=1)    
+    new_column_names = ['state', 'group', 'value1', 'value2', 'growth']
+    df.columns = new_column_names
+        
+    # 5. caculate score for each indicator among states. The lowest value gets 1.0 and the highest get 7.0, the rankings
+    indicators = IndicatorIndex.objects.all().values('group', 'indicator', 'weight', 'unit', 'key')
+    indicators_df = pd.DataFrame(list(indicators))
+    group_name = GroupName.objects.all().values('index', 'name')
+    group_name_df = pd.DataFrame(list(group_name))
+    df = pd.merge(df, indicators_df, on=['group'])
+
+
+    def calculate_scores(state_values, key_values):
+        min_value = state_values.min()
+        max_value = state_values.max()
+        
+        if min_value == max_value:
+            return pd.Series([1] * len(state_values), index=state_values.index)  # Return a series of ones if all values are the same
+        
+        scores = pd.Series(index=state_values.index, dtype=float)
+        
+        for i in range(len(state_values)):
+            if key_values.iloc[i] == 1:
+                scores.iloc[i] = ((state_values.iloc[i] - min_value) / (max_value - min_value)) * 6 + 1
+            elif key_values.iloc[i] == 0:
+                scores.iloc[i] = 7 - ((state_values.iloc[i] - min_value) / (max_value - min_value)) * 6
+        
+        return scores
+
+    # Eliminate empty or none values
+    df = df.dropna()
+
+    # Drop specific rows
+    groups_to_drop = ['E65', 'E22', 'E24', 'E15']
+    df = df[~df['group'].isin(groups_to_drop)]    
+
+    # Apply the calculate_scores function with the key field
+    try:
+        df['score1'] = df.groupby(['group']).apply(lambda x: calculate_scores(x['value1'], x['key'])).reset_index(level=0, drop=True)
+        df['score_gr'] = df.groupby(['group']).apply(lambda x: calculate_scores(x['growth'], x['key'])).reset_index(level=0, drop=True)
+        df['score2'] = df.groupby(['group']).apply(lambda x: calculate_scores(x['value2'], x['key'])).reset_index(level=0, drop=True)
+    except Exception as e:
+        print("Error during groupby and apply operations:", e)
+    
+
+    df['rank1'] = df.groupby(['group'])['score1'].rank(ascending=False)
+    df['rankgr'] =df.groupby(['group'])['score_gr'].rank(ascending=False)
+    df['rank2'] = df.groupby(['group'])['score2'].rank(ascending=False)
+    
+        
+    #6. Calculate weighted scores by groups of indicators, and overall then rankings 
+
+    df['index'] = df['group'].str[:2]
+    df['index_main'] = df['group'].str[:1]
+    indicators_df['group_index'] = indicators_df['group'].str[:2]
+    # df = pd.merge(df, indicators_df, on=['group'])
+    df['weighted_score1'] = df['score1'] * df['weight']
+    df['weighted_score_gr'] = df['score_gr'] * df['weight']
+    df['weighted_score2'] = df['score2'] * df['weight']
+
+    # Function to calculate weighted averages with division by zero check
+   
+    def calculate_weighted_avg(x):
+        weight_sum = x['weight'].sum()
+        if weight_sum == 0:
+            return pd.Series({
+                'weighted_avg_score1': float('nan'),                
+                'weighted_avg_score_gr': float('nan'),
+                'weighted_avg_score2': float('nan')
+            })
+        else:
+            return pd.Series({
+                'weighted_avg_score1': x['weighted_score1'].sum() / weight_sum,
+                'weighted_avg_score_gr': x['weighted_score_gr'].sum() / weight_sum,
+                'weighted_avg_score2': x['weighted_score2'].sum() / weight_sum
+            })
+
+    # Calculate the overall weighted average score and growth score for each group and year
+    try:
+        weighted_avg_scores = df.groupby(['index', 'state']).apply(calculate_weighted_avg).reset_index()
+        weighted_avg_scores_state = df.groupby(['index_main', 'state']).apply(calculate_weighted_avg).reset_index()        
+
+        # Merge with group_name_df to get the names
+        weighted_avg_scores = pd.merge(weighted_avg_scores, group_name_df, on='index')        
+        weighted_avg_scores['weighted_rank1'] = weighted_avg_scores.groupby(['index'])['weighted_avg_score1'].rank(ascending=False)
+        weighted_avg_scores['weighted_rank_gr'] = weighted_avg_scores.groupby(['index'])['weighted_avg_score_gr'].rank(ascending=False)
+        weighted_avg_scores['weighted_rank2'] = weighted_avg_scores.groupby(['index'])['weighted_avg_score2'].rank(ascending=False)
+        weighted_avg_scores_state['weighted_state_rank1'] = weighted_avg_scores_state.groupby(['index_main'])['weighted_avg_score1'].rank(ascending=False)
+        weighted_avg_scores_state['weighted_state_rank_gr'] = weighted_avg_scores_state.groupby(['index_main'])['weighted_avg_score_gr'].rank(ascending=False)
+        weighted_avg_scores_state['weighted_state_rank2'] = weighted_avg_scores_state.groupby(['index_main'])['weighted_avg_score2'].rank(ascending=False)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+
+    context = {
+        'df': df,
+        'weighted_avg_scores': weighted_avg_scores,
+        'weighted_avg_scores_state': weighted_avg_scores_state,
+    }
+    return context
+
+def doanhnghiep(request):
+    input_data = inputs(request, 'doanhnghiep.html')
+    if isinstance(input_data, dict):
+        states = input_data['states']
+        years = input_data['years']
+        indicators = input_data['indicators']
+        selected_indicators = input_data['selected_indicators']
+        selected_state = input_data['selected_state']
+        year1 = input_data['year1']
+        year2 = input_data['year2']
+        warning_message = input_data['warning_message']
+    else:
+        return input_data  # Rendered response if there's a warning
+
+    # Perform calculations
+    calculations_result = calculations(year1, year2)
+    df = calculations_result['df']
+    weighted_avg_scores = calculations_result['weighted_avg_scores']
+    weighted_avg_scores_state = calculations_result['weighted_avg_scores_state']
+
+    # Order the DataFrame by group
+    df = df.sort_values(by='group')
+
+    # Draw separate horizontal bar charts for value2 of all indicators and sort them in descending order
+    plot_urls = []
+    for indicator in selected_indicators:
+        plt.figure(figsize=(10, 15))
+        indicator_df = df[df['indicator'] == indicator].sort_values(by='value2', ascending=True)
+        
+        # Create a new column combining state names and rank2 with no decimal
+        indicator_df['state_rank'] = indicator_df.apply(lambda row: f"{row['state']} (Rank: {int(row['rank2'])})", axis=1)
+        
+        bars = plt.barh(indicator_df['state_rank'], indicator_df['value2'], label=indicator)
+        
+        # Highlight the border of the selected state and show data in bars with one decimal
+        for bar, state, value2, rank2 in zip(bars, indicator_df['state'], indicator_df['value2'], indicator_df['rank2']):
+            if rank2 <= 10:
+                bar.set_color('green')
+            elif rank2 <= 20:
+                bar.set_color('lightgreen')
+            elif rank2 <= 30:
+                bar.set_color('yellow')
+            elif rank2 <= 40:
+                bar.set_color('orange')
+            else:
+                bar.set_color('red')
+            
+            if state == selected_state:
+                bar.set_edgecolor('black')
+                bar.set_linewidth(2)
+            
+            plt.text(bar.get_width(), bar.get_y() + bar.get_height()/2, f'{value2:.1f}', va='center', ha='left')
+
+        plt.xlabel('Score')
+        plt.ylabel('State')
+        plt.title(f'{indicator}')
+        
+        # Save the plot to a BytesIO object
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        
+        # Encode the plot as a base64 string
+        plot_url = base64.b64encode(buf.getvalue()).decode('utf8')
+        plot_urls.append(plot_url)
+    
+        plt.close()
+
+    # Prepare context for rendering
+    weighted_avg_scores_selected_state = weighted_avg_scores[weighted_avg_scores['state'] == selected_state]
+    weighted_avg_scores_state_selected_state = weighted_avg_scores_state[weighted_avg_scores_state['state'] == selected_state]
+    df_selected_state = df[df['state'] == selected_state]
+
+    df1_dict = df_selected_state.to_dict(orient='records')
+    df2_dict = weighted_avg_scores_selected_state.to_dict(orient='records')
+    df3_dict = weighted_avg_scores_state_selected_state.to_dict(orient='records')
+    
+    context = {
+        'df': df,
+        'df1': df1_dict,
+        'df2': df2_dict,
+        'df3': df3_dict,
+        'states': states,
+        'years': years,
+        'indicators': indicators,
+        'selected_indicators': selected_indicators,
+        'selected_state': selected_state,
+        'year1': year1,
+        'year2': year2,
+        'warning_message': warning_message,
+        'plot_urls': plot_urls,
+    }
+
+    return render(request, 'rankings/doanhnghiep.html', context)
+
+def all_states(request):    
+    # Fetch inputs
+    input_data = inputs(request, 'all_states.html')
+    if isinstance(input_data, dict):
+        states = input_data['states']
+        years = input_data['years']
+        indicators = input_data['indicators']
+        selected_state = input_data['selected_state']
+        selected_indicators = input_data['selected_indicators']
+        year1 = input_data['year1']
+        year2 = input_data['year2']
+        warning_message = input_data['warning_message']
+    else:
+        return input_data  # Rendered response if there's a warning
+    
+    # Perform calculations
+    calculations_result = calculations(year1, year2)
+    df = calculations_result['df']
+    print(df.columns.tolist())
+
+    # Filter the DataFrame for the selected indicators
+    filtered_df = df[df['indicator'].isin(selected_indicators)]
+
+    # Order the DataFrame by group
+    filtered_df = filtered_df.sort_values(by='group')
+
+    # Draw separate horizontal bar charts for score2 of the selected indicators and sort them in descending order
+    plot_urls = []
+    for indicator in selected_indicators:
+        plt.figure(figsize=(10, 15))
+        indicator_df = filtered_df[filtered_df['indicator'] == indicator].sort_values(by='score2', ascending=False)
+        
+        # Create a new column combining state names and rank2 with no decimal
+        indicator_df['state_rank'] = indicator_df.apply(lambda row: f"{row['state']} (Rank: {int(row['rank2'])})", axis=1)
+        
+        bars = plt.barh(indicator_df['state_rank'], indicator_df['score2'], label=indicator)
+        
+        # Highlight the border of the selected state and show data in bars with one decimal
+        for bar, state, score2, rank2 in zip(bars, indicator_df['state'], indicator_df['score2'], indicator_df['rank2']):
+            if rank2 <= 10:
+                bar.set_color('green')
+            elif rank2 <= 20:
+                bar.set_color('lightgreen')
+            elif rank2 <= 30:
+                bar.set_color('yellow')
+            elif rank2 <= 40:
+                bar.set_color('orange')
+            else:
+                bar.set_color('red')
+            
+            if state == selected_state:
+                bar.set_edgecolor('black')
+                bar.set_linewidth(2)
+            
+            plt.text(bar.get_width(), bar.get_y() + bar.get_height()/2, f'{score2:.1f}', va='center', ha='left')
+
+        plt.xlabel('Score')
+        plt.ylabel('State')
+        plt.title(f'{indicator}')
+        
+        # Save the plot to a BytesIO object
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        
+        # Encode the plot as a base64 string
+        plot_url = base64.b64encode(buf.getvalue()).decode('utf8')
+        plot_urls.append(plot_url)
+        # print(plot_url)
+        print(df)
+    
+    # Prepare context for rendering
+    context = {
+        'df': df,
+        'states': states,
+        'years': years,
+        'indicators': indicators,
+        'selected_state': selected_state,
+        'selected_indicators': selected_indicators,
+        'year1': year1,
+        'year2': year2,
+        'warning_message': warning_message,
+        'plot_urls': plot_urls
+    }
+
+    return render(request, 'rankings/all_states.html', context)
