@@ -9,7 +9,6 @@ urlpatterns = [
     path('indicator_map/', views.shown_chart, name='shown_chart'),    
     path('scores/', views.score_and_rankings, name='score_and_rankings'),    
     path('result/', views.result, name='result'),    
-    path('state/', views.state, name='state'),    
-    path('doanhnghiep/', views.doanhnghiep, name='doanhnghiep'),    
+    path('state/', views.state, name='state'),        
 ]
 
