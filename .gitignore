@@ -2,3 +2,5 @@ __pycache__/
 myenv/
 db.sqlite3
 *.pyc
+/media
+/static

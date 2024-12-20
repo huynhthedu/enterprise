@@ -172,10 +172,10 @@ USE_TZ = True
 STATIC_URL = '/static/'  # URL for accessing static files
 
 # Directories to search for static files in development
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "enterprise/static")]
 
 # Directory to collect all static files for production
-STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Media files (uploads)
 MEDIA_URL = '/media/'  # URL for accessing media files
