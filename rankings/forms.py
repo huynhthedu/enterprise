@@ -58,3 +58,7 @@ class RankingsForm(forms.Form):
     state = forms.ChoiceField(choices=STATE_CHOICES, label="State")
     year1 = forms.IntegerField(min_value=1998, max_value=2023, label="Year 1")
     year2 = forms.IntegerField(min_value=1998, max_value=2023, label="Year 2")
+
+
+class StateSelectionForm(forms.Form):
+    state = forms.CharField(widget=forms.HiddenInput())

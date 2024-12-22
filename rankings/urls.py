@@ -8,7 +8,8 @@ urlpatterns = [
     path('chart/', views.growth_chart, name='growth_chart'),
     path('indicator_map/', views.shown_chart, name='shown_chart'),    
     path('scores/', views.score_and_rankings, name='score_and_rankings'),    
-    path('result/', views.result, name='result'),    
+    path('result/', views.result, name='result'),   
+     path('select_state/', views.select_state, name='select_state'), 
     # path('state/', views.state, name='state'),        
 ]
 
