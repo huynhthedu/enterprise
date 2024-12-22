@@ -1229,7 +1229,7 @@ def calculations(year1, year2):
 
 def state(request):    
     # Fetch inputs
-    input_data = inputs(request, 'state.html')
+    input_data = inputs(request, 'rankings/rankings.html')
     if isinstance(input_data, dict):
         states = input_data['states']
         years = input_data['years']
@@ -1332,4 +1332,4 @@ def state(request):
         'plot_urls': plot_urls,
     }
 
-    return render(request, 'rankings/state.html', context)
+    return render(request, 'rankings/rankings.html', context)
