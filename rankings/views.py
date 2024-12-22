@@ -7,6 +7,7 @@ import matplotlib
 matplotlib.use('Agg')
 
 import geopandas as gpd
+import numpy as np
 import fiona
 import pandas as pd
 import base64, urllib
