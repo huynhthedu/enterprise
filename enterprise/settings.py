@@ -30,7 +30,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
 
 # ALLOWED_HOSTS = ['127.0.0.1', 'duhtvn.pythonanywhere.com']
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "duhuynh.us, 127.0.0.1,localhost").split(",")
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1, localhost").split(",")
 
 DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
 
@@ -86,43 +86,43 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'enterprise.wsgi.application'
 
-DATABASE_URL = os.getenv('DATABASE_URL', None)
+# DATABASE_URL = os.getenv('DATABASE_URL', None)
 
-if not DATABASE_URL:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
-    }
-else:
-    db_info = urlparse(DATABASE_URL)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': db_info.path[1:],  # Remove leading slash
-            'USER': db_info.username,
-            'PASSWORD': db_info.password,
-            'HOST': db_info.hostname,
-            'PORT': db_info.port,
-            'OPTIONS': {'sslmode': 'require'},
-        }
-    }
-
-
-
-
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'rankings',
-#         'USER': 'postgres',
-#         'PASSWORD': '123456',
-#         'HOST': 'localhost',
-#         'PORT': '5432',        
+# if not DATABASE_URL:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#         }
 #     }
-# }
+# else:
+#     db_info = urlparse(DATABASE_URL)
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#             'NAME': db_info.path[1:],  # Remove leading slash
+#             'USER': db_info.username,
+#             'PASSWORD': db_info.password,
+#             'HOST': db_info.hostname,
+#             'PORT': db_info.port,
+#             'OPTIONS': {'sslmode': 'require'},
+#         }
+#     }
+
+
+
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'rankings',
+        'USER': 'postgres',
+        'PASSWORD': '123456',
+        'HOST': 'localhost',
+        'PORT': '5432',        
+    }
+}
 
 # DATABASES = {
 #     'default': {
