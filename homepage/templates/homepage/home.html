@@ -1,4 +1,3 @@
-
 <!doctype html>
 {% load static %}
 <html lang="en" data-bs-theme="auto">
@@ -9,30 +8,19 @@
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
     <meta name="generator" content="Hugo 0.122.0">
-    <title>Carousel Template · Bootstrap v5.3</title>
-
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/carousel/">        
-  <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-<!-- <img src="{% static 'images/header.png' %}" alt="Header"> -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-<!-- <link rel="stylesheet" href="'css/bootstrap.min.css"> -->
-<link rel="stylesheet" href="{% static 'css/styles.css' %}">
-<link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
-
-<!-- <link href="css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous"> -->
-
-<!-- Favicons -->
-<link rel="apple-touch-icon" href="/static/images/apple-touch-icon.png" sizes="180x180">
-<link rel="icon" href="/static/images/favicon-32x32.png" sizes="32x32" type="image/png">
-<link rel="icon" href="/static/images/favicon-16x16.png" sizes="16x16" type="image/png">
-<!-- <link rel="manifest" href="/static/images/manifest.json"> -->
-<!-- <link rel="mask-icon" href="/static/images/safari-pinned-tab.svg" color="#712cf9">
-<link rel="icon" href="/static/images/favicon.ico"> -->
-
-<meta name="theme-color" content="#712cf9">
+    <title>Rankings v1.0 · Bootstrap v5.3</title>
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/carousel/">    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}" sizes="180x180">
+    <link rel="icon" href="{% static 'images/favicon-32x32.png' %}" sizes="32x32" type="image/png">
+    <link rel="icon" href="{% static 'images/favicon-16x16.png' %}" sizes="16x16" type="image/png">
+    <meta name="theme-color" content="#712cf9">
 
 
-    <style>
+   <style>
       .bd-placeholder-img {
         font-size: 1.125rem;
         text-anchor: middle;
@@ -114,15 +102,20 @@
     background-color: crimson !important;
       }
       .bg-dark-crimson {
-          background-color: #8B0000; /* Dark Crimson */
+          background-color: #8B0000;  
       }
 
+      /* .bg-blue {
+          background-color: blue;  
+      } */
+
       .bg-blue {
-          background-color: blue; /*Blue */
+      background-color: blue !important;
+      color: white !important; /* Ensure the text is readable */
       }
 
       .custom-bg {
-          background-color: rgb(255, 123, 0); /* Dark Crimson */
+          background-color: rgb(255, 123, 0);  
       }
       .custom-input-bg {
           background-color: rgb(255, 0, 76);
@@ -136,9 +129,9 @@
       }
     
       .btn-secondary {
-        background-color: #6c757d; /* Adjust the color as needed */
+        background-color: #6c757d; 
         color: white;
-        padding: 10px 20px; /* Adjust the padding as needed */
+        padding: 10px 20px;  
         border: none;
         border-radius: 4px;
         text-decoration: none;
@@ -147,18 +140,31 @@
       }
 
       .btn-secondary:hover {
-        background-color: #5a6268; /* Adjust the hover color as needed */
+        background-color: #5a6268; 
       }
 
       button.btn-secondary {
         cursor: pointer;
       }
+    
+      #myCarousel .carousel-inner {
+        height: 500px; /* Adjust this value to your desired height */
+      }
+      #myCarousel .carousel-item,
+      #myCarousel .bd-placeholder-img,
+      #myCarousel .bg-primary {
+        height: 100%;
+      }
+
+      .fixed-size {
+            width: 500px;
+            height: 500px;
+        }
     </style>
 
     
-    <!-- Custom styles for this template -->
-    <!-- <link href="carousel.css" rel="stylesheet"> -->
-  </head>
+
+    </head>
   <body>
     <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
       <symbol id="check2" viewBox="0 0 16 16">
@@ -215,20 +221,17 @@
 <header data-bs-theme="dark">
   <nav class="navbar navbar-expand-md navbar-light fixed-top bg-blue">
     <div class="container-fluid">
-        <a class="navbar-brand" href="{% url 'home' %}">Home</a>
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <i class="fas fa-house-chimney fa-2x"></i>
+      </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                <!-- <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
-                </li> -->
-                <!-- <li class="nav-item">
-                    <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-                </li> -->
+
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Rankings
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="rankingsDropdown">
@@ -237,16 +240,16 @@
                     </ul>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                    <a class="navbar-brand nav-link" href="{% url 'dashboard' %}">Dashboard</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'survey' %}">Survey</a>
+                    <a class="navbar-brand nav-link" href="{% url 'survey' %}">Survey</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'index' %}">Framework</a>
+                    <a class="navbar-brand nav-link" href="{% url 'index' %}">Framework</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="https://www.linkedin.com/in/duh01/">Author</a>
+                    <a class="navbar-brand nav-link" href="https://www.linkedin.com/in/duh01/">Author</a>
                 </li>
             </ul>
             <form class="d-flex bg-info" role="search">
@@ -257,70 +260,71 @@
     </div>
 </nav>
 
-<!-- Include Bootstrap JavaScript bundle -->
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </header>
 
 <main>
 
-  <div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel">
+   <div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel" data-bs-interval="5000"> <!-- sliding and time  -->
     <div class="carousel-indicators">
-      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-      <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
     </div>
-    <div class="carousel-inner">
-      <div class="bg-primary">
-        <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
-          <rect width="100%" height="100%" fill="none"/>
-        </svg>
-        <div class="container">
-          <div class="carousel-caption text-start">
-            <h1>Example headline.</h1>
-            <p class="opacity-75">Some representative placeholder content for the first slide of the carousel.</p>
-            <p><a class="btn btn-lg btn-info" href="#">Sign up today</a></p>
-          </div>
+    <div class="carousel-inner ">
+        <div class="carousel-item active bg-primary">
+            <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
+                <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
+            </svg>
+            <div class="container">
+                <div class="carousel-caption text-start">
+                    <h1 >Rankings.</h1>
+                    <p class="opacity-75">Rankings of states in economic indicators.</p>
+                    <p><a class="btn btn-lg btn-info" href="{% url 'rankings' %}">Explore data</a></p>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="carousel-item">            
-        <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="var(--bs-secondary-color)"/></svg>
-        <div class="container">
-          <div class="carousel-caption">
-            <h1>Another example headline.</h1>
-            <p>Some representative placeholder content for the second slide of the carousel.</p>
-            <p><a class="btn btn-lg btn-primary" href="#">Learn more</a></p>
-          </div>
+        <div class="carousel-item  bg-primary">
+            <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
+                <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
+            </svg>
+            <div class="container">
+                <div class="carousel-caption">
+                    <h1>In depth analysis of state</h1>
+                    <p>The economic resilience and fiscal sustainability of each state is analyzed.</p>
+                    <p><a class="btn btn-lg btn-primary" href="{% url 'survey' %}">Learn more</a></p>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="carousel-item">
-        <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false"><rect width="100%" height="100%" fill="var(--bs-secondary-color)"/></svg>
-        <div class="container">
-          <div class="carousel-caption text-end">
-            <h1>One more for good measure.</h1>
-            <p>Some representative placeholder content for the third slide of this carousel.</p>
-            <p><a class="btn btn-lg btn-primary" href="#">Browse gallery</a></p>
-          </div>
+        <div class="carousel-item bg-primary">
+            <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
+                <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
+            </svg>
+            <div class="container">
+                <div class="carousel-caption text-end">
+                    <h1>Framework</h1>
+                    <p>Approaches for generating rankings and analysis.</p>
+                    <p><a class="btn btn-lg btn-primary" href="{% url 'index' %}">Go to fundamental</a></p>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
     </button>
     <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
     </button>
-  </div>
+</div>
+<br>
+<br>
+  
+ <div class="container marketing">
 
-
-  <!-- Marketing messaging and featurettes
-  ================================================== -->
-  <!-- Wrap the rest of the page in another container to center all the content. -->
-
-  <div class="container marketing">
-
-    <!-- Three columns of text below the carousel -->
+    
     <div class="row">
       <div class="col-lg-4">
         <img src="{% static 'images/EDA.png' %}" class="bd-placeholder-img rounded-circle" width="140" height="140" alt="Your Image">
@@ -332,8 +336,8 @@
           Rankings of Economic Resilience and Fiscal Sustainability: A Comparative Diagnosis among U.S. States. Rankings of Economic Resilience and Fiscal Sustainability: A Comparative Diagnosis among U.S. States.
       </p>
       <p>
-          <button id="toggleButton" class="btn btn-secondary">Read more</button>
-          <a class="btn btn-secondary" href="{% url 'rankings' %}">Go to rankings &raquo;</a>
+        <button id="toggleButton" class="btn btn-secondary bg-blue">Read more</button>
+          <a class="btn btn-secondary bg-blue" href="{% url 'rankings' %}">Go to rankings &raquo;</a>
       </p>
       <script>
         document.getElementById('toggleButton').addEventListener('click', function() {
@@ -347,10 +351,10 @@
             }
         });
       </script>        
-      </div><!-- /.col-lg-4 -->
+      </div>
 
       <div class="col-lg-4">
-        <img src="{% static 'images/header.png' %}" class="bd-placeholder-img rounded-circle" width="140" height="140" alt="Your Image">
+        <img src="{% static 'images/EDA.png' %}" class="bd-placeholder-img rounded-circle" width="140" height="140" alt="Your Image">
       <h2 class="fw-normal">
           <a >Surveys</a>
       </h2>
@@ -359,8 +363,8 @@
         Opinions of reperesentatives from local governments on competitiveness of their localities.Opinions of reperesentatives from local governments on competitiveness of their localities.
       </p>
       <p>
-          <button id="toggleButton" class="btn btn-secondary">Read more</button>
-          <a class="btn btn-secondary" href="{% url 'survey' %}">Go to surveys &raquo;</a>
+        <button id="toggleButton" class="btn btn-secondary bg-blue">Read more</button>
+        <a class="btn btn-secondary bg-blue" href="{% url 'survey' %}">Go to surveys &raquo;</a>
       </p>
       <script>
         document.getElementById('toggleButton').addEventListener('click', function() {
@@ -374,20 +378,20 @@
             }
         });
       </script>        
-      </div><!-- /.col-lg-4 -->
+      </div>
 
       <div class="col-lg-4">
-        <img src="{% static 'images/diamond.jpg' %}" class="bd-placeholder-img rounded-circle" width="140" height="140" alt="Your Image">
+        <img src="{% static 'images/BD.jpg' %}" class="bd-placeholder-img rounded-circle" width="140" height="140" alt="Your Image">
       <h2 class="fw-normal">
-          <a >Methodology</a>
+          <a >Framework</a>
       </h2>
 
       <p id="summary" class="collapsed">
         Framework of our approaches in ranking economic resilience and fiscal sustainability. Framework of our approaches in ranking economic resilience and fiscal sustainability.
       </p>
       <p>
-          <button id="toggleButton" class="btn btn-secondary">Read more</button>
-          <a class="btn btn-secondary" href="{% url 'index' %}">Go to methodology &raquo;</a>
+          <button id="toggleButton" class="btn btn-secondary bg-blue">Read more</button>
+          <a class="btn btn-secondary bg-blue" href="{% url 'index' %}">Go to methodology &raquo;</a>
       </p>
       <script>
         document.getElementById('toggleButton').addEventListener('click', function() {
@@ -401,21 +405,19 @@
             }
         });
       </script>        
-      </div><!-- /.col-lg-4 -->
-    </div><!-- /.row -->
-
-
-    <!-- START THE FEATURETTES -->
+      </div>
+    </div>
 
     <hr class="featurette-divider">
 
     <div class="row featurette">
       <div class="col-md-7">
-        <h2 class="featurette-heading fw-normal lh-1">First featurette heading. <span class="text-body-secondary">It’ll blow your mind.</span></h2>
-        <p class="lead">Some great placeholder content for the first featurette here. Imagine some exciting prose here.</p>
+        <h2 class="featurette-heading fw-normal lh-1">Exploring all states. <span class="text-body-secondary">It’ll blow your mind.</span></h2>
+        <p class="lead">Utah stands out as a leading state in terms of economic improvement and fiscal stability, earning the top spot in the U.S. News s’ best state rankings. Both the economy and fiscal stability sub-categories are ranked 1st, highlighting the state's strong prospects. The Beehive State is also ranked 1st for its economic outlook by Rich States Poor States. Moreover, the Economic Report to the Governor, produced by the Utah Economic Council in collaboration with the David Eccles School of Business, supports this positive outlook..</p>
       </div>
       <div class="col-md-5">
-        <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"/><text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">500x500</text></svg>
+        <img src="{% static 'images/lina.jpg' %}" class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto fixed-size" width="500" height="500" alt="Description of the image">
+        <!-- <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"/><text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">500x500</text></svg> -->
       </div>
     </div>
 
@@ -423,11 +425,11 @@
 
     <div class="row featurette">
       <div class="col-md-7 order-md-2">
-        <h2 class="featurette-heading fw-normal lh-1">Oh yeah, it’s that good. <span class="text-body-secondary">See for yourself.</span></h2>
-        <p class="lead">Another featurette? Of course. More placeholder content here to give you an idea of how this layout would work with some actual real-world content in place.</p>
+        <h2 class="featurette-heading fw-normal lh-1">Exploring each s. <span class="text-body-secondary">See for yourself.</span></h2>
+        <p class="lead">Utah stands out as a leading state in terms of economic improvement and fiscal stability, earning the top spot in the U.S. News s’ best state rankings. Both the economy and fiscal stability sub-categories are ranked 1st, highlighting the state's strong prospects. The Beehive State is also ranked 1st for its economic outlook by Rich States Poor States. Moreover, the Economic Report to the Governor, produced by the Utah Economic Council in collaboration with the David Eccles School of Business, supports this positive outlook..</p>
       </div>
       <div class="col-md-5 order-md-1">
-        <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"/><text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">500x500</text></svg>
+        <img src="{% static 'images/USA.jpg' %}" class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" alt="Description of the image">
       </div>
     </div>
 
@@ -435,22 +437,22 @@
 
     <div class="row featurette">
       <div class="col-md-7">
-        <h2 class="featurette-heading fw-normal lh-1">And lastly, this one. <span class="text-body-secondary">Checkmate.</span></h2>
+        <h2 class="featurette-heading fw-normal lh-1">In depth analysis for state. <span class="text-body-secondary">Checkmate.</span></h2>
         <p class="lead">And yes, this is the last block of representative placeholder content. Again, not really intended to be actually read, simply here to give you a better view of what this would look like with some actual content. Your content.</p>
       </div>
       <div class="col-md-5">
-        <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"/><text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">500x500</text></svg>
+        <img src="{% static 'images/EDA.png' %}" class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" alt="Description of the image">
       </div>
     </div>
 
     <hr class="featurette-divider">
 
-    <!-- /END THE FEATURETTES -->
-
-  </div><!-- /.container -->
 
 
-  <!-- FOOTER -->
+  </div>
+
+
+
   <footer class="container">
     <p class="float-end"><a href="#">Back to top</a></p>
     <p>&copy; {% now "Y" %} Du Huynh. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
@@ -459,4 +461,4 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
     </body>
-</html>
+</html> 

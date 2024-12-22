@@ -28,8 +28,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False") == "True"
 
 # ALLOWED_HOSTS = ['127.0.0.1', 'duhtvn.pythonanywhere.com']
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
@@ -46,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'dashboard.apps.DashboardConfig',
     'survey.apps.SurveyConfig',
+    'whitenoise.runserver_nostatic',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,7 +55,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # new
+    'whitenoise.middleware.WhiteNoiseMiddleware',   
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -111,6 +110,9 @@ else:
     }
 
 
+
+
+
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
@@ -156,7 +158,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'EST'
+TIME_ZONE = 'America/New_York'
 
 USE_I18N = True
 
@@ -172,13 +174,46 @@ USE_TZ = True
 STATIC_URL = '/static/'  # URL for accessing static files
 
 # Directories to search for static files in development
-STATICFILES_DIRS = [os.path.join(BASE_DIR, "enterprise/static")]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 # Directory to collect all static files for production
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Media files (uploads)
 MEDIA_URL = '/media/'  # URL for accessing media files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Directory for media file uploads
 # STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# SECURITY WARNING: don't run with debug turned on in production!
+
+DEBUG = os.getenv('DEBUG', 'False') == 'False'
+
+import logging
+logger = logging.getLogger(__name__)
+
+if DEBUG:
+    logger.info("Using FileSystemStorage for static files.")
+else:
+    logger.info("Using WhiteNoise for static files.")
+
+if DEBUG:
+    STORAGES = {
+        'default': {
+            'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+        },
+    }
+else:
+    STORAGES = {
+        'default': {
+            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        },
+    }
+
+WHITENOISE_USE_FINDERS = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
