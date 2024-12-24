@@ -217,3 +217,5 @@ else:
 
 WHITENOISE_USE_FINDERS = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# $env:DJANGO_ALLOWED_HOSTS="duhuynh.us,127.0.0.1,localhost"

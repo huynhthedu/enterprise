@@ -1071,8 +1071,7 @@ def calculations(year1, year2):
 
     # Create a DataFrame
     df = pd.DataFrame(data)    
-    df = df.dropna()
-    
+    df = df.dropna()    
  
     # 3. Canculate new indicatiors by ratios of existing indicators and add to the dataframe
     new_groups = {
@@ -1167,8 +1166,7 @@ def calculations(year1, year2):
         df['score_gr'] = df.groupby(['group']).apply(lambda x: calculate_scores(x['growth'], x['key'])).reset_index(level=0, drop=True)
         df['score2'] = df.groupby(['group']).apply(lambda x: calculate_scores(x['value2'], x['key'])).reset_index(level=0, drop=True)
     except Exception as e:
-        print("Error during groupby and apply operations:", e)
-    
+        print("Error during groupby and apply operations:", e)    
 
     df['rank1'] = df.groupby(['group'])['score1'].rank(ascending=False)
     df['rankgr'] =df.groupby(['group'])['score_gr'].rank(ascending=False)
@@ -1219,8 +1217,6 @@ def calculations(year1, year2):
     except Exception as e:
         print(f"An error occurred: {e}")
 
-
-
     context = {
         'df': df,
         'weighted_avg_scores': weighted_avg_scores,
@@ -1248,6 +1244,7 @@ def state(request):
     df = calculations_result['df']
     weighted_avg_scores = calculations_result['weighted_avg_scores']
     weighted_avg_scores_state = calculations_result['weighted_avg_scores_state']
+    map_color = calculations_result['weighted_avg_scores_state']
 
     # Order the DataFrame by group
     df = df.sort_values(by='group')
@@ -1316,6 +1313,8 @@ def state(request):
     df1_dict = df_selected_state.to_dict(orient='records')
     df2_dict = weighted_avg_scores_selected_state.to_dict(orient='records')
     df3_dict = weighted_avg_scores_state_selected_state.to_dict(orient='records')
+    df4_dict = map_color.to_dict(orient='records')
+    
     
     context = {
         'df': df,
@@ -1324,6 +1323,7 @@ def state(request):
         'df3': df3_dict,
         'states': states,
         'years': years,
+        'db4': df4_dict,
         'indicators': indicators,
         'selected_indicators': selected_indicators,
         'selected_state': selected_state,
@@ -1333,8 +1333,7 @@ def state(request):
         'plot_urls': plot_urls,
     }
 
-    return render(request, 'rankings/select_state.html', context)
-
+    return render(request, 'rankings/rankings.html', context)
 
 
 def select_state(request):
@@ -1344,10 +1343,10 @@ def select_state(request):
         states = input_data['states']
         years = input_data['years']
         indicators = input_data['indicators']
-        selected_indicators = input_data['selected_indicators']
-        selected_state = input_data['selected_state']
-        year1 = input_data['year1']
-        year2 = input_data['year2']
+        selected_indicators = input_data['selected_indicators'] or ['Gross Domestic Product']  # Default indicator
+        selected_state = input_data['selected_state'] or 'Indiana'  # Default state
+        year1 = input_data['year1'] or 2019  # Default year1
+        year2 = input_data['year2'] or 2023  # Default year2
         warning_message = input_data['warning_message']
     else:
         return input_data  # Rendered response if there's a warning
@@ -1356,6 +1355,7 @@ def select_state(request):
     df = calculations_result['df']
     weighted_avg_scores = calculations_result['weighted_avg_scores']
     weighted_avg_scores_state = calculations_result['weighted_avg_scores_state']
+    map_color = calculations_result['weighted_avg_scores_state']
 
     # Order the DataFrame by group
     df = df.sort_values(by='group')
@@ -1424,12 +1424,15 @@ def select_state(request):
     df1_dict = df_selected_state.to_dict(orient='records')
     df2_dict = weighted_avg_scores_selected_state.to_dict(orient='records')
     df3_dict = weighted_avg_scores_state_selected_state.to_dict(orient='records')
+    df4_dict = map_color.to_dict(orient='records')
+    
     
     context = {
         'df': df,
         'df1': df1_dict,
         'df2': df2_dict,
         'df3': df3_dict,
+        'df4': df4_dict,
         'states': states,
         'years': years,
         'indicators': indicators,

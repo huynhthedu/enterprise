@@ -43,8 +43,8 @@
 
         .container {
             overflow-y: auto;
-            margin-left: 1in;
-            margin-right: 1in;
+            /* margin-left: 1in;
+            margin-right: 1in; */
         }
 
         .table-container {
@@ -258,7 +258,11 @@
             display: block;
         }
 
-        #map { height: 600px; }
+        #map {
+            height: 600px; /* Increase the height to 800px or any desired value */
+            margin: 0 auto; /* Center the map */
+            width: 100% /*Ensure the map takes the full width of its container */
+        }
         .dropdown-menu { display: none; }
         .dropdown-menu.show { display: block; }
         .state-label {
@@ -293,23 +297,22 @@
     <br>
 
     {% load humanize %}
-    <h1>Economic Rankings for {{ selected_state }}</h1>
+    <h1>Rankings for {{ selected_state }}</h1>
+    <br>
+        <a > Choose two years, list of indicators and a state   </a>
     <br>
 
     <div class="container">
         <form id="stateForm" method="GET">
-            <div class="form-inline">
-                <label for="state">Choose a state:</label>
-                <input type="hidden" name="state" id="state" value="{{ selected_state }}">
-                
-                <label for="year1">Choose Year 1:</label>
+            <div class="form-inline">              
+                <label for="year1">Year 1:</label>
                 <select name="year1" id="year1">
                     {% for year in years %}
                         <option value="{{ year }}" {% if year == year1 %}selected{% endif %}>{{ year }}</option>
                     {% endfor %}
                 </select>
 
-                <label for="year2">Choose Year 2:</label>
+                <label for="year2">Year 2:</label>
                 <select name="year2" id="year2">
                     {% for year in years reversed %}
                         <option value="{{ year }}" {% if year == year2 %}selected{% endif %}>{{ year }}</option>
@@ -317,7 +320,7 @@
                 </select>
 
                 <div class="dropdown">
-                    <button type="button" class="dropdown-toggle" onclick="toggleDropdown()">Select Indicators</button>
+                    <button type="button" class="dropdown-toggle" onclick="toggleDropdown()"> Indicators</button>
                     <div id="dropdown-menu" class="dropdown-menu">
                         <div class="dropdown-content">
                             {% for indicator in indicators %}
@@ -329,7 +332,9 @@
                         </div>
                         <button type="button" class="btn btn-primary" onclick="toggleDropdown()">Done</button>
                     </div>
-                </div>    
+                </div> 
+                <!-- <label for="state">Choose a state:</label> -->
+                <input type="hidden" name="state" id="state" value="{{ selected_state }}">
                 <button type="submit">Submit</button>
             </div>
         </form>
@@ -444,70 +449,156 @@
 
 
 
-<script>
-    var map = L.map('map').setView([37.8, -96], 4); // Center of the US
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    var selectedLayer;
-    var selectedState = "{{ selected_state }}";
-
-    function highlightFeature(layer) {
-        layer.setStyle({
-            weight: 5,
-            color: '#666',
-            dashArray: '',
-            fillOpacity: 0.7
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map', {
+            center: [37.8, -96],
+            zoom: 4,
+            zoomControl: false,
+            scrollWheelZoom: false,
+            doubleClickZoom: false,
+            boxZoom: false,
+            dragging: false,
+            touchZoom: false
         });
 
-        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-            layer.bringToFront();
-        }
-    }
-
-    function resetHighlight(e) {
-        geojson.resetStyle(e.target);
-    }
-
-    function onEachFeature(feature, layer) {
-        layer.on({
-            click: function(e) {
-                if (selectedLayer) {
-                    resetHighlight({ target: selectedLayer });
-                }
-                selectedLayer = e.target;
-                highlightFeature(e.target);
-
-                var stateName = feature.properties.name;
-                document.getElementById('state').value = stateName;
-                document.getElementById('stateForm').submit();
-            }
-        });
-
-        if (feature.properties.name === selectedState) {
-            selectedLayer = layer;
-            highlightFeature(layer);
-        }
-
-        // Add state name as a label at the center of the state
-        var label = L.marker(layer.getBounds().getCenter(), {
-            icon: L.divIcon({
-                className: 'state-label',
-                html: feature.properties.name,
-                iconSize: [100, 20]
-            })
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
         }).addTo(map);
-    }
 
-    fetch('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json')
-        .then(response => response.json())
-        .then(data => {
-            geojson = L.geoJson(data, {
-                onEachFeature: onEachFeature
-            }).addTo(map);
-        })
-        .catch(error => console.error('Error loading GeoJSON data:', error));
+        var selectedLayer;
+        var selectedState = "{{ selected_state }}"; // Set this to the state you want to highlight initially
+
+        // Function to get color based on rank
+        function getColor(rank) {
+            console.log('Rank:', rank); // Debugging line
+            if (rank <= 10) return 'green';
+            else if (rank <= 20) return 'lightgreen';
+            else if (rank <= 30) return 'yellow';
+            else if (rank <= 40) return 'orange';
+            else return 'red';
+        }
+
+        // Function to find the rank of a state by name
+        function getStateRank(stateName) {
+            for (var i = 0; i < stateRankings.length; i++) {
+                if (stateRankings[i].name === stateName) {
+                    return stateRankings[i].rank;
+                }
+            }
+            return null;
+        }
+
+        // Function to find the score of a state by name
+        function getStateScore(stateName) {
+            for (var i = 0; i < stateRankings.length; i++) {
+                if (stateRankings[i].name === stateName) {
+                    return stateRankings[i].score;
+                }
+            }
+            return null;
+        }
+
+        // Function to reset the highlight
+        function resetHighlight(e) {
+            geojson.resetStyle(e.target);
+        }
+
+        // Function to highlight a feature
+        function highlightFeature(layer) {
+            layer.setStyle({
+                weight: 5,
+                color: '#666',
+                dashArray: '',
+                fillOpacity: 0.7
+            });
+        }
+
+        // Function to handle each feature
+        function onEachFeature(feature, layer) {
+            var rank = getStateRank(feature.properties.name);
+            var score = getStateScore(feature.properties.name);
+            console.log('State:', feature.properties.name, 'Rank:', rank, 'Score:', score); // Debugging line
+            layer.setStyle({
+                fillColor: getColor(rank),
+                weight: 2,
+                opacity: 1,
+                color: 'white',
+                dashArray: '3',
+                fillOpacity: 0.7
+            });
+
+            layer.on({
+                click: function(e) {
+                    if (selectedLayer) {
+                        resetHighlight({ target: selectedLayer });
+                    }
+                    selectedLayer = e.target;
+                    highlightFeature(e.target);
+
+                    var stateName = feature.properties.name;
+                    document.getElementById('state').value = stateName;
+                    document.getElementById('stateForm').submit();
+                },
+                mouseover: function(e) {
+                    var layer = e.target;
+                    layer.bindTooltip( layer.feature.properties.name + "<br>Rank: " + rank + "<br>Score: " + score.toFixed(1)).openTooltip();
+                },
+                mouseout: function(e) {
+                    e.target.closeTooltip();
+                }
+            });
+
+            if (feature.properties.name === selectedState) {
+                selectedLayer = layer;
+                highlightFeature(layer);
+            }
+
+            // Add state name as a label at the center of the state
+            // var label = L.marker(layer.getBounds().getCenter(), {
+            //     icon: L.divIcon({
+            //         className: 'state-label',
+            //         html: feature.properties.name,
+            //         iconSize: [100, 20]
+            //     })
+            // }).addTo(map);
+        }
+
+        // Pass state rankings data from Django template
+        var stateRankings = [
+            {% for score in df4 %}
+            {
+                name: "{{ score.state }}",
+                rank: {{ score.weighted_state_rank2 }},
+                score: {{ score.weighted_avg_score2 }}
+            },
+            {% endfor %}
+        ];
+
+        console.log('State Rankings:', stateRankings); // Debugging line
+
+        // Fetch GeoJSON data and add to map
+        fetch('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json')
+            .then(response => response.json())
+            .then(data => {
+                // Find the Alaska feature and modify its coordinates
+                // data.features.forEach(feature => {
+                //     if (feature.properties.name === 'Alaska') {
+                //         feature.geometry.coordinates = [[
+                //             [-130, 30], // Example coordinates near California
+                //             [-130, 35],
+                //             [-125, 35],
+                //             [-125, 30],
+                //             [-130, 30]
+                //         ]];
+                //     }
+                // });
+                
+                geojson = L.geoJson(data, {
+                    onEachFeature: onEachFeature
+                }).addTo(map);
+            })
+            .catch(error => console.error('Error loading GeoJSON data:', error));
 
     function toggleDropdown() {
         var dropdownMenu = document.getElementById('dropdown-menu');

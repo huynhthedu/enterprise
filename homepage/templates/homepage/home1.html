@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>State Rankings Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+    #map { 
+        height: 600px; 
+        position: relative; /* Add this to create a stacking context */
+    }
+    .tooltip {
+        display: none;
+        position: absolute;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        color: #000;
+        font-size: 14px;
+        z-index: 500; /* Ensure tooltip is on top */
+    }    
+    
+    </style>
+</head>
+<body>
+  <div id="map">
+    <div id="tooltip" class="tooltip"></div> 
+  </div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          var map = L.map('map').setView([37.8, -96], 4);
+  
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              maxZoom: 19,
+          }).addTo(map);
+  
+          var statesData = {{ geojson_data|safe }};
+          console.log("GeoJSON Data:", statesData);  // Log the entire GeoJSON data
+  
+          function getColor(rank) {
+              return rank <= 10 ? 'green' :
+                     rank <= 20 ? 'lightgreen' :
+                     rank <= 30 ? 'yellow' :
+                     rank <= 40 ? 'orange' :
+                     rank <= 51 ? 'red' :
+                                  'grey';
+          }
+  
+          function style(feature) {
+              console.log("Feature Properties:", feature.properties);  // Log feature properties
+              return {
+                  fillColor: getColor(feature.properties.rank),
+                  weight: 2,
+                  opacity: 1,
+                  color: 'white',
+                  dashArray: '3',
+                  fillOpacity: 0.7
+              };
+          }
+  
+          function onEachFeature(feature, layer) {
+              layer.addEventListener('mouseover', showTooltip);
+              layer.addEventListener('mouseout', hideTooltip);
+              layer.addEventListener('click', function() {
+                  var stateName = feature.properties.name;
+                  window.location.href = "{% url 'rankings' %}?state=" + stateName;
+              });
+          }
+  
+          function showTooltip(e) {
+              var layer = e.target;
+              var tooltip = document.getElementById('tooltip');
+              var props = layer.feature.properties;
+              console.log("Tooltip Properties:", props);  // Log properties for tooltip
+              tooltip.innerHTML = props.name + '<br>Rank: ' + props.rank + '<br>Score: ' + props.score.toFixed(1);
+              tooltip.style.display = 'block'; // Set display to block
+              tooltip.style.left = e.originalEvent.pageX + 10 + 'px';
+              tooltip.style.top = e.originalEvent.pageY + 10 + 'px';
+          }
+  
+          function hideTooltip() {
+              var tooltip = document.getElementById('tooltip');
+              tooltip.style.display = 'none'; // Hide the tooltip
+          }
+  
+          var geojson = L.geoJson(statesData, {
+              style: style,
+              onEachFeature: onEachFeature
+          }).addTo(map);
+  
+          map.on('mousemove', function(e) {
+              var tooltip = document.getElementById('tooltip');
+              if (tooltip.style.display === 'block') {
+                  tooltip.style.left = e.originalEvent.pageX + 10 + 'px';
+                  tooltip.style.top = e.originalEvent.pageY + 10 + 'px';
+              }
+          });
+      });
+    </script>
+</body>
+</html>
