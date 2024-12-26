@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Profile</title>
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-light fixed-top bg-blue">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="{% url 'home' %}">
+            <i class="fas fa-house-chimney fa-1x"></i>
+          </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+    
+                    <li class="nav-item dropdown">
+                        <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Rankings
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="rankingsDropdown">
+                            <li><a class="dropdown-item" href="{% url 'rankings' %}">All rankings for a state</a></li>
+                            <li><a class="dropdown-item" href="{% url 'indicator_map' %}">Rankings of states by indicator</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="navbar-brand nav-link" href="{% url 'analysis' %}">In depth analysis</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="navbar-brand nav-link" href="{% url 'survey' %}">Survey</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="navbar-brand nav-link" href="{% url 'index' %}">Framework</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                      <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Author
+                      </a>
+                      <ul class="dropdown-menu" aria-labelledby="authorDropdown">
+                          <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+                          <li><a class="dropdown-item" href="https://scholar.google.com/citations?user=GLLP3h4AAAAJ&hl=en">Google Scholar</a></li>
+                          <li><a class="dropdown-item" href="https://www.linkedin.com/in/duh01/">Linkedin</a></li>
+                          <li><a class="dropdown-item" href="https://www.facebook.com/HUYNHTHEDU">Facebook</a></li>
+                      </ul>
+                  </li>
+                </ul>
+                <form class="d-flex bg-info" role="search">
+                    <input class="form-control me-2 bg-info" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <h1>Edit Profile</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+    <p><a href="{% url 'profile_detail' %}">Back to Profile</a></p>
+</body>
+</html>

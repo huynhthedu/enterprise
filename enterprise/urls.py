@@ -26,6 +26,7 @@ urlpatterns = [
     path('dashboard/', include('dashboard.urls')),
     path("survey/", include("survey.urls")),
     path('', homepage.views.home, name='home'), 
+    path('analysis/', include('analysis.urls')),
     path('admin/', admin.site.urls),
 ]
 
