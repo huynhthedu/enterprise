@@ -24,8 +24,8 @@ def upload_image(request):
             return redirect('image_list')
     else:
         form = ImageForm()
-    return render(request, 'upload_image.html', {'form': form})
+    return render(request, 'framework/upload_image.html', {'form': form})
 
 def image_list(request):
     images = Image.objects.all()
-    return render(request, 'image_list.html', {'images': images})
+    return render(request, 'framework/image_list.html', {'images': images})
