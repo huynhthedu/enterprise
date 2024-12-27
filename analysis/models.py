@@ -9,6 +9,9 @@ class Article(models.Model):
 
     def __str__(self):
         return self.title
+    
+    def brief(self):
+        return self.summary[:1000]
 
 class Profile(models.Model):
     name = models.CharField(max_length=100)

@@ -54,13 +54,17 @@
 
 
         .no-bullets {
-            list-style-type: none;  /* Removes the bullets */
-            padding: 0;  /* Removes default padding */
-            margin: 0;  /* Removes default margin */
+            list-style-type: none;
+            /* Removes the bullets */
+            padding: 0;
+            /* Removes default padding */
+            margin: 0;
+            /* Removes default margin */
         }
 
         .no-bullets li {
-            margin-bottom: 10px;  /* Adds some space between list items */
+            margin-bottom: 10px;
+            /* Adds some space between list items */
         }
     </style>
 </head>
@@ -126,14 +130,19 @@
     <br><br><br><br>
     <div class="container marketing">
         <div class="centered-content">
-            <h1>Policy Analysis</h1>
+            <h1 style="text-decoration: none; color: black;">Policy Analysis</h1>
         </div>
         <br>
         <ul class="no-bullets">
             {% for article in articles %}
             <li>
-                <a href="{% url 'article_detail' article.pk %}">{{ article.title }}</a>
-                {{ article.summary|linebreaks }}
+                <a href="{% url 'article_detail' article.pk %}" style="text-decoration: none;">
+                    <h3 class="text-left pt-3" style="color: black;">{{ article.title }}</h3>
+                </a>
+                <br>
+                <img class="img-fluid float-start me-3" src="{{ article.picture.url }}" alt="{{ article.title }}"
+                    style="max-width: 300px;">
+                {{ article.brief|linebreaks }}
             </li>
             {% endfor %}
         </ul>
