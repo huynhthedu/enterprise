@@ -16,6 +16,9 @@ import sys
 import dj_database_url
 from django.core.management.utils import get_random_secret_key
 from urllib.parse import urlparse
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -198,6 +201,25 @@ if DEBUG:
 else:
     logger.info("Using WhiteNoise for static files.")
 
+# if DEBUG:
+#     STORAGES = {
+#         'default': {
+#             'BACKEND': 'django.core.files.storage.FileSystemStorage',
+#         },
+#         'staticfiles': {
+#             'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+#         },
+#     }
+# else:
+#     STORAGES = {
+#         'default': {
+#             'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+#         },
+#         'staticfiles': {
+#             'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+#         },
+#     }
+
 if DEBUG:
     STORAGES = {
         'default': {
@@ -210,7 +232,17 @@ if DEBUG:
 else:
     STORAGES = {
         'default': {
-            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+            'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
+            'OPTIONS': {
+                'access_key': os.getenv('AWS_ACCESS_KEY_ID'),
+                'secret_key': os.getenv('AWS_SECRET_ACCESS_KEY'),
+                'bucket_name': os.getenv('AWS_STORAGE_BUCKET_NAME'),
+                'endpoint_url': os.getenv('AWS_S3_ENDPOINT_URL'),
+                'object_parameters': {
+                    'CacheControl': 'max-age=86400',
+                },
+                'location': 'media',
+            },
         },
         'staticfiles': {
             'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
@@ -219,5 +251,11 @@ else:
 
 WHITENOISE_USE_FINDERS = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+
+
+
 
 # $env:DJANGO_ALLOWED_HOSTS="duhuynh.us,127.0.0.1,localhost"
