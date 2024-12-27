@@ -42,6 +42,9 @@
         height: auto;             
       } 
 
+      body {
+    color: black; /* Set the default text color to black */
+  }
       .centered-content {
         display: flex;
         flex-direction: column;
@@ -49,6 +52,11 @@
         justify-content: center;
         text-align: center;
       }
+
+      h3 {
+    color: black; /* Ensure the title is black */
+    text-decoration: none; /* Remove underline */
+  
     </style>
   </head>
   <body>
@@ -104,27 +112,25 @@
     <br><br><br><br>  
     <div class="container marketing">
     <div class="container">
-        <h1 class="text-center pt-3">Framework</h1>
+        <h1 class="text-center pt-3 text-black">Framework</h1>
         <br />
         <hr />
 
         {% for framework in frameworks %}
-        <div class="framework">
-            <a href="{% url 'detail' framework.id %}">
-                <h5>{{ framework.title }}</h5>
-            </a>
-            <p>{{ framework.pub_date_pretty }}</p>
-            <div class="framework-content">
-                <img class="img-fluid" src="{{ framework.image.url }}" alt="{{ framework.title }}" />
-                <p class="truncate">{{ framework.summary }}</p>
-            </div>
-        </div>
-        {% endfor %}
+    <div class="container mb-4">
+        <a href="{% url 'detail' framework.id %}">
+        <h3 class="text-left pt-3" style="text-decoration: none;">{{ framework.title }}</h3>
+        </a>
+        <p>{{ framework.pub_date_pretty }}</p>
+        <img class="img-fluid float-start me-3" src="{{ framework.image.url }}" alt="{{ framework.title }}" style="max-width: 300px;" />
+        <div>{{ framework.summary|linebreaks }}</div> <!-- This will convert line breaks to paragraphs -->
+    </div>
+{% endfor %}
     </div>
 </div>
 
     <footer class="container">
-        <p class="float-end"><a href="#">Back to top</a></p>
+        <p class="float-end"><a href={% url 'home' %}>Back to top</a></p>
         <p>&copy; {% now "Y" %} Du Huynh. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
       </footer>
   </div>
