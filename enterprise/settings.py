@@ -92,22 +92,22 @@ WSGI_APPLICATION = 'enterprise.wsgi.application'
 DATABASE_URL = os.getenv('DATABASE_URL', None)
 
 if not DATABASE_URL:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#         }
+#     }
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT'),
         }
     }
-    # DATABASES = {
-    #     'default': {
-    #         'ENGINE': 'django.db.backends.postgresql',
-    #         'NAME': os.getenv('DB_NAME'),
-    #         'USER': os.getenv('DB_USER'),
-    #         'PASSWORD': os.getenv('DB_PASSWORD'),
-    #         'HOST': os.getenv('DB_HOST'),
-    #         'PORT': os.getenv('DB_PORT'),
-    #     }
-    # }
 
 else:
     db_info = urlparse(DATABASE_URL)
