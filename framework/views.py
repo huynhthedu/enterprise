@@ -4,7 +4,7 @@ from .forms import ImageForm
 from .models import Image
 
 def index(request):
-    frameworks = Framework.objects.all()
+    frameworks = Framework.objects.all().order_by('index')
     return render(request, 'framework/index.html', {'frameworks': frameworks})
 
 def detail(request, framework_id):
