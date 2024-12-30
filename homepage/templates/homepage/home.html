@@ -263,6 +263,17 @@
       border: none solid #ddd;
       border-radius: 5px;
     }
+    .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: blue;
+            min-width: 400px;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1001; /* Ensure this is higher than other elements */
+        }
+
 
     @keyframes flash {
       0% {
@@ -407,10 +418,8 @@
               </ul>
             </li>
           </ul>
-          <form class="d-flex " role="search" action="https://www.google.com/cse" method="get">
-            <input type="hidden" name="cx" value="611cee323edcb4af4">
-            <input class="form-control me-2 bg-white" type="search" name="q" placeholder="Search" aria-label="Search"
-              style="color: black;">
+          <form class="d-flex" role="search" action="https://www.google.com/search" method="get">
+            <input class="form-control me-2 bg-white" type="search" name="q" placeholder="Search" aria-label="Search" style="color: black;">
             <button class="btn btn-outline-success" type="submit" style="color: white;">Search</button>
           </form>
         </div>
@@ -533,8 +542,7 @@
 
       <div class="row featurette">
         <div class="col-md-7">
-          <h2 class="featurette-heading fw-normal lh-1">Exploring all states. <span class="text-body-secondary">It’ll
-              blow your mind.</span></h2>
+          <h2 class="featurette-heading fw-normal lh-1">Exploring all states <span class="text-body-secondary"></span></h2>
           <p class="lead">State rankings are evaluated across several dimensions: the size of the economy, development level and efficiency, and economic foundations. 
             These dimensions provide a comprehensive view of each state's economic position. 
             Additionally, fiscal sustainability is assessed through indicators such as government revenue, government expenditure, burdens, and public debt. 
@@ -553,8 +561,7 @@
 
       <div class="row featurette">
         <div class="col-md-7 order-md-2">
-          <h2 class="featurette-heading fw-normal lh-1">In depth analysis for states. <span class="text-body-secondary">See for
-              yourself.</span></h2>
+          <h2 class="featurette-heading fw-normal lh-1">In depth analysis for states <span class="text-body-secondary"> </span></h2>
           <p class="lead">An in-depth analysis of states to examine their economic resilience and fiscal sustainability involves evaluating various indicators and metrics. 
             Economic resilience refers to a state's ability to anticipate, withstand, and recover from economic shocks. 
             Key indicators include the size and diversity of the economy, employment rates, and the presence of robust industries. 
@@ -572,8 +579,7 @@
 
       <div class="row featurette">
         <div class="col-md-7">
-          <h2 class="featurette-heading fw-normal lh-1">In depth analysis for state. <span
-              class="text-body-secondary">Checkmate.</span></h2>
+          <h2 class="featurette-heading fw-normal lh-1">In depth analysis for state <span class="text-body-secondary"></span></h2>
           <p class="lead">Surveys were conducted to gather opinions from local government representatives on the competitiveness of their localities. 
             These surveys aimed to convey the viewpoints and opinions of stakeholders regarding the services provided by local governments. 
             The feedback collected highlights the strengths and areas for improvement in local services, offering valuable insights into how local governments can enhance their competitiveness. 
@@ -649,13 +655,7 @@
       </button>
     </div>
 
-    <li class="linkedin"><a href="https://www.linkedin.com/company/4867" class="block inherit-color-onhover" style="text-decoration:none;position:relative;height:48px;width:48px;" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="48px" height="48px" viewBox="0 0 110 110" version="1.1" focusable="false">
-      <circle cx="55" cy="55" r="50" stroke-width="6" stroke="currentColor"/></svg><div style="position:absolute;top:12px;left:13px;"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="23" height="23" viewBox="0 0 100 100" version="1.1" class="onhover-container" focusable="false">
-         <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-            <g fill-rule="nonzero" fill="currentColor" class="linkedin inherit-fill-onhover">
-               <path d="M24.4043689,12.3014563 C24.4043689,19.0956311 18.9412621,24.6031553 12.2021845,24.6031553 C5.4631068,24.6031553 0,19.0956311 0,12.3014563 C-1.72461829e-15,5.50752427 5.4631068,0 12.2021845,0 C18.9415049,0 24.4043689,5.50752427 24.4043689,12.3014563 Z M22.618932,33.3332524 L1.98373786,33.3332524 L1.98373786,100 L22.618932,100 L22.618932,33.3332524 L22.618932,33.3332524 Z M55.6046117,33.3332524 L35.8131068,33.3332524 L35.8131068,100 L55.6046117,100 C55.6046117,100 55.6046117,75.2725728 55.6046117,65.0046117 C55.6046117,55.6298544 59.9199029,50.0495146 68.1791262,50.0495146 C75.7684466,50.0495146 79.4143204,55.4065534 79.4143204,65.0046117 C79.4143204,74.6029126 79.4143204,100 79.4143204,100 L99.9495146,100 C99.9495146,100 99.9495146,75.6446602 99.9495146,57.7876214 C99.9495146,39.9305825 89.8308252,31.2995146 75.6936893,31.2995146 C61.5565534,31.2995146 55.6043689,42.3114078 55.6043689,42.3114078 L55.6043689,33.3332524 L55.6046117,33.3332524 Z" class="linkedin-icon"/>
-            </g>
-         </g></svg></div></a></li>
+
 
     <footer class="container">
       <p class="float-end"><a href="#">Back to top</a></p>

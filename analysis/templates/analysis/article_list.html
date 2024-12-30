@@ -66,67 +66,88 @@
             margin-bottom: 10px;
             /* Adds some space between list items */
         }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: blue;
+            min-width: 400px;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1001; /* Ensure this is higher than other elements */
+        }
+
     </style>
 </head>
 
 <body>
     <header data-bs-theme="dark">
         <nav class="navbar navbar-expand-md navbar-light fixed-top bg-blue">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="{% url 'home' %}">
-                    <i class="fas fa-house-chimney fa-1x"></i>
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
-                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarCollapse">
-                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                        <li class="nav-item dropdown">
-                            <a class="navbar-brand nav-link dropdown-toggle" href="#" id="rankingsDropdown"
-                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Rankings
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="rankingsDropdown">
-                                <li><a class="dropdown-item" href="{% url 'rankings' %}">All rankings for a state</a>
-                                </li>
-                                <li><a class="dropdown-item" href="{% url 'indicator_map' %}">Rankings of states by
-                                        indicator</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="navbar-brand nav-link" href="{% url 'analysis' %}">In depth analysis</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="navbar-brand nav-link" href="{% url 'survey' %}">Survey</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="navbar-brand nav-link" href="{% url 'index' %}">Framework</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false">
-                                Author
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="authorDropdown">
-                                <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
-                                <li><a class="dropdown-item"
-                                        href="https://scholar.google.com/citations?user=GLLP3h4AAAAJ&hl=en">Google
-                                        Scholar</a></li>
-                                <li><a class="dropdown-item" href="https://www.linkedin.com/in/duh01/">Linkedin</a></li>
-                                <li><a class="dropdown-item" href="https://www.facebook.com/HUYNHTHEDU">Facebook</a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                    <form class="d-flex bg-info" role="search">
-                        <input class="form-control me-2 bg-info" type="search" placeholder="Search" aria-label="Search">
-                        <button class="btn btn-outline-success" type="submit">Search</button>
-                    </form>
-                </div>
+          <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">
+              <i class="fas fa-house-chimney fa-1x"></i>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+              aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+              <ul class="navbar-nav me-auto mb-2 mb-md-0">
+    
+                <li class="nav-item dropdown">
+                  <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Rankings
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="rankingsDropdown">
+                    <li><a class="dropdown-item" href="{% url 'rankings' %}">All rankings for a state</a></li>
+                    <li><a class="dropdown-item" href="{% url 'indicator_map' %}">Rankings of states by indicator</a></li>
+                  </ul>
+                </li>
+                <li class="nav-item">
+                  <a class="navbar-brand nav-link" href="{% url 'analysis' %}">Analysis</a>
+                </li>
+                <li class="nav-item">
+                  <a class="navbar-brand nav-link" href="{% url 'survey' %}">Survey</a>
+                </li>
+                <li class="nav-item">
+                  <a class="navbar-brand nav-link" href="{% url 'index' %}">Framework</a>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Exploring
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="authorDropdown">
+                    <li><a class="dropdown-item" href="">Data Science</a></li>
+                    <li><a class="dropdown-item" href="">Macroeconomics</a></li>
+                    <li><a class="dropdown-item" href="">Microeconomics</a></li>
+                    <li><a class="dropdown-item" href="">Public Policy</a></li>
+                  </ul>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Author
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="authorDropdown">
+                    <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+                    <li><a class="dropdown-item" href="https://scholar.google.com/citations?user=GLLP3h4AAAAJ&hl=en">Google
+                        Scholar</a></li>
+                    <li><a class="dropdown-item" href="https://www.linkedin.com/in/duh01/">Linkedin</a></li>
+                    <li><a class="dropdown-item" href="https://www.facebook.com/HUYNHTHEDU">Facebook</a></li>
+                  </ul>
+                </li>
+              </ul>
+              <form class="d-flex" role="search" action="https://www.google.com/search" method="get">
+                <input class="form-control me-2 bg-white" type="search" name="q" placeholder="Search" aria-label="Search" style="color: black;">
+                <button class="btn btn-outline-success" type="submit" style="color: white;">Search</button>
+              </form>
             </div>
+          </div>
         </nav>
-    </header>
+      </header>
     <br><br><br><br>
     <div class="container marketing">
         <div class="centered-content">

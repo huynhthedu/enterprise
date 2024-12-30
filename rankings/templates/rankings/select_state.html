@@ -76,10 +76,10 @@
             padding: 0;
         }
 
-        th, td {
+        /* th, td {
             border: 1px solid #ddd;
             padding: 8px;
-        }
+        } */
 
         th {
             background-color: #f4f4f4;
@@ -212,12 +212,12 @@
         }
 
         .form-inline label {
-            margin-right: 5px;
+            margin-right: 15px;
         }
 
         .checkbox-label {
             display: flex;
-            align-items: center;
+            align-items: left;
         }
 
         .checkbox-label input[type="checkbox"] {
@@ -250,7 +250,7 @@
         }
 
         .dropdown-menu div {
-            padding: 12px 16px;
+            padding: 3px 6px;
             cursor: pointer;
         }
 
@@ -263,8 +263,7 @@
             margin: 0 auto; /* Center the map */
             width: 100% /*Ensure the map takes the full width of its container */
         }
-        .dropdown-menu { display: none; }
-        .dropdown-menu.show { display: block; }
+
         .state-label {
             font-size: 12px;
             font-weight: bold;
@@ -275,31 +274,79 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg bg-blue">
-        <div class="container-fluid">
+    <header data-bs-theme="dark">
+        <nav class="navbar navbar-expand-md navbar-light fixed-top bg-blue">
+          <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'home' %}">
-                <i class="fas fa-house-chimney fa-1x"></i>
-              </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+              <i class="fas fa-house-chimney fa-1x"></i>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+              aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav">
-                    <a class="navbar-brand nav-link" href="{% url 'rankings' %}">Rankings</a>
-                    <a class="navbar-brand nav-link" href="{% url 'dashboard' %}">State's analysis</a>
-                    <a class="navbar-brand nav-link" href="{% url 'survey' %}">Survey</a>
-                    <a class="navbar-brand nav-link" href="{% url 'index' %}">Framework</a>
-                    <a class="navbar-brand nav-link" href="https://www.linkedin.com/in/duh01/">Author</a>
-                </div>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+              <ul class="navbar-nav me-auto mb-2 mb-md-0">
+    
+                <li class="nav-item dropdown">
+                  <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Rankings
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="rankingsDropdown">
+                    <li><a class="dropdown-item" href="{% url 'rankings' %}">All rankings for a state</a></li>
+                    <li><a class="dropdown-item" href="{% url 'indicator_map' %}">Rankings of states by indicator</a></li>
+                  </ul>
+                </li>
+                <li class="nav-item">
+                  <a class="navbar-brand nav-link" href="{% url 'analysis' %}">Analysis</a>
+                </li>
+                <li class="nav-item">
+                  <a class="navbar-brand nav-link" href="{% url 'survey' %}">Survey</a>
+                </li>
+                <li class="nav-item">
+                  <a class="navbar-brand nav-link" href="{% url 'index' %}">Framework</a>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Exploring
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="authorDropdown">
+                    <li><a class="dropdown-item" href="">Data Science</a></li>
+                    <li><a class="dropdown-item" href="">Macroeconomics</a></li>
+                    <li><a class="dropdown-item" href="">Microeconomics</a></li>
+                    <li><a class="dropdown-item" href="">Public Policy</a></li>
+                  </ul>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Author
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="authorDropdown">
+                    <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+                    <li><a class="dropdown-item" href="https://scholar.google.com/citations?user=GLLP3h4AAAAJ&hl=en">Google
+                        Scholar</a></li>
+                    <li><a class="dropdown-item" href="https://www.linkedin.com/in/duh01/">Linkedin</a></li>
+                    <li><a class="dropdown-item" href="https://www.facebook.com/HUYNHTHEDU">Facebook</a></li>
+                  </ul>
+                </li>
+              </ul>
+              <form class="d-flex" role="search" action="https://www.google.com/search" method="get">
+                <input class="form-control me-2 bg-white" type="search" name="q" placeholder="Search" aria-label="Search"
+                  style="color: black;">
+                <button class="btn btn-outline-success" type="submit" style="color: white;">Search</button>
+              </form>
             </div>
-        </div>
-    </nav>
+          </div>
+        </nav>
+      </header>
     <br>
 
     {% load humanize %}
     <h1>Rankings for {{ selected_state }}</h1>
     <br>
-        <a > Choose two years, list of indicators and a state   </a>
+        <a > Choose two years, list of indicators and a state  </a>
     <br>
 
     <div class="container">
@@ -319,20 +366,20 @@
                     {% endfor %}
                 </select>
 
-                <div class="dropdown">
-                    <button type="button" class="dropdown-toggle" onclick="toggleDropdown()"> Indicators</button>
+               <div class="dropdown">
+                    <button type="button" class="dropdown-toggle" onclick="toggleDropdown()">Indicators</button>
                     <div id="dropdown-menu" class="dropdown-menu">
                         <div class="dropdown-content">
                             {% for indicator in indicators %}
-                                <div>
+                                <div style="display: flex; align-items: center; text-align: left;">
                                     <input type="checkbox" name="indicators" value="{{ indicator }}" {% if indicator in selected_indicators %}checked{% endif %}>
-                                    <label for="indicator">{{ indicator }}</label>
+                                    <label for="indicator" style="margin-left: 5px;">{{ indicator }}</label>
                                 </div>
                             {% endfor %}
                         </div>
-                        <button type="button" class="btn btn-primary" onclick="toggleDropdown()">Done</button>
+                        <!-- <button type="button" class="btn btn-primary" onclick="toggleDropdown()">Done</button> -->
                     </div>
-                </div> 
+                </div>
                 <!-- <label for="state">Choose a state:</label> -->
                 <input type="hidden" name="state" id="state" value="{{ selected_state }}">
                 <button type="submit">Submit</button>
@@ -555,19 +602,20 @@
             }
 
             // Add state name as a label at the center of the state
-            // var label = L.marker(layer.getBounds().getCenter(), {
-            //     icon: L.divIcon({
-            //         className: 'state-label',
-            //         html: feature.properties.name,
-            //         iconSize: [100, 20]
-            //     })
-            // }).addTo(map);
+            var label = L.marker(layer.getBounds().getCenter(), {
+                icon: L.divIcon({
+                    className: 'state-label',
+                    html: feature.properties.name,
+                    iconSize: [100, 20]
+                })
+            }).addTo(map);
         }
 
         // Pass state rankings data from Django template
         var stateRankings = [
             {% for score in df4 %}
             {
+                STAREFP: "{{ score.STAREFP }}",
                 name: "{{ score.state }}",
                 rank: {{ score.weighted_state_rank2 }},
                 score: {{ score.weighted_avg_score2 }}

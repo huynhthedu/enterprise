@@ -62,6 +62,19 @@
       /* Ensure the title is black */
       text-decoration: none;
       /* Remove underline */
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      background-color: blue;
+      min-width: 400px;
+      max-height: 200px;
+      overflow-y: auto;
+      box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+      z-index: 1001;
+      /* Ensure this is higher than other elements */
+    }
   </style>
 </head>
 
@@ -78,8 +91,9 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
           <ul class="navbar-nav me-auto mb-2 mb-md-0">
+
             <li class="nav-item dropdown">
-              <a class="navbar-brand nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button"
+              <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button"
                 data-bs-toggle="dropdown" aria-expanded="false">
                 Rankings
               </a>
@@ -89,7 +103,7 @@
               </ul>
             </li>
             <li class="nav-item">
-              <a class="navbar-brand nav-link" href="{% url 'analysis' %}">In depth analysis</a>
+              <a class="navbar-brand nav-link" href="{% url 'analysis' %}">Analysis</a>
             </li>
             <li class="nav-item">
               <a class="navbar-brand nav-link" href="{% url 'survey' %}">Survey</a>
@@ -98,7 +112,19 @@
               <a class="navbar-brand nav-link" href="{% url 'index' %}">Framework</a>
             </li>
             <li class="nav-item dropdown">
-              <a class="navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button"
+              <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                Exploring
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="authorDropdown">
+                <li><a class="dropdown-item" href="">Data Science</a></li>
+                <li><a class="dropdown-item" href="">Macroeconomics</a></li>
+                <li><a class="dropdown-item" href="">Microeconomics</a></li>
+                <li><a class="dropdown-item" href="">Public Policy</a></li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button"
                 data-bs-toggle="dropdown" aria-expanded="false">
                 Author
               </a>
@@ -111,9 +137,10 @@
               </ul>
             </li>
           </ul>
-          <form class="d-flex bg-info" role="search">
-            <input class="form-control me-2 bg-info" type="search" placeholder="Search" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
+          <form class="d-flex" role="search" action="https://www.google.com/search" method="get">
+            <input class="form-control me-2 bg-white" type="search" name="q" placeholder="Search" aria-label="Search"
+              style="color: black;">
+            <button class="btn btn-outline-success" type="submit" style="color: white;">Search</button>
           </form>
         </div>
       </div>
@@ -129,8 +156,8 @@
       {% for framework in frameworks %}
       <div class="container mb-4">
         <a href="{% url 'detail' framework.id %}" style="text-decoration: none;">
-                    <h3 class="text-left pt-3" style="color: black;">{{ framework.title }}</h3>
-                </a>
+          <h3 class="text-left pt-3" style="color: black;">{{ framework.title }}</h3>
+        </a>
         <p>{{ framework.pub_date_pretty }}</p>
         <img class="img-fluid float-start me-3" src="{{ framework.image.url }}" alt="{{ framework.title }}"
           style="max-width: 300px;" />

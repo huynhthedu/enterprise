@@ -56,8 +56,9 @@
             margin-left: 1in;
             margin-right: 1in;
             margin-top: 20px;
+            position: relative; /* Ensure it has a position property */
+            z-index: 0; /* Set a low z-index value */
         }
-
         th, td {
             padding: 8px 12px;
             border: 1px solid #ddd;
@@ -238,7 +239,7 @@
             background-color: blue;
             color: black;
             padding: 10px;
-            font-size: 16px;
+            font-size: 20px;
             border: none;
             cursor: pointer;
         }
@@ -246,12 +247,12 @@
         .dropdown-menu {
             display: none;
             position: absolute;
-            background-color: #f9f9f9;
+            background-color: blue;
             min-width: 400px;
             max-height: 200px;
             overflow-y: auto;
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1; /* Ensure this is higher than other elements */
+            z-index: 1001; /* Ensure this is higher than other elements */
         }
 
         .dropdown-menu div {
@@ -264,11 +265,11 @@
         }
 
         /* dropdown m */
-        .dropdownm {
+        /* .dropdownm {
             position: relative;
-            z-index: 1000; /* Ensures the dropdown menu is on top */
-            background-color: white; /* Set background color to blue */
-        }
+            z-index: 1000;  
+            background-color: white;  
+        } */
 
         .dropdownm-toggle {
             background-color: white;
@@ -291,7 +292,7 @@
         }
 
         .dropdownm-menu div {
-            padding: 12px 16px;
+            padding: 3px 6px;
             cursor: pointer;
         }
 
@@ -306,57 +307,73 @@
     </style>
 </head>
 <body>
- 
-    <nav class="navbar navbar-expand-md navbar-light fixed-top bg-blue">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="{% url 'home' %}">
-            <i class="fas fa-house-chimney fa-1x"></i>
-          </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+    <header data-bs-theme="dark">
+        <nav class="navbar navbar-expand-md navbar-light fixed-top bg-blue">
+          <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">
+              <i class="fas fa-house-chimney fa-1x"></i>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+              aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
-                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+              <ul class="navbar-nav me-auto mb-2 mb-md-0">
     
-                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                        <li class="nav-item dropdown">
-                            <a class="navbar-brand nav-link dropdown-toggle custom-font-size" href="#" id="rankingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Rankings
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="rankingsDropdown">
-                                <li><a class="dropdown-item" href="{% url 'rankings' %}">All rankings for a state</a></li>
-                                <li><a class="dropdown-item" href="{% url 'indicator_map' %}">Rankings of states by indicator</a></li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="navbar-brand nav-link custom-font-size" href="{% url 'analysis' %}">In depth analysis</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="navbar-brand nav-link custom-font-size" href="{% url 'survey' %}">Survey</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="navbar-brand nav-link custom-font-size" href="{% url 'index' %}">Framework</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="navbar-brand nav-link dropdown-toggle custom-font-size" href="#" id="authorDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Author
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="authorDropdown">
-                                <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
-                                <li><a class="dropdown-item" href="https://scholar.google.com/citations?user=GLLP3h4AAAAJ&hl=en">Google Scholar</a></li>
-                                <li><a class="dropdown-item" href="https://www.linkedin.com/in/duh01/">LinkedIn</a></li>
-                                <li><a class="dropdown-item" href="https://www.facebook.com/HUYNHTHEDU">Facebook</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </ul>
-                <form class="d-flex bg-info" role="search">
-                    <input class="form-control me-2 bg-info" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
+                <li class="nav-item dropdown">
+                  <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Rankings
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="rankingsDropdown">
+                    <li><a class="dropdown-item" href="{% url 'rankings' %}">All rankings for a state</a></li>
+                    <li><a class="dropdown-item" href="{% url 'indicator_map' %}">Rankings of states by indicator</a></li>
+                  </ul>
+                </li>
+                <li class="nav-item">
+                  <a class="navbar-brand nav-link" href="{% url 'analysis' %}">Analysis</a>
+                </li>
+                <li class="nav-item">
+                  <a class="navbar-brand nav-link" href="{% url 'survey' %}">Survey</a>
+                </li>
+                <li class="nav-item">
+                  <a class="navbar-brand nav-link" href="{% url 'index' %}">Framework</a>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Exploring
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="authorDropdown">
+                    <li><a class="dropdown-item" href="">Data Science</a></li>
+                    <li><a class="dropdown-item" href="">Macroeconomics</a></li>
+                    <li><a class="dropdown-item" href="">Microeconomics</a></li>
+                    <li><a class="dropdown-item" href="">Public Policy</a></li>
+                  </ul>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Author
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="authorDropdown">
+                    <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+                    <li><a class="dropdown-item" href="https://scholar.google.com/citations?user=GLLP3h4AAAAJ&hl=en">Google
+                        Scholar</a></li>
+                    <li><a class="dropdown-item" href="https://www.linkedin.com/in/duh01/">Linkedin</a></li>
+                    <li><a class="dropdown-item" href="https://www.facebook.com/HUYNHTHEDU">Facebook</a></li>
+                  </ul>
+                </li>
+              </ul>
+              <form class="d-flex" role="search" action="https://www.google.com/search" method="get">
+                <input class="form-control me-2 bg-white" type="search" name="q" placeholder="Search" aria-label="Search"
+                  style="color: black;">
+                <button class="btn btn-outline-success" type="submit" style="color: white;">Search</button>
+              </form>
             </div>
-        </div>
-    </nav>
+          </div>
+        </nav>
+      </header>
     <br>
 
 {% load humanize %}
@@ -401,11 +418,11 @@
                 <button type="button" class="dropdownm-toggle" onclick="toggleDropdown()">Select Indicators</button>
                 <div id="dropdownm-menu" class="dropdownm-menu">
                     <div class="dropdown-content">
-                        {% for indicator in indicators %}
-                            <div>
+                        {% for indicator in indicators %}                        
+                        <div style="display: flex; align-items: center; text-align: left;">
                                 <input type="checkbox" name="indicators" value="{{ indicator }}" {% if indicator in selected_indicators %}checked{% endif %}>
-                                <label for="indicator">{{ indicator }}</label>
-                            </div>
+                                <label for="indicator" style="margin-left: 5px;">{{ indicator }}</label>
+                            </div>                        
                         {% endfor %}
                     </div>
                     <button type="button" class="btn btn-primary" onclick="toggleDropdown()">Done</button>
@@ -426,6 +443,7 @@
     {% endif %}
 </div>
 
+<div class="container-wrapper">
 <div class="table-container">
     <table border="1">
         <thead class="bg-primary">
@@ -488,13 +506,15 @@
                     {{ data.rank2|floatformat:0 }}
                 </td>
                 <td class="center-align col-value">{{ data.score2|floatformat:1|intcomma }}</td>
-                <td class="right-align col-value">{{ data.value2|floatformat:1|intcomma }}</td>                
+                <!-- <td class="right-align col-value">{{ data|format_value2 }}</td> -->
+                <td class="right-align col-value">{{ data.value2 }}</td>
                 <td style="padding-left: 2em;" class="col-indicator">{{ data.unit }}</td>                
             </tr>
             {% endif %}
         {% endfor %}
         {% endfor %}
     </table>
+</div>
 </div>
 <br>
 <br>

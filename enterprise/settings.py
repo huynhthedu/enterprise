@@ -16,6 +16,8 @@ import sys
 import dj_database_url
 from django.core.management.utils import get_random_secret_key
 from urllib.parse import urlparse
+from dotenv import load_dotenv
+load_dotenv()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -90,12 +92,23 @@ WSGI_APPLICATION = 'enterprise.wsgi.application'
 DATABASE_URL = os.getenv('DATABASE_URL', None)
 
 if not DATABASE_URL:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.sqlite3',
+#             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#         }
+#     }
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.getenv('DB_NAME'),
+            'USER': os.getenv('DB_USER'),
+            'PASSWORD': os.getenv('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST'),
+            'PORT': os.getenv('DB_PORT'),
         }
     }
+
 else:
     db_info = urlparse(DATABASE_URL)
     DATABASES = {
@@ -110,10 +123,6 @@ else:
         }
     }
 
-
-
-
-
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
@@ -122,16 +131,6 @@ else:
 #         'PASSWORD': '123456',
 #         'HOST': 'localhost',
 #         'PORT': '5432',        
-#     }
-# }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': str(BASE_DIR / 'db.sqlite3'),
-#         'OPTIONS': {
-#             'timeout': 20,  # 20 seconds timeout
-#         },
 #     }
 # }
 

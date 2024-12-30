@@ -1,4 +1,5 @@
 from django import template
+import pandas as pd  # Import pandas if using pd.isna
 
 register = template.Library()
 
@@ -60,3 +61,14 @@ def remove_decimal(value):
     except (ValueError, TypeError):
         return value  # In case of error, return the value as is
     
+@register.filter
+def format_value2(data):
+    try:
+        value2 = float(data['value2'])
+    except (ValueError, TypeError):
+        return data['value2']  # Return the original value if conversion fails
+
+    if data['unit'] == 'Percent':
+        return f"{value2:.1f}"
+    else:
+        return f"{value2:,.0f}"

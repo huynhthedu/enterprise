@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="auto">
+{% load static %}
+{% load custom_filters %}
+<head>
+    <title>State Rankings Dashboard</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Ranking Page">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.122.0">
+    <meta name="theme-color" content="#712cf9">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}" sizes="180x180">
+    <link rel="icon" href="{% static 'images/favicon-32x32.png' %}" sizes="32x32" type="image/png">
+    <link rel="icon" href="{% static 'images/favicon-16x16.png' %}" sizes="16x16" type="image/png">
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/carousel/">
+
+    <script src="{% static 'js/color-modes.js' %}"></script>
+    <style>
+        body {
+            margin: 1;
+            padding: 0;
+        }
+
+        /* Container for the form */
+        .inline-form {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px; /* Space between elements */
+        }
+
+
+        .graph-container {
+            width: 100%; /* Adjust the width as needed */
+            max-width: 8400px; /* Set a maximum width */
+            margin: 0 auto; /* Center the container */
+            padding: 20px; /* Add some padding */
+        }
+
+        .container {
+            overflow-y: auto;
+            margin-left: 1in;
+            margin-right: 1in;
+        }
+
+        .table-container {
+            width: 90%;
+            height: 600px; /* Adjust the height as needed */
+            overflow-y: auto;
+            margin-left: 1in;
+            margin-right: 1in;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            background-color: #f2f2f2; /* Background color for the header */
+            z-index: 1; /* Ensure the header is above the table rows */
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+
+        .rank-green {
+            background-color: green !important;
+            color: white;
+        }
+        .rank-light-green {
+            background-color: lightgreen !important;
+            color: black;
+        }
+        .rank-yellow {
+            background-color: yellow !important;
+            color: black;
+        }
+        .rank-orange {
+            background-color: orange !important;
+            color: white;
+        }
+        .rank-red {
+            background-color: red !important;
+            color: white;
+        }
+        .rank-default {
+            background-color: grey !important;
+            color: white;
+        }
+
+        .bg-medium-crimson {
+            background-color: #1521c7; /* Medium Crimson */
+            color: white; /* Optional: Set text color to white for better contrast */
+        }
+
+        .bg-blue {
+            background-color: blue; /* Blue */
+        }
+        .grey-background {
+            background-color: lightgrey;
+        }
+        .center-align {
+            text-align: center;
+        }
+
+        .right-align {
+            text-align: right;
+        }
+
+        .column-uniform {
+            width: 10%;
+            text-align: center;
+        }
+
+        .title-margin {
+            margin-left: 1in;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        /* Added margin-left of 1 inch to the label */
+        label {
+            margin-left: 1in;
+        }
+
+        /* Fixed column widths */
+        .col-state { width: 10%; }
+        .col-indicator { width: 25%; }
+        .col-rank { width: 10%; }
+        .col-value { width: 10%; }
+        .col-unit { width: 10%; }
+        .col-source { width: 15%; }
+        .col-group { width: 3%; }
+
+        footer {
+            margin-top: 50px;
+            padding: 20px;
+            background: #f8f9fa;
+            text-align: center;
+        }
+
+        .navbar-nav .nav-link, .navbar-brand {
+            color: white !important;
+        }
+        .navbar-nav .nav-link:hover, .navbar-brand:hover {
+            color: #ffcc00; /* Optional: Change color on hover */
+        }
+
+        
+
+        .flashing-text {
+            color: red;
+            animation: flash 1s infinite;
+        }
+
+        @keyframes flash {
+            0% { opacity: 1; }
+            50% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .bar-container {
+            margin: 0 auto;            
+            display: flex;
+            width: 10in;
+            height: 40px; 
+            border: 2px solid black; 
+        }
+        .portion {
+            height: 100%;
+        }
+        .green { background-color: green; }
+        .light-green { background-color: lightgreen; }
+        .yellow { background-color: yellow; }
+        .orange { background-color: orange; }
+        .red { background-color: red; }
+
+        .centered-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center; 
+        }
+
+        .form-inline {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Adjust the gap between elements as needed */
+        }
+
+        .form-inline label {
+            margin-right: 5px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            margin-right: 1px; /* Adjust the spacing as needed */
+        }
+        /* dropdown 1*/
+        .dropdown {
+            position: relative;
+            z-index: 1000; /* Ensures the dropdown menu is on top */
+            background-color: blue; /* Light grey background color */
+        }
+
+        .dropdown-toggle {
+            background-color: blue;
+            color: black;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 400px;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1; /* Ensure this is higher than other elements */
+        }
+
+        .dropdown-menu div {
+            padding: 12px 16px;
+            cursor: pointer;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        /* dropdown m */
+        .dropdownm {
+            position: relative;
+            z-index: 1000; /* Ensures the dropdown menu is on top */
+            background-color: white; /* Set background color to blue */
+        }
+
+        .dropdownm-toggle {
+            background-color: white;
+            color: black;
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .dropdownm-menu {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 400px;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1; /* Ensure this is higher than other elements */
+        }
+
+        .dropdownm-menu div {
+            padding: 12px 16px;
+            cursor: pointer;
+        }
+
+        .dropdownm-menu.show {
+            display: block;
+        }
+        .custom-font-size {
+            font-size: 1.25rem; /* Adjust to your desired font size */
+        }
+
+        
+    </style>
+</head>
+<body>
+ 
+    <nav class="navbar navbar-expand-md navbar-light fixed-top bg-blue">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="{% url 'home' %}">
+            <i class="fas fa-house-chimney fa-1x"></i>
+          </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+    
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                        <li class="nav-item dropdown">
+                            <a class="navbar-brand nav-link dropdown-toggle custom-font-size" href="#" id="rankingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Rankings
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="rankingsDropdown">
+                                <li><a class="dropdown-item" href="{% url 'rankings' %}">All rankings for a state</a></li>
+                                <li><a class="dropdown-item" href="{% url 'indicator_map' %}">Rankings of states by indicator</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a class="navbar-brand nav-link custom-font-size" href="{% url 'analysis' %}">In depth analysis</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="navbar-brand nav-link custom-font-size" href="{% url 'survey' %}">Survey</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="navbar-brand nav-link custom-font-size" href="{% url 'index' %}">Framework</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="navbar-brand nav-link dropdown-toggle custom-font-size" href="#" id="authorDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Author
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="authorDropdown">
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+                                <li><a class="dropdown-item" href="https://scholar.google.com/citations?user=GLLP3h4AAAAJ&hl=en">Google Scholar</a></li>
+                                <li><a class="dropdown-item" href="https://www.linkedin.com/in/duh01/">LinkedIn</a></li>
+                                <li><a class="dropdown-item" href="https://www.facebook.com/HUYNHTHEDU">Facebook</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </ul>
+                <form class="d-flex bg-info" role="search">
+                    <input class="form-control me-2 bg-info" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+    <br>
+
+{% load humanize %}
+<h1>Economic Rankings for {{ selected_state }}</h1>
+<br>
+
+<div class="bar-container">
+    <div class="centered-content portion grey">Rankings in color-coded ranges:</div>
+    <div class="centered-content portion green" style="flex: 1;">1-10</div>
+    <div class="centered-content portion light-green" style="flex: 1;">11-20</div>
+    <div class="centered-content portion yellow" style="flex: 1;">21-30</div>
+    <div class="centered-content portion orange" style="flex: 1;">31-40</div>
+    <div class="centered-content portion red" style="flex: 1;">41-51</div>
+</div>
+<br>
+
+<div class="container">
+    <form method="GET">
+        <div class="form-inline">                    
+            <label for="year">Choose Year:</label>
+            <select name="year" id="year">
+                {% for year in years %}
+                    <option value="{{ year }}" {% if year == year %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+            
+            <div class="dropdownm">
+                <button type="button" class="dropdownm-toggle" onclick="toggleDropdown()">Select Indicators</button>
+                <div id="dropdownm-menu" class="dropdownm-menu">
+                    <div class="dropdown-content">
+                        {% for indicator in indicators %}
+                            <div>
+                                <input type="checkbox" name="indicators" value="{{ indicator }}" {% if indicator in selected_indicators %}checked{% endif %}>
+                                <label for="indicator">{{ indicator }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="toggleDropdown()">Done</button>
+                </div>
+            </div>    
+            <button type="submit">Submit</button>
+        </div>
+    </form>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    {% if warning_message %}
+    <div class="alert alert-danger flashing-text" role="alert">
+        {{ warning_message }}
+    </div>
+    {% endif %}
+</div>
+
+<br>
+<br>
+<div class="graph-container">
+    {% for plot_url in plot_urls %}
+        <img src="data:image/png;base64,{{ plot_url }}" alt="Score2 Bar Chart for Indicator" class="img-fluid">
+    {% endfor %}
+</div>
+
+<footer class="container">
+    <p class="float-end"><a href="#">Back to top</a></p>
+    <p>&copy; {% now "Y" %} Du Huynh. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+</footer>
+
+<script>
+function toggleDropdown() {
+    document.getElementById("dropdownm-menu").classList.toggle("show");
+}
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+    if (!event.target.matches('.dropdownm-toggle') && !event.target.matches('.btn')) {
+        var dropdowns = document.getElementsByClassName("dropdownm-menu");
+        for (var i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+        }
+    }
+}
+</script>
+
+<!-- Include Bootstrap JavaScript and Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
