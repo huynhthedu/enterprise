@@ -150,32 +150,94 @@
             50% { opacity: 0; }
             100% { opacity: 1; }
         }
+
+        .dropdown-menu {
+      display: none;
+      position: absolute;
+      background-color: blue;
+      min-width: 400px;
+      max-height: 200px;
+      overflow-y: auto;
+      box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+      z-index: 1001;
+      /* Ensure this is higher than other elements */
+    }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg bg-blue">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'home' %}">Home</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+    <header data-bs-theme="dark">
+        <nav class="navbar navbar-expand-md navbar-light fixed-top bg-blue">
+          <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">
+              <i class="fas fa-house-chimney fa-1x"></i>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+              aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                <div class="navbar-nav ml-auto">
-                    <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-                    <a class="nav-link" href="{% url 'rankings' %}">Rankings</a>
-                    <a class="nav-link" href="{% url 'survey' %}">Survey</a>
-                    <a class="nav-link" href="{% url 'index' %}">Framework</a>
-                    <a class="nav-link" href="https://www.linkedin.com/in/duh01/">Author</a>
-                </div>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+              <ul class="navbar-nav me-auto mb-2 mb-md-0">
+    
+                <li class="nav-item dropdown">
+                  <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Rankings
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="rankingsDropdown">
+                    <li><a class="dropdown-item" href="{% url 'rankings:rankings' %}">All rankings for a state</a></li>
+                    <li><a class="dropdown-item" href="{% url 'rankings:indicator_map' %}">Rankings of states by indicator</a></li>
+                  </ul>
+                </li>
+                <li class="nav-item">
+                  <a class="navbar-brand nav-link" href="{% url 'analysis' %}">Analysis</a>
+                </li>
+                <li class="nav-item">
+                  <a class="navbar-brand nav-link" href="{% url 'survey' %}">Survey</a>
+                </li>
+                <li class="nav-item">
+                  <a class="navbar-brand nav-link" href="{% url 'index' %}">Framework</a>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Exploring
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="authorDropdown">
+                    <li><a class="dropdown-item" href="">Data Science</a></li>
+                    <li><a class="dropdown-item" href="">Macroeconomics</a></li>
+                    <li><a class="dropdown-item" href="">Microeconomics</a></li>
+                    <li><a class="dropdown-item" href="">Public Policy</a></li>
+                  </ul>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Author
+                  </a>
+                  <ul class="dropdown-menu" aria-labelledby="authorDropdown">
+                    <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+                    <li><a class="dropdown-item" href="https://scholar.google.com/citations?user=GLLP3h4AAAAJ&hl=en">Google
+                        Scholar</a></li>
+                    <li><a class="dropdown-item" href="https://www.linkedin.com/in/duh01/">Linkedin</a></li>
+                    <li><a class="dropdown-item" href="https://www.facebook.com/HUYNHTHEDU">Facebook</a></li>
+                  </ul>
+                </li>
+              </ul>
+              <form class="d-flex" role="search" action="https://www.google.com/search" method="get">
+                <input class="form-control me-2 bg-white" type="search" name="q" placeholder="Search" aria-label="Search"
+                  style="color: black;">
+                <button class="btn btn-outline-success" type="submit" style="color: white;">Search</button>
+              </form>
             </div>
-        </div>
-    </nav>
+          </div>
+        </nav>
+      </header>
 
     <h1>Graphs for States</h1>
     <br>
     <div class="container">   
         <!-- First Form -->
-        <form method="get" action="{% url 'indicator_map' %}">
+        <form method="get" action="{% url 'rankings:indicator_map' %}">
             <label for="indicator">Indicator:</label>
             <select name="indicator" id="indicator">
                 {% for indicator in indicators %}
@@ -205,7 +267,7 @@
             <div class="error">{{ error }}</div>
         {% else %}
             <!-- <div class="container">                   
-                <form method="GET" action="{% url 'shown_chart' %}">
+                <form method="GET" action="{% url 'rankings:shown_chart' %}">
                     <label for="indicator">Select Indicator:</label>
                     <select name="indicator" id="indicator">
                         {% for indicator in indicators1 %}

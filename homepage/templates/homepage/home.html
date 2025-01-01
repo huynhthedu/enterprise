@@ -379,8 +379,8 @@
                 Rankings
               </a>
               <ul class="dropdown-menu" aria-labelledby="rankingsDropdown">
-                <li><a class="dropdown-item" href="{% url 'rankings' %}">All rankings for a state</a></li>
-                <li><a class="dropdown-item" href="{% url 'indicator_map' %}">Rankings of states by indicator</a></li>
+                <li><a class="dropdown-item" href="{% url 'rankings:rankings' %}">All rankings for a state</a></li>
+                <li><a class="dropdown-item" href="{% url 'rankings:indicator_map' %}">Rankings of states by indicator</a></li>
               </ul>
             </li>
             <li class="nav-item">
@@ -478,7 +478,7 @@
             </p>
             <p>
                 <button class="toggleButton btn btn-secondary">Read more</button>
-                <a class="btn btn-secondary" href="{% url 'rankings' %}">Go to rankings &raquo;</a>
+                <a class="btn btn-secondary" href="{% url 'rankings:rankings' %}">Go to rankings &raquo;</a>
             </p>
         </div>
     
@@ -536,13 +536,15 @@
     });
     </script>
 
-
-
       <hr class="featurette-divider">
 
       <div class="row featurette">
         <div class="col-md-7">
-          <h2 class="featurette-heading fw-normal lh-1">Exploring all states <span class="text-body-secondary"></span></h2>
+          <h2 class="featurette-heading fw-normal lh-1">
+            <a href="{% url 'rankings:one_year' 1 %}" style="text-decoration: none;">Exploring all states</a>
+            <span class="text-body-secondary"></span>
+        </h2>
+          <!-- <h2 class="featurette-heading fw-normal lh-1">Exploring all states <span class="text-body-secondary"></span></h2> -->
           <p class="lead">State rankings are evaluated across several dimensions: the size of the economy, development level and efficiency, and economic foundations. 
             These dimensions provide a comprehensive view of each state's economic position. 
             Additionally, fiscal sustainability is assessed through indicators such as government revenue, government expenditure, burdens, and public debt. 
@@ -558,10 +560,13 @@
       </div>
 
       <hr class="featurette-divider">
-
+      
       <div class="row featurette">
         <div class="col-md-7 order-md-2">
-          <h2 class="featurette-heading fw-normal lh-1">In depth analysis for states <span class="text-body-secondary"> </span></h2>
+          <h2 class="featurette-heading fw-normal lh-1">
+            <a href="{% url 'analysis' %}">In depth analysis for states</a>
+            <span class="text-body-secondary"></span>
+          </h2>
           <p class="lead">An in-depth analysis of states to examine their economic resilience and fiscal sustainability involves evaluating various indicators and metrics. 
             Economic resilience refers to a state's ability to anticipate, withstand, and recover from economic shocks. 
             Key indicators include the size and diversity of the economy, employment rates, and the presence of robust industries. 
@@ -569,7 +574,7 @@
             This involves analyzing government revenue streams, expenditure patterns, debt levels, and fiscal policies.</p>
         </div>
         <div class="col-md-5 order-md-1">
-          <img src="{% static 'images/USA.jpg' %}"
+          <img src="{% static 'images/states.png' %}"
             class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500"
             alt="Description of the image">
         </div>
@@ -579,7 +584,10 @@
 
       <div class="row featurette">
         <div class="col-md-7">
-          <h2 class="featurette-heading fw-normal lh-1">Survey on stakeholders <span class="text-body-secondary"></span></h2>
+          <h2 class="featurette-heading fw-normal lh-1">
+            <a href="{% url 'survey' %}">Survey on stakeholders</a>
+            <span class="text-body-secondary"></span>
+          </h2>          
           <p class="lead">Surveys were conducted to gather opinions from local government representatives on the competitiveness of their localities. 
             These surveys aimed to convey the viewpoints and opinions of stakeholders regarding the services provided by local governments. 
             The feedback collected highlights the strengths and areas for improvement in local services, offering valuable insights into how local governments can enhance their competitiveness. 
@@ -587,7 +595,7 @@
           </p>
         </div>
         <div class="col-md-5">
-          <img src="{% static 'images/EDA.png' %}"
+          <img src="{% static 'images/survey.jpg' %}"
             class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500"
             alt="Description of the image">
         </div>
@@ -614,7 +622,7 @@
             <div class="carousel-caption text-start">
               <h1>Rankings.</h1>
               <p class="opacity-75">Rankings of states in economic indicators.</p>
-              <p><a class="btn btn-lg btn-info" href="{% url 'rankings' %}">Explore data</a></p>
+              <p><a class="btn btn-lg btn-info" href="{% url 'rankings:rankings' %}">Explore data</a></p>
             </div>
           </div>
         </div>
@@ -703,7 +711,7 @@
       layer.addEventListener('mouseout', hideTooltip); // Ensure hiding when leaving the state
       layer.addEventListener('click', function () {
         var stateName = feature.properties.name;
-        window.location.href = "{% url 'rankings' %}?state=" + stateName;
+        window.location.href = "{% url 'rankings:rankings' %}?state=" + stateName;
       });
     }
 

@@ -71,8 +71,8 @@
                   Rankings
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="rankingsDropdown">
-                  <li><a class="dropdown-item" href="{% url 'rankings' %}">All rankings for a state</a></li>
-                  <li><a class="dropdown-item" href="{% url 'indicator_map' %}">Rankings of states by indicator</a></li>
+                  <li><a class="dropdown-item" href="{% url 'rankings:rankings' %}">All rankings for a state</a></li>
+                <li><a class="dropdown-item" href="{% url 'rankings:indicator_map' %}">Rankings of states by indicator</a></li>
                 </ul>
               </li>
               <li class="nav-item">
@@ -130,7 +130,7 @@
         {{ profile.summary|linebreaks }}
     </div>
     <div class="centered-content">
-      <a href="{{ profile.resume.url }}" target="_blank">Download Resume</a>
+      <a href="{{ profile.resume.url }}" target="_blank">Full Resume</a>
     </div>
     <footer class="container">
       <p class="float-end"><a href="#">Back to top</a></p>

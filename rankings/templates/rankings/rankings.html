@@ -326,8 +326,8 @@
                     Rankings
                   </a>
                   <ul class="dropdown-menu" aria-labelledby="rankingsDropdown">
-                    <li><a class="dropdown-item" href="{% url 'rankings' %}">All rankings for a state</a></li>
-                    <li><a class="dropdown-item" href="{% url 'indicator_map' %}">Rankings of states by indicator</a></li>
+                    <li><a class="dropdown-item" href="{% url 'rankings:rankings' %}">All rankings for a state</a></li>
+                <li><a class="dropdown-item" href="{% url 'rankings:indicator_map' %}">Rankings of states by indicator</a></li>
                   </ul>
                 </li>
                 <li class="nav-item">
@@ -415,7 +415,7 @@
             </select>
 
             <div class="dropdownm">
-                <button type="button" class="dropdownm-toggle" onclick="toggleDropdown()">Select Indicators</button>
+                <button type="button" class="dropdownm-toggle" onclick="toggleDropdown()">Indicators</button>
                 <div id="dropdownm-menu" class="dropdownm-menu">
                     <div class="dropdown-content">
                         {% for indicator in indicators %}                        

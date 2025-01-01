@@ -10,7 +10,7 @@ contourpy==1.1.1
 cycler==0.12.1
 Django==4.2.16
 et_xmlfile==2.0.0
-fiona==1.10.1
+fiona==1.9.6
 fonttools==4.55.0
 geopandas==0.13.2
 idna==3.10

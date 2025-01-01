@@ -843,7 +843,7 @@ def select_state(request):
 
 
 
-def one_year(request):
+def one_year(request, pk):
     # Fetch available states, indicators, and valid years
     states = list(Indicator.objects.values_list('state', flat=True).distinct().order_by('state')) 
     years = list(Indicator.objects.values_list('year', flat=True).distinct().order_by('year'))
@@ -859,15 +859,15 @@ def one_year(request):
         # Fetch inputs with default values        
         year = request.GET.get('year', 2023)        
         selected_indicators = request.GET.getlist('indicators', [])
- 
+
     fields = ['group', 'state', 'year', 'value']
     queryset = Indicator.objects.filter(year=year).values(*fields)     
-        
+     
     data = list(queryset)    
     # Create a DataFrame
     df = pd.DataFrame(data)    
     df = df.dropna()    
- 
+
     # Calculate new indicators by ratios of existing indicators and add to the dataframe
     new_groups = {
         ('E47', 'E16'): 'E61',
@@ -919,43 +919,43 @@ def one_year(request):
     for indicator in selected_indicators:
         fig, ax = plt.subplots(figsize=(32, 16))  # Increase figure size
         indicator_df = df[df['indicator'] == indicator].sort_values(by='value', ascending=False)
-        
+     
         if indicator_df.empty:
             print(f"No data available for indicator: {indicator}")
             continue
-        
+     
         # Create a new column combining state names and rank with no decimal
         indicator_df['rank'] = indicator_df.groupby(['group'])['value'].rank(ascending=False)
-        
+     
         indicator_df['state_rank'] = indicator_df.apply(
         lambda row: f"{row['state']}\n{row['value']:,.0f}" if row['unit'] != "Percent" else f"{row['state']}\n{row['value']:.2f}%", 
         axis=1
         )
         # print(indicator_df)
-        
+     
         # Prepare data for the tree map
         sizes = indicator_df['value'].tolist()        
         labels = indicator_df['state_rank'].tolist()
         colors = ['green' if rank <= 10 else 'lightgreen' if rank <= 20 else 'yellow' if rank <= 30 else 'orange' if rank <= 40 else 'red' for rank in indicator_df['rank']]        
-        
+     
         # Ensure no zero sizes to avoid ZeroDivisionError
         sizes = [size if size > 0 else 0.1 for size in sizes]
-        
+     
         # Create the tree map
         squarify.plot(sizes=sizes, label=labels, color=colors, alpha=0.8, ax=ax, edgecolor="black", linewidth=1.5)
-        
+     
         ax.set_title(f'{indicator} ({indicator_df["unit"].iloc[0]})', fontsize=30, pad=50)
         ax.axis('off')  # Remove axes
-        
+     
         # Increase label font size
         for label in ax.texts:
             label.set_fontsize(20)
-        
+     
         # Save the plot to a BytesIO object
         buf = io.BytesIO()
         plt.savefig(buf, format='png')
         buf.seek(0)
-        
+     
         # Encode the plot as a base64 string
         plot_url = base64.b64encode(buf.getvalue()).decode('utf8')
         plot_urls.append(plot_url)
