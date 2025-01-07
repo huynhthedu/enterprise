@@ -1,0 +1,290 @@
+<!doctype html>
+{% load static %}
+<html lang="en" data-bs-theme="auto">
+
+<head>
+    <title>Rankings v1.0 · Bootstrap v5.3</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.122.0">
+    <meta name="theme-color" content="#712cf9">
+
+    <!-- Canonical Link -->
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/carousel/">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}" sizes="180x180">
+    <link rel="icon" href="{% static 'images/favicon-32x32.png' %}" sizes="32x32" type="image/png">
+    <link rel="icon" href="{% static 'images/favicon-16x16.png' %}" sizes="16x16" type="image/png">
+
+    <!-- Scripts -->
+    <script src="{% static 'js/color-modes.js' %}"></script>
+
+    <style>
+        .bg-blue {
+            background-color: blue !important;
+            color: white !important;
+        }
+
+        .custom-bg {
+            background-color: rgb(255, 123, 0);
+        }
+
+        .custom-input-bg {
+            background-color: rgb(255, 0, 76);
+        }
+
+        .bar-container {
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            width: 15in;
+            height: auto;
+        }
+
+        body {
+            color: black;
+        }
+
+        .centered-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        h3 {
+            color: black;
+            text-decoration: none;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: blue;
+            min-width: 400px;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+        }
+
+        .form-inline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            /* Adjust the gap between elements as needed */
+        }
+
+        .form-inline label {
+            margin-right: 5px;
+        }
+
+        .table-container {
+            width: 100%;
+            /* height: 600px;   */
+            overflow-y: auto;
+            margin-left: 1in;
+            margin-right: 1in;
+            margin-top: 20px;
+            position: relative;
+            /* Ensure it has a position property */
+            z-index: 0;
+            /* Set a low z-index value */
+        }
+
+        .autocomplete-suggestions {
+            border: 1px solid #ccc;
+            max-height: 150px;
+            overflow-y: auto;
+            position: absolute;
+            background-color: white;
+            z-index: 1000;
+        }
+
+        .autocomplete-suggestion {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .autocomplete-suggestion:hover {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+
+<body>
+    <header data-bs-theme="dark">
+        <nav class="navbar navbar-expand-md navbar-light fixed-top bg-blue">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'home' %}">
+                    <i class="fas fa-house-chimney"></i>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                        <li class="nav-item dropdown">
+                            <a class="navbar-brand nav-link dropdown-toggle" href="#" id="rankingsDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Rankings
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="rankingsDropdown">
+                                <li><a class="dropdown-item" href="{% url 'rankings:rankings' %}">All rankings for a
+                                        state</a></li>
+                                <li><a class="dropdown-item" href="{% url 'rankings:indicator_map' %}">Rankings of
+                                        states by indicator</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a class="navbar-brand nav-link" href="{% url 'analysis' %}">Analysis</a>
+                        </li>
+                        <li class="nav-item"><a class="navbar-brand nav-link" href="{% url 'survey' %}">Survey</a></li>
+                        <li class="nav-item"><a class="navbar-brand nav-link" href="{% url 'index' %}">Framework</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="navbar-brand nav-link dropdown-toggle" href="#" id="exploringDropdown"
+                                role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Exploring
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="exploringDropdown">
+                                <li><a class="dropdown-item" href="">Data Science</a></li>
+                                <li><a class="dropdown-item" href="">Macroeconomics</a></li>
+                                <li><a class="dropdown-item" href="">Microeconomics</a></li>
+                                <li><a class="dropdown-item" href="">Public Policy</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                                Author
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="authorDropdown">
+                                <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+                                <li><a class="dropdown-item"
+                                        href="https://scholar.google.com/citations?user=GLLP3h4AAAAJ&hl=en">Google
+                                        Scholar</a>
+                                </li>
+                                <li><a class="dropdown-item" href="https://www.linkedin.com/in/duh01/">LinkedIn</a></li>
+                                <li><a class="dropdown-item" href="https://www.facebook.com/HUYNHTHEDU">Facebook</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <form class="d-flex" role="search" action="https://www.google.com/search" method="get">
+                        <input class="form-control me-2 bg-white" type="search" name="q" placeholder="Search"
+                            aria-label="Search" style="color: black;">
+                        <button class="btn btn-outline-success" type="submit" style="color: white;">Search</button>
+                    </form>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <h1>Institution Degree Data</h1>
+            <div class="form-inline">
+
+                <!-- Input field for institution search -->
+                <form method="get" action="">
+                    <label for="instnm">Choose Your Institution:</label>
+                    <input type="text" id="instnm" name="instnm" autocomplete="off" placeholder="Type to search..."
+                        value="{{ chosen_institution }}">
+                    <div id="suggestions" class="autocomplete-suggestions"></div>
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+
+            <h2>Data for {{ chosen_institution }}</h2>
+
+            <!-- Display chosen institution data -->
+            {% load humanize %}
+            {% if table_data %}
+            <div class="table-container">
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>unitid</th>
+                            <th>Item</th>
+                            <th style="text-align: right;">2020-21</th>
+                            <th style="text-align: right;">Growth</th>
+                            <th style="text-align: right;">2021-22</th>
+                            <th style="text-align: right;">Growth</th>
+                            <th style="text-align: right;">2022-23</th>
+                            <th style="text-align: right;">Rankings</th>
+                            <th style="text-align: right;">Proportion to Income</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in pivot_data %}
+                        <tr>
+                            <td>{{ row.unitid }}</td>
+                            <td>{{ row.item }}</td>
+                            <td width="100" style="text-align: right;">{{ row.2021|floatformat:0|intcomma }}</td>
+                            <td width="100" style="text-align: right;">{{ row.gr22|floatformat:1|intcomma }}</td>
+                            <td width="100" style="text-align: right;">{{ row.2022|floatformat:0|intcomma }}</td>
+                            <td width="100" style="text-align: right;">{{ row.gr23|floatformat:1|intcomma }}</td>
+                            <td width="100" style="text-align: right;">{{ row.2023|floatformat:0|intcomma }}</td>
+                            <td width="100" style="text-align: right;">{{ row.rankings_tuition|floatformat:0|intcomma }}
+                            </td>
+                            <td width="100" style="text-align: right;">{{ row.to_ic|floatformat:1|intcomma }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>No data available for the selected institution.</p>
+            {% endif %}
+        </div>
+        <footer class="container">
+            <p class="float-end"><a href={% url 'home' %}>Back to top</a></p>
+            <p>&copy; {% now "Y" %} Du Huynh. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+        </footer>
+        </div>
+        <!-- Include Bootstrap JavaScript and Popper.js -->
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+        <script>
+            const input = document.getElementById('instnm');
+            const suggestionsBox = document.getElementById('suggestions');
+
+            input.addEventListener('input', () => {
+                const query = input.value;
+
+                if (query.length < 2) {
+                    suggestionsBox.innerHTML = '';
+                    return;
+                }
+
+                fetch(`?query=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const suggestions = data.suggestions;
+                        suggestionsBox.innerHTML = '';
+                        suggestions.forEach(suggestion => {
+                            const div = document.createElement('div');
+                            div.textContent = suggestion;
+                            div.addEventListener('click', () => {
+                                input.value = suggestion;
+                                suggestionsBox.innerHTML = '';
+                            });
+                            suggestionsBox.appendChild(div);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching suggestions:', error));
+            });
+        </script>
+
+</body>
+
+</html>

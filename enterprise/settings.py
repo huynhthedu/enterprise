@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     'homepage',
     'analysis',
     'framework',
+    'data',
+    'highered',
     'rankings.apps.RankingsConfig',
     'django.contrib.humanize',
     'dashboard.apps.DashboardConfig',

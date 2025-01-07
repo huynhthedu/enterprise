@@ -10,6 +10,12 @@ urlpatterns = [
     path('indicator_map/', views.shown_chart, name='shown_chart'),            
     path('select_state/', views.select_state, name='select_state'), 
     path('one_year/<int:pk>/', views.one_year, name='one_year'), 
+    path('dashboard/', views.dashboard_view, name='dashboard'),
+    path('get_indicator_data/', views.get_indicator_data, name='get_indicator_data'),
+    path('get_year_data/', views.get_year_data, name='get_year_data'),
+    path('overall_indicator/', views.overall_indicator, name='overall_indicator'),
+    
+
     # path('state/', views.state, name='state'),        
 ]
 
