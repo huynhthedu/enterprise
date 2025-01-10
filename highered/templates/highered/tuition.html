@@ -51,9 +51,9 @@
             height: auto;
         }
 
-        body {
+        /* body {
             color: black;
-        }
+        } */
 
         .centered-content {
             display: flex;
@@ -119,6 +119,48 @@
 
         .autocomplete-suggestion:hover {
             background-color: #ddd;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* height: 100vh; */
+            margin: 0;
+        }
+
+        .dashboard {
+            display: flex;
+            gap: 20px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 400px;
+            text-align: center;
+        }
+
+        .students {
+            background-color: #008080;
+            /* Teal */
+            color: white;
+        }
+
+        .degrees {
+            background-color: #4169E1;
+            /* Royal Blue */
+            color: white;
+        }
+
+        .tuition {
+            background-color: #FF7F50;
+            /* Coral */
+            color: white;
         }
     </style>
 </head>
@@ -190,11 +232,11 @@
                 </div>
             </div>
         </nav>
+        <br><br><br><br>
         <div class="container">
             <h1>Institution Degree Data</h1>
-            <div class="form-inline">
-
-                <!-- Input field for institution search -->
+            <h2>Data for {{ chosen_institution }}</h2>
+            <div class="form-inline">               
                 <form method="get" action="">
                     <label for="instnm">Choose Your Institution:</label>
                     <input type="text" id="instnm" name="instnm" autocomplete="off" placeholder="Type to search..."
@@ -203,11 +245,31 @@
                     <button type="submit">Submit</button>
                 </form>
             </div>
+            <br><br><br>
 
-            <h2>Data for {{ chosen_institution }}</h2>
 
             <!-- Display chosen institution data -->
             {% load humanize %}
+
+            <div class="dashboard">
+                {% for row in tuition %}
+                <div class="card students">
+                    <h2>Students</h2>
+                    <p>{{ row.y2023 }}</p>
+                    <p>Growth: {{ students_growth }}%</p>
+                </div>
+                <div class="card degrees">
+                    <h2>Degrees Granted</h2>
+                    <p>{{ number_of_degrees }}</p>
+                    <p>Growth: {{ degrees_growth }}%</p>
+                </div>
+                <div class="card tuition">
+                    <h2>Tuition</h2>
+                    <p>{{ row.y2023|floatformat:0|intcomma }}</p>
+                    <p>Growth: {{ tuition_growth }}%</p>
+                </div>
+                {% endfor %}
+            </div>
             {% if table_data %}
             <div class="table-container">
                 <table border="1">
@@ -229,14 +291,67 @@
                         <tr>
                             <td>{{ row.unitid }}</td>
                             <td>{{ row.item }}</td>
-                            <td width="100" style="text-align: right;">{{ row.2021|floatformat:0|intcomma }}</td>
+                            <td width="100" style="text-align: right;">{{ row.y2021|floatformat:0|intcomma }}</td>
                             <td width="100" style="text-align: right;">{{ row.gr22|floatformat:1|intcomma }}</td>
-                            <td width="100" style="text-align: right;">{{ row.2022|floatformat:0|intcomma }}</td>
+                            <td width="100" style="text-align: right;">{{ row.y2022|floatformat:0|intcomma }}</td>
                             <td width="100" style="text-align: right;">{{ row.gr23|floatformat:1|intcomma }}</td>
-                            <td width="100" style="text-align: right;">{{ row.2023|floatformat:0|intcomma }}</td>
+                            <td width="100" style="text-align: right;">{{ row.y2023|floatformat:0|intcomma }}</td>
                             <td width="100" style="text-align: right;">{{ row.rankings_tuition|floatformat:0|intcomma }}
                             </td>
                             <td width="100" style="text-align: right;">{{ row.to_ic|floatformat:1|intcomma }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="table-container">
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>unitid</th>
+                            <th>Institution</th>
+                            <th style="text-align: right;">Rankings</th>
+                            <th style="text-align: right;">Tuition</th>
+                            <th style="text-align: right;">Percent of State Income</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in top10 %}
+                        <tr>
+                            <td>{{ row.unitid }}</td>
+                            <td>{{ row.instnm }}</td>
+                            <td width="100" style="text-align: right;">{{ row.rankings_tuition|floatformat:0|intcomma }}
+                            </td>
+                            <td width="100" style="text-align: right;">{{ row.y2023|floatformat:0|intcomma }}</td>
+                            <td width="100" style="text-align: right;">{{ row.to_ic|floatformat:1|intcomma }}</td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="table-container">
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th>unitid</th>
+                            <th>Institution</th>
+                            <th style="text-align: right;">Rankings</th>
+                            <th style="text-align: right;">Tuition</th>
+                            <th style="text-align: right;">Proportion to Income</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in lowest10 %}
+                        <tr>
+                            <td>{{ row.unitid }}</td>
+                            <td>{{ row.instnm }}</td>
+                            <td width="100" style="text-align: right;">{{ row.rankings_tuition|floatformat:0|intcomma }}
+                            </td>
+                            <td width="100" style="text-align: right;">{{ row.y2023|floatformat:0|intcomma }}</td>
+                            <td width="100" style="text-align: right;">{{ row.to_ic|floatformat:1|intcomma }}</td>
+
                         </tr>
                         {% endfor %}
                     </tbody>

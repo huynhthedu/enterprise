@@ -4,8 +4,6 @@
 {% load custom_filters %}
 <head>
     <title>State Rankings Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Ranking Page">
@@ -48,7 +46,7 @@
         .container {
             overflow-y: auto;
             margin-left: 1in;
-            /* margin-right: 1in; */
+            margin-right: 1in;
         }
 
         .table-container {
@@ -304,45 +302,7 @@
         .custom-font-size {
             font-size: 1.25rem; /* Adjust to your desired font size */
         }
-        .highlight {
-        background-color: yellow; /* Change this to your preferred highlight color */
-        }
 
-        /* .chart-container1 {
-            position: absolute;
-            top: 0;
-            left: 0;
-        } */
-
-        .container1 {
-    display: flex;
-    width: calc(100% - 2in); /* Adjust width to account for margins */
-    height: calc(100vh - 2in); /* Adjust height to account for margins */
-    margin: 1in;
-}
-
-.left-half1 {
-    width: 48%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 1%;
-}
-
-.right-half1 {
-    width: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.chart-container1 {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
         
     </style>
 </head>
@@ -414,10 +374,9 @@
           </div>
         </nav>
       </header>
-
+    <br>
 
 {% load humanize %}
-<br><br><br><br>
 <h1>Economic Rankings for {{ selected_state }}</h1>
 <br>
 
@@ -430,27 +389,6 @@
     <div class="centered-content portion red" style="flex: 1;">41-51</div>
 </div>
 <br>
-
-
-<div class="container1">
-    <div class="left-half1">
-        <div class="chart-container1">
-            <img src="data:image/png;base64,{{ pie_charts_url }}" alt="Pie Charts">
-        </div>
-    </div>
-    <div class="right-half1">        
-        <div class="chart-container1">            
-            <img src="data:image/png;base64,{{ bar_charts_url }}" alt="Pie Charts">
-        </div>
-    </div>
-</div>
-<div>
-    <!-- Example of existing content -->
-    <h1>Dashboard</h1>
-    <p>Selected State: {{ selected_state }}</p>
-    <p>Year Range: {{ year1 }} - {{ year2 }}</p>
-    <!-- Add more content as needed -->
-</div>
 
 <div class="container">
     <form method="GET">
@@ -475,6 +413,21 @@
                     <option value="{{ year }}" {% if year == year2 %}selected{% endif %}>{{ year }}</option>
                 {% endfor %}
             </select>
+
+            <div class="dropdownm">
+                <button type="button" class="dropdownm-toggle" onclick="toggleDropdown()">Indicators</button>
+                <div id="dropdownm-menu" class="dropdownm-menu">
+                    <div class="dropdown-content">
+                        {% for indicator in indicators %}                        
+                        <div style="display: flex; align-items: center; text-align: left;">
+                                <input type="checkbox" name="indicators" value="{{ indicator }}" {% if indicator in selected_indicators %}checked{% endif %}>
+                                <label for="indicator" style="margin-left: 5px;">{{ indicator }}</label>
+                            </div>                        
+                        {% endfor %}
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="toggleDropdown()">Done</button>
+                </div>
+            </div>    
             <button type="submit">Submit</button>
         </div>
     </form>
@@ -489,123 +442,91 @@
     </div>
     {% endif %}
 </div>
-<h2 style="margin-left: 1in; font-weight: bold;">I - OVERALL RANKINGS</h2>
+
 <div class="container-wrapper">
-    <div class="table-container">
-        <table border="1">
-            <thead class="bg-primary">
-                <tr>            
-                    <th class="bg-primary text-white col-indicator" style="text-align: left;">Indicator</th>
-                    <th class="bg-primary text-white col-rank">{{ year1 }}</th>
-                    <th class="bg-primary text-white col-rank">Growth</th>
-                    <th class="bg-primary text-white col-rank">{{ year2 }}</th>
-                    <th class="bg-primary text-white col-value">Score {{ year2 }}</th>
-                    <th class="bg-primary text-white col-value">Value {{ year2 }}</th>
-                    <th class="bg-primary text-white col-unit">Unit</th>
-                </tr>
-            </thead>
-
-            {% for score in df3 %}
-            <tr>    
-                <td><strong> Overall Rankings</strong></td>            
-                <td class="column-uniform col-rank {% if score.weighted_state_rank1  <= 10 %}rank-green{% elif score.weighted_state_rank1  <= 20 %}rank-light-green{% elif score.weighted_state_rank1  <= 30 %}rank-yellow{% elif score.weighted_state_rank1  <= 40 %}rank-orange{% else %}rank-red{% endif %}">
-                    <strong>{{ score.weighted_state_rank1|floatformat:0 }}</strong>
-                </td>
-                <td class="column-uniform col-rank {% if score.weighted_state_rank_gr  <= 10 %}rank-green{% elif score.weighted_state_rank_gr  <= 20 %}rank-light-green{% elif score.weighted_state_rank_gr <= 30 %}rank-yellow{% elif score.weighted_state_rank_gr  <= 40 %}rank-orange{% else %}rank-red{% endif %}">
-                    <strong>{{ score.weighted_state_rank_gr|floatformat:0 }}</strong>
-                </td>
-                <td class="column-uniform col-rank {% if score.weighted_state_rank2  <= 10 %}rank-green{% elif score.weighted_state_rank2 <= 20 %}rank-light-green{% elif score.weighted_state_rank2  <= 30 %}rank-yellow{% elif score.weighted_state_rank2  <= 40 %}rank-orange{% else %}rank-red{% endif %}">
-                    <strong>{{ score.weighted_state_rank2|floatformat:0 }}</strong>
-                </td>
-                <td class="center-align col-value">{{ score.weighted_avg_score2|floatformat:1|intcomma }}</td>
-                <td><strong></strong></td>
-                <td><strong></td>
-            </tr>        
-            {% endfor %}
-
-            {% for item in df2 %}
-            <tr>           
-                <td class="grey-background"><strong>{{ item.name }}</strong></td>
-                <td class="column-uniform col-rank {% if item.weighted_rank1 <= 10 %}rank-green{% elif item.weighted_rank1 <= 20 %}rank-light-green{% elif item.weighted_rank1 <= 30 %}rank-yellow{% elif item.weighted_rank1 <= 40 %}rank-orange{% else %}rank-red{% endif %}">
-                    <strong>{{ item.weighted_rank1|floatformat:0 }}</strong>
-                </td>
-                <td class="column-uniform col-rank {% if item.weighted_rank_gr <= 10 %}rank-green{% elif item.weighted_rank_gr <= 20 %}rank-light-green{% elif item.weighted_rank_gr <= 30 %}rank-yellow{% elif item.weighted_rank_gr <= 40 %}rank-orange{% else %}rank-red{% endif %}">
-                    <strong>{{ item.weighted_rank_gr|floatformat:0 }}</strong>
-                </td>
-                <td class="column-uniform col-rank {% if item.weighted_rank2 <= 10 %}rank-green{% elif item.weighted_rank2 <= 20 %}rank-light-green{% elif item.weighted_rank2 <= 30 %}rank-yellow{% elif item.weighted_rank2 <= 40 %}rank-orange{% else %}rank-red{% endif %}">
-                    <strong>{{ item.weighted_rank2|floatformat:0 }}</strong>
-                </td> 
-                <td class="center-align col-value grey-background"> <strong>{{ item.weighted_avg_score2|floatformat:1|intcomma }} </strong></td>
-                <td class="grey-background"><strong></strong></td>
-                <td class="grey-background"><strong></strong></td>
+<div class="table-container">
+    <table border="1">
+        <thead class="bg-primary">
+            <tr>            
+                <th class="bg-primary text-white col-indicator" style="text-align: left;">Indicator</th>
+                <th class="bg-primary text-white col-rank">{{ year1 }}</th>
+                <th class="bg-primary text-white col-rank">Growth</th>
+                <th class="bg-primary text-white col-rank">{{ year2 }}</th>
+                <th class="bg-primary text-white col-value">Score {{ year2 }}</th>
+                <th class="bg-primary text-white col-value">Value {{ year2 }}</th>
+                <th class="bg-primary text-white col-unit">Unit</th>
             </tr>
-            {% for data in df1 %}
-                {% if data.group|slice:":2" == item.index %}
-                <tr>        
-                    <td style="padding-left: 2em;" class="col-indicator {% if data.indicator == default_indicator %}highlight{% endif %}" id="indicator-{{ data.indicator }}">{{ data.indicator }}</td>
-                    <td class="column-uniform col-rank {% if data.rank1 <= 10 %}rank-green{% elif data.rank1 <= 20 %}rank-light-green{% elif data.rank1 <= 30 %}rank-yellow{% elif data.rank1 <= 40 %}rank-orange{% elif data.rank1 <= 51 %}rank-red{% else %}rank-white{% endif %}">
-                        {{ data.rank1|floatformat:0 }}
-                    </td>
-                    <td class="column-uniform col-rank {% if data.rankgr <= 10 %}rank-green{% elif data.rankgr <= 20 %}rank-light-green{% elif data.rankgr <= 30 %}rank-yellow{% elif data.rankgr <= 40 %}rank-orange{% elif data.rankgr <= 51 %}rank-red{% else %}rank-white{% endif %}">
-                        {{ data.rankgr|floatformat:0 }}
-                    </td>
-                    <td class="column-uniform col-rank {% if data.rank2 <= 10 %}rank-green{% elif data.rank2 <= 20 %}rank-light-green{% elif data.rank2 <= 30 %}rank-yellow{% elif data.rank2 <= 40 %}rank-orange{% elif data.rank2 <= 51 %}rank-red{% else %}rank-white{% endif %}">
-                        {{ data.rank2|floatformat:0 }}
-                    </td>
-                    <td class="center-align col-value">{{ data.score2|floatformat:1|intcomma }}</td>
-                    <td class="right-align col-value">{{ data.value2 }}</td>
-                    <td style="padding-left: 2em;" class="col-indicator">{{ data.unit }}</td>                
-                </tr>
-                {% endif %}
-            {% endfor %}
-            {% endfor %}
-        </table>
-    </div>
+        </thead>
+
+        {% for score in df3 %}
+        <tr>    
+            <td><strong> Overall Rankings</strong></td>            
+            <td class="column-uniform col-rank {% if score.weighted_state_rank1  <= 10 %}rank-green{% elif score.weighted_state_rank1  <= 20 %}rank-light-green{% elif score.weighted_state_rank1  <= 30 %}rank-yellow{% elif score.weighted_state_rank1  <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                <strong>{{ score.weighted_state_rank1|floatformat:0 }}</strong>
+            </td>
+            <td class="column-uniform col-rank {% if score.weighted_state_rank_gr  <= 10 %}rank-green{% elif score.weighted_state_rank_gr  <= 20 %}rank-light-green{% elif score.weighted_state_rank_gr <= 30 %}rank-yellow{% elif score.weighted_state_rank_gr  <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                <strong>{{ score.weighted_state_rank_gr|floatformat:0 }}</strong>
+            </td>
+            <td class="column-uniform col-rank {% if score.weighted_state_rank2  <= 10 %}rank-green{% elif score.weighted_state_rank2 <= 20 %}rank-light-green{% elif score.weighted_state_rank2  <= 30 %}rank-yellow{% elif score.weighted_state_rank2  <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                <strong>{{ score.weighted_state_rank2|floatformat:0 }}</strong>
+            </td>
+            <td class="center-align col-value">{{ score.weighted_avg_score2|floatformat:1|intcomma }}</td>
+            <td><strong></strong></td>
+            <td><strong></strong></td>
+        </tr>        
+        {% endfor %}
+
+        {% for item in df2 %}
+        <tr>           
+            <td class="grey-background"><strong>{{ item.name }}</strong></td>
+            <td class="column-uniform col-rank {% if item.weighted_rank1 <= 10 %}rank-green{% elif item.weighted_rank1 <= 20 %}rank-light-green{% elif item.weighted_rank1 <= 30 %}rank-yellow{% elif item.weighted_rank1 <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                <strong>{{ item.weighted_rank1|floatformat:0 }}</strong>
+            </td>
+            <td class="column-uniform col-rank {% if item.weighted_rank_gr <= 10 %}rank-green{% elif item.weighted_rank_gr <= 20 %}rank-light-green{% elif item.weighted_rank_gr <= 30 %}rank-yellow{% elif item.weighted_rank_gr <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                <strong>{{ item.weighted_rank_gr|floatformat:0 }}</strong>
+            </td>
+            <td class="column-uniform col-rank {% if item.weighted_rank2 <= 10 %}rank-green{% elif item.weighted_rank2 <= 20 %}rank-light-green{% elif item.weighted_rank2 <= 30 %}rank-yellow{% elif item.weighted_rank2 <= 40 %}rank-orange{% else %}rank-red{% endif %}">
+                <strong>{{ item.weighted_rank2|floatformat:0 }}</strong>
+            </td> 
+            <td class="center-align col-value grey-background"> <strong>{{ item.weighted_avg_score2|floatformat:1|intcomma }} </strong></td>
+            <td class="grey-background"><strong></strong></td>
+            <td class="grey-background"><strong></strong></td>
+        </tr>
+        {% for data in df1 %}
+            {% if data.group|slice:":2" == item.index %}
+            <tr>                
+                <td style="padding-left: 2em;" class="col-indicator">{{ data.indicator }}</td>
+                <td class="column-uniform col-rank {% if data.rank1 <= 10 %}rank-green{% elif data.rank1 <= 20 %}rank-light-green{% elif data.rank1 <= 30 %}rank-yellow{% elif data.rank1 <= 40 %}rank-orange{% elif data.rank1 <= 51 %}rank-red{% else %}rank-white{% endif %}">
+                    {{ data.rank1|floatformat:0 }}
+                </td>
+                <td class="column-uniform col-rank {% if data.rankgr <= 10 %}rank-green{% elif data.rankgr <= 20 %}rank-light-green{% elif data.rankgr <= 30 %}rank-yellow{% elif data.rankgr <= 40 %}rank-orange{% elif data.rankgr <= 51 %}rank-red{% else %}rank-white{% endif %}">
+                    {{ data.rankgr|floatformat:0 }}
+                </td>
+                <td class="column-uniform col-rank {% if data.rank2 <= 10 %}rank-green{% elif data.rank2 <= 20 %}rank-light-green{% elif data.rank2 <= 30 %}rank-yellow{% elif data.rank2 <= 40 %}rank-orange{% elif data.rank2 <= 51 %}rank-red{% else %}rank-white{% endif %}">
+                    {{ data.rank2|floatformat:0 }}
+                </td>
+                <td class="center-align col-value">{{ data.score2|floatformat:1|intcomma }}</td>
+                <!-- <td class="right-align col-value">{{ data|format_value2 }}</td> -->
+                <td class="right-align col-value">{{ data.value2 }}</td>
+                <td style="padding-left: 2em;" class="col-indicator">{{ data.unit }}</td>                
+            </tr>
+            {% endif %}
+        {% endfor %}
+        {% endfor %}
+    </table>
+</div>
 </div>
 <br>
 <br>
-<h2 style="margin-left: 1in;  font-weight: bold;">II - TREND OF CHOSEN INDICATOR</h2>
-<div id="chart-container", style="margin-left: 1in; margin-right: 1in;">
-    <canvas id="indicatorChart"></canvas>
-</div>
-
-<h2 style="margin-left: 1in;  font-weight: bold;">II - POSITION OF THE CHOSEN STATE FOR THE CHOSEN INDICATOR</h2>
-<div id="horizontal-chart-container", style="margin-left: 1in; margin-right: 1in;">
-    <canvas id="horizontalChart"></canvas>
-</div>
-
-<form method="GET">
-    <div class="form-inline">
-        <input type="hidden" name="year1" value="{{ year1 }}">
-        <input type="hidden" name="year2" value="{{ year2 }}">
-        <input type="hidden" name="state" value="{{ selected_state }}">
-        <div class="dropdownm">
-            <button type="button" class="dropdownm-toggle" onclick="toggleDropdown()">Indicators</button>
-            <div id="dropdownm-menu" class="dropdownm-menu">
-                <div class="dropdown-content">
-                    {% for indicator in indicators %}
-                    <div style="display: flex; align-items: center; text-align: left;">
-                        <input type="checkbox" name="indicators" value="{{ indicator }}" {% if indicator in selected_indicators %}checked{% endif %}>
-                        <label for="indicator" style="margin-left: 5px;">{{ indicator }}</label>
-                    </div>
-                    {% endfor %}
-                </div>
-                <button type="button" class="btn btn-primary" onclick="toggleDropdown()">Done</button>
-            </div>
-        </div>
-        <button type="submit">Submit</button>
-    </div>
-</form>
-
 <div class="graph-container">
     <div class="row">
         {% for plot_url in plot_urls %}
-        <div class="col-md-4">
-            <img src="data:image/png;base64,{{ plot_url }}" alt="Score2 Bar Chart for Indicator" class="img-fluid">
-        </div>
-        {% if forloop.counter|divisibleby:3 and not forloop.last %}
-        </div><div class="row">
-        {% endif %}
+            <div class="col-md-4">
+                <img src="data:image/png;base64,{{ plot_url }}" alt="Score2 Bar Chart for Indicator" class="img-fluid">
+            </div>
+            {% if forloop.counter|divisibleby:3 and not forloop.last %}
+                </div><div class="row">
+            {% endif %}
         {% endfor %}
     </div>
 </div>
@@ -613,165 +534,27 @@
 <footer class="container">
     <p class="float-end"><a href="#">Back to top</a></p>
     <p>&copy; {% now "Y" %} Du Huynh. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
-</footer>
+  </footer>
 
 <script>
-    function toggleDropdown() {
-        document.getElementById("dropdownm-menu").classList.toggle("show");
-    }
-    
-    // Close the dropdown if the user clicks outside of it
-    window.onclick = function(event) {
-        if (!event.target.matches('.dropdownm-toggle') && !event.target.matches('.btn')) {
-            var dropdowns = document.getElementsByClassName("dropdownm-menu");
-            for (var i = 0; i < dropdowns.length; i++) {
-                var openDropdown = dropdowns[i];
-                if (openDropdown.classList.contains('show')) {
-                    openDropdown.classList.remove('show');
-                }
+function toggleDropdown() {
+    document.getElementById("dropdownm-menu").classList.toggle("show");
+}
+
+// Close the dropdown if the user clicks outside of it
+window.onclick = function(event) {
+    if (!event.target.matches('.dropdownm-toggle') && !event.target.matches('.btn')) {
+        var dropdowns = document.getElementsByClassName("dropdownm-menu");
+        for (var i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
             }
         }
     }
-    
-    let chart; // Declare chart variable outside the event listener
-    let horizontalChart; // Declare horizontal chart variable outside the event listener
-
-    // Function to render the chart
-    function renderChart(indicator, state) {
-        fetch(`/rankings/get_indicator_data/?indicator=${indicator}&state=${state}`)
-            .then(response => response.json())
-            .then(data => {
-                console.log("Received data:", data); // Debugging log
-                var ctx = document.getElementById('indicatorChart').getContext('2d');
-                
-                // If a chart already exists, destroy it before creating a new one
-                if (chart) {
-                    chart.destroy();
-                }
-
-                chart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: data.years,
-                        datasets: [{
-                            label: indicator,
-                            data: data.values,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        plugins: {
-                            datalabels: {
-                                anchor: 'end',
-                                align: 'top',
-                                formatter: function(value) {
-                                    return value.toLocaleString();
-                                },
-                                color: 'black'
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        },
-                        onClick: function(evt, item) {
-                            if (item.length > 0) {
-                                var year = data.years[item[0].index];
-                                console.log("Clicked year:", year); // Debugging log
-                                fetch(`/rankings/get_year_data/?indicator=${indicator}&year=${year}`)
-                                    .then(response => response.json())
-                                    .then(yearData => {
-                                        console.log("Received year data:", yearData); // Debugging log
-                                        
-                                        // Sort the data by values in descending order
-                                        const sortedData = yearData.states.map((state, index) => ({
-                                            state: state,
-                                            value: yearData.values[index]
-                                        })).sort((a, b) => b.value - a.value);
-
-                                        const sortedStates = sortedData.map(item => item.state);
-                                        const sortedValues = sortedData.map(item => item.value);
-
-                                        var ctxHorizontal = document.getElementById('horizontalChart').getContext('2d');
-                                        
-                                        // If a horizontal chart already exists, destroy it before creating a new one
-                                        if (horizontalChart) {
-                                            horizontalChart.destroy();
-                                        }
-
-                                        horizontalChart = new Chart(ctxHorizontal, {
-                                            type: 'bar',
-                                            data: {
-                                                labels: sortedStates,
-                                                datasets: [{
-                                                    label: `${indicator} in ${year}`,
-                                                    data: sortedValues,
-                                                    backgroundColor: sortedStates.map(state => state === '{{ selected_state }}' ? 'rgba(255, 99, 132, 0.2)' : 'rgba(153, 102, 255, 0.2)'),
-                                                    borderColor: sortedStates.map(state => state === '{{ selected_state }}' ? 'rgba(255, 99, 132, 1)' : 'rgba(153, 102, 255, 1)'),
-                                                    borderWidth: 1
-                                                }]
-                                            },
-                                            options: {
-                                                indexAxis: 'y',
-                                                plugins: {
-                                                    datalabels: {
-                                                        anchor: 'end',
-                                                        align: 'right',
-                                                        formatter: function(value) {
-                                                            return value.toLocaleString();
-                                                        },
-                                                        color: 'black'
-                                                    }
-                                                },
-                                                scales: {
-                                                    x: {
-                                                        beginAtZero: true
-                                                    }
-                                                }
-                                            }
-                                        });
-
-                                        // Highlight the chosen year in the first graph
-                                        chart.data.datasets[0].backgroundColor = chart.data.labels.map(label => label === year ? 'rgba(255, 99, 132, 0.2)' : 'rgba(75, 192, 192, 0.2)');
-                                        chart.update();
-                                    })
-                                    .catch(error => console.error("Error fetching year data:", error)); // Debugging log
-                            }
-                        }
-                    }
-                });
-
-                // Change the background color of the clicked indicator
-                document.querySelectorAll('.col-indicator').forEach(function(cell) {
-                    cell.style.backgroundColor = ''; // Reset background color
-                });
-                document.getElementById(`indicator-${indicator}`).style.backgroundColor = 'lightblue'; // Set new background color
-            })
-            .catch(error => console.error("Error fetching data:", error)); // Debugging log
-    }
-
-    // Fetch and render the default indicator data on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        const defaultIndicator = '{{ default_indicator }}';
-        const selectedState = '{{ selected_state }}';
-        renderChart(defaultIndicator, selectedState);
-    });
-
-    // Add event listeners to indicator cells
-    document.querySelectorAll('.col-indicator').forEach(function(cell) {
-        cell.addEventListener('click', function() {
-            var indicator = this.innerText;
-            console.log("Clicked indicator:", indicator); // Debugging log
-            renderChart(indicator, '{{ selected_state }}');
-        });
-    });
+}
 </script>
 
 <!-- Include Bootstrap JavaScript and Popper.js -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-
-

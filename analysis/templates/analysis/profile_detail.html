@@ -64,50 +64,23 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
-  
-              <li class="nav-item dropdown">
-                <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button"
-                  data-bs-toggle="dropdown" aria-expanded="false">
-                  Rankings
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="rankingsDropdown">
-                  <li><a class="dropdown-item" href="{% url 'rankings:rankings' %}">All rankings for a state</a></li>
-                <li><a class="dropdown-item" href="{% url 'rankings:indicator_map' %}">Rankings of states by indicator</a></li>
-                </ul>
+              <li class="nav-item">
+                <a class="navbar-brand nav-link" href="{% url 'rankings:rankings' %}">State Economies</a>
+              </li>
+              <li class="nav-item">
+                <a class="navbar-brand nav-link" href="{% url 'degree' %}">Higher Education</a>
               </li>
               <li class="nav-item">
                 <a class="navbar-brand nav-link" href="{% url 'analysis' %}">Analysis</a>
               </li>
               <li class="nav-item">
-                <a class="navbar-brand nav-link" href="{% url 'survey' %}">Survey</a>
-              </li>
-              <li class="nav-item">
                 <a class="navbar-brand nav-link" href="{% url 'index' %}">Framework</a>
               </li>
-              <li class="nav-item dropdown">
-                <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button"
-                  data-bs-toggle="dropdown" aria-expanded="false">
-                  Exploring
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="authorDropdown">
-                  <li><a class="dropdown-item" href="">Data Science</a></li>
-                  <li><a class="dropdown-item" href="">Macroeconomics</a></li>
-                  <li><a class="dropdown-item" href="">Microeconomics</a></li>
-                  <li><a class="dropdown-item" href="">Public Policy</a></li>
-                </ul>
+              <li class="nav-item">
+                <a class="navbar-brand nav-link" href="{% url 'index' %}">Exploring</a>
               </li>
-              <li class="nav-item dropdown">
-                <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button"
-                  data-bs-toggle="dropdown" aria-expanded="false">
-                  Author
-                </a>
-                <ul class="dropdown-menu" aria-labelledby="authorDropdown">
-                  <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
-                  <li><a class="dropdown-item" href="https://scholar.google.com/citations?user=GLLP3h4AAAAJ&hl=en">Google
-                      Scholar</a></li>
-                  <li><a class="dropdown-item" href="https://www.linkedin.com/in/duh01/">Linkedin</a></li>
-                  <li><a class="dropdown-item" href="https://www.facebook.com/HUYNHTHEDU">Facebook</a></li>
-                </ul>
+              <li class="nav-item">
+                <a class="navbar-brand nav-link" href="{% url 'profile' %}">Author</a>
               </li>
             </ul>
             <form class="d-flex" role="search" action="https://www.google.com/search" method="get">

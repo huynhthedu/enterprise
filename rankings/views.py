@@ -720,7 +720,7 @@ def state(request):
         'plot_urls': plot_urls,
     }
 
-    return render(request, 'rankings/rankings.html', context)
+    return render(request, 'rankings/dashboard.html', context)
 
 
 def select_state(request):
@@ -1219,7 +1219,7 @@ def dashboard_view(request):
         'bar_charts_url': bar_charts_url,  # Add the pie charts URL to the context
     })
 
-    return render(request, 'rankings/dashboard.html', context)
+    return render(request, 'rankings/rankings.html', context)
 
 def get_indicator_data(request):
     default_indicator = 'Gross Domestic Product'  # Set your default indicator here
