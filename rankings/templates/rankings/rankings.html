@@ -315,35 +315,48 @@
         } */
 
         .container1 {
-    display: flex;
-    width: calc(100% - 2in); /* Adjust width to account for margins */
-    height: calc(100vh - 2in); /* Adjust height to account for margins */
-    margin: 1in;
-}
+            display: flex;
+            width: calc(100% - 2in); /* Adjust width to account for margins */
+            height: calc(100vh - 2in); /* Adjust height to account for margins */
+            margin: 1in;
+        }
 
-.left-half1 {
-    width: 48%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-right: 1%;
-}
+        .left-half1 {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 1%;
+        }
 
-.right-half1 {
-    width: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+        .right-half1 {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-.chart-container1 {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+        .chart-container1 {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
         
+        .container2 {
+            display: flex;
+            justify-content: space-between;
+        }
+        .column {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+        .center-column {
+            flex: 2; /* Twice as wide as the other columns */
+        }
     </style>
 </head>
 <body>
@@ -391,39 +404,9 @@
 
 {% load humanize %}
 <br><br><br><br>
-<h1>Economic Rankings for {{ selected_state }}</h1>
+<h1>Economic Indicators for {{ selected_state }}</h1>
 <br>
 
-<div class="bar-container">
-    <div class="centered-content portion grey">Rankings in color-coded ranges:</div>
-    <div class="centered-content portion green" style="flex: 1;">1-10</div>
-    <div class="centered-content portion light-green" style="flex: 1;">11-20</div>
-    <div class="centered-content portion yellow" style="flex: 1;">21-30</div>
-    <div class="centered-content portion orange" style="flex: 1;">31-40</div>
-    <div class="centered-content portion red" style="flex: 1;">41-51</div>
-</div>
-<br>
-
-
-<div class="container1">
-    <div class="left-half1">
-        <div class="chart-container1">
-            <img src="data:image/png;base64,{{ pie_charts_url }}" alt="Pie Charts">
-        </div>
-    </div>
-    <div class="right-half1">        
-        <div class="chart-container1">            
-            <img src="data:image/png;base64,{{ bar_charts_url }}" alt="Pie Charts">
-        </div>
-    </div>
-</div>
-<div>
-    <!-- Example of existing content -->
-    <h1>Dashboard</h1>
-    <p>Selected State: {{ selected_state }}</p>
-    <p>Year Range: {{ year1 }} - {{ year2 }}</p>
-    <!-- Add more content as needed -->
-</div>
 
 <div class="container">
     <form method="GET">
@@ -453,9 +436,37 @@
     </form>
     <br>
     <br>
+
+<div class="bar-container">
+    <div class="centered-content portion grey">Rankings in color-coded ranges:</div>
+    <div class="centered-content portion green" style="flex: 1;">1-10</div>
+    <div class="centered-content portion light-green" style="flex: 1;">11-20</div>
+    <div class="centered-content portion yellow" style="flex: 1;">21-30</div>
+    <div class="centered-content portion orange" style="flex: 1;">31-40</div>
+    <div class="centered-content portion red" style="flex: 1;">41-51</div>
+</div>
+<br>
+
+
+<div class="container1">
+    <div class="left-half1">
+        <div class="chart-container1">
+            <img src="data:image/png;base64,{{ pie_charts_url }}" alt="Pie Charts">
+        </div>
+    </div>
+    <div class="right-half1">        
+        <div class="chart-container1">            
+            <img src="data:image/png;base64,{{ bar_charts_url }}" alt="Pie Charts">
+        </div>
+    </div>
+</div>
+
     <br>
     <br>
 
+    
+        <h1>Dashboard for {{ selected_state }}</h1>
+    
     {% if warning_message %}
     <div class="alert alert-danger flashing-text" role="alert">
         {{ warning_message }}

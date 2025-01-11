@@ -1,606 +1,756 @@
 <!doctype html>
 {% load static %}
 <html lang="en" data-bs-theme="auto">
-  <head>
-    <title>Rankings v1.0 · Bootstrap v5.3</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />    
-    <script src="{% static 'js/color-modes.js' %}"></script>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
-    <meta name="generator" content="Hugo 0.122.0">
-    
-    <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/carousel/">    
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
-    <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}" sizes="180x180">
-    <link rel="icon" href="{% static 'images/favicon-32x32.png' %}" sizes="32x32" type="image/png">
-    <link rel="icon" href="{% static 'images/favicon-16x16.png' %}" sizes="16x16" type="image/png">
-    <meta name="theme-color" content="#712cf9">
+
+<head>
+  <meta charset="UTF-8">
+  <title>State Rankings Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="{% static 'js/color-modes.js' %}"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="Mark Otto, Jacob Thornton, Bootstrap contributors and Du Huynh">
+  <meta name="generator" content="Hugo 0.122.0">
+
+  <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/carousel/">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+  <link rel="apple-touch-icon" href="{% static 'images/apple-touch-icon.png' %}" sizes="180x180">
+  <link rel="icon" href="{% static 'images/favicon-32x32.png' %}" sizes="32x32" type="image/png">
+  <link rel="icon" href="{% static 'images/favicon-16x16.png' %}" sizes="16x16" type="image/png">
+  <meta name="theme-color" content="#712cf9">
 
 
-   <style>
+  <style>
+    .bd-placeholder-img {
+      font-size: 1.125rem;
+      text-anchor: middle;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
 
-      #map { 
-              height: 400px; 
-              position: relative; /* Add this to create a stacking context */
-          }
-          .custom-tooltip {
-    position: absolute;
-    background-color: white;
-    border: 1px solid black;
-    padding: 5px;
-    display: none;
-    z-index: 1000;
-    color: black;
-}
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
+    @media (min-width: 768px) {
+      .bd-placeholder-img-lg {
+        font-size: 3.5rem;
       }
+    }
 
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
+    .b-example-divider {
+      width: 100%;
+      height: 3rem;
+      background-color: rgba(0, 0, 0, .1);
+      border: solid rgba(0, 0, 0, .15);
+      border-width: 1px 0;
+      box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
+    }
 
-      .b-example-divider {
-        width: 100%;
-        height: 3rem;
-        background-color: rgba(0, 0, 0, .1);
-        border: solid rgba(0, 0, 0, .15);
-        border-width: 1px 0;
-        box-shadow: inset 0 .5em 1.5em rgba(0, 0, 0, .1), inset 0 .125em .5em rgba(0, 0, 0, .15);
-      }
+    .b-example-vr {
+      flex-shrink: 0;
+      width: 1.5rem;
+      height: 100vh;
+    }
 
-      .b-example-vr {
-        flex-shrink: 0;
-        width: 1.5rem;
-        height: 100vh;
-      }
+    .bi {
+      vertical-align: -.125em;
+      fill: currentColor;
+    }
 
-      .bi {
-        vertical-align: -.125em;
-        fill: currentColor;
-      }
+    .nav-scroller {
+      position: relative;
+      z-index: 2;
+      height: 2.75rem;
+      overflow-y: hidden;
+    }
 
-      .nav-scroller {
-        position: relative;
-        z-index: 2;
-        height: 2.75rem;
-        overflow-y: hidden;
-      }
+    .nav-scroller .nav {
+      display: flex;
+      flex-wrap: nowrap;
+      padding-bottom: 1rem;
+      margin-top: -1px;
+      overflow-x: auto;
+      text-align: center;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+    }
 
-      .nav-scroller .nav {
-        display: flex;
-        flex-wrap: nowrap;
-        padding-bottom: 1rem;
-        margin-top: -1px;
-        overflow-x: auto;
-        text-align: center;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-      }
+    .btn-bd-primary {
+      --bd-violet-bg: #712cf9;
+      --bd-violet-rgb: 112.520718, 44.062154, 249.437846;
 
-      .btn-bd-primary {
-        --bd-violet-bg: #712cf9;
-        --bd-violet-rgb: 112.520718, 44.062154, 249.437846;
+      --bs-btn-font-weight: 600;
+      --bs-btn-color: var(--bs-white);
+      --bs-btn-bg: var(--bd-violet-bg);
+      --bs-btn-border-color: var(--bd-violet-bg);
+      --bs-btn-hover-color: var(--bs-white);
+      --bs-btn-hover-bg: #6528e0;
+      --bs-btn-hover-border-color: #6528e0;
+      --bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
+      --bs-btn-active-color: var(--bs-btn-hover-color);
+      --bs-btn-active-bg: #5a23c8;
+      --bs-btn-active-border-color: #5a23c8;
+    }
 
-        --bs-btn-font-weight: 600;
-        --bs-btn-color: var(--bs-white);
-        --bs-btn-bg: var(--bd-violet-bg);
-        --bs-btn-border-color: var(--bd-violet-bg);
-        --bs-btn-hover-color: var(--bs-white);
-        --bs-btn-hover-bg: #6528e0;
-        --bs-btn-hover-border-color: #6528e0;
-        --bs-btn-focus-shadow-rgb: var(--bd-violet-rgb);
-        --bs-btn-active-color: var(--bs-btn-hover-color);
-        --bs-btn-active-bg: #5a23c8;
-        --bs-btn-active-border-color: #5a23c8;
-      }
+    .bd-mode-toggle {
+      z-index: 1500;
+    }
 
-      .bd-mode-toggle {
-        z-index: 1500;
-      }
+    .bd-mode-toggle .dropdown-menu .active .bi {
+      display: block !important;
+    }
 
-      .bd-mode-toggle .dropdown-menu .active .bi {
-        display: block !important;
-      }
+    .bg-crimson {
+      background-color: crimson !important;
+    }
 
-      .bg-crimson {
-        background-color: crimson !important;
-      }
-      .bg-dark-crimson {
-          background-color: #8B0000;  
-      }
+    .bg-dark-crimson {
+      background-color: #8B0000;
+    }
 
-      .bg-blue {
+    .bg-blue {
       background-color: blue !important;
-      color: white !important; /* Ensure the text is readable */
-      }
+      color: white !important;
+      /* Ensure the text is readable */
+    }
 
-      .custom-bg {
-          background-color: rgb(255, 123, 0);  
-      }
-      .custom-input-bg {
-          background-color: rgb(255, 0, 76);
-      }
-    
-      .collapsed {
-          overflow: hidden;
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-      }
-    
-      .btn-secondary {
-        background-color: #6c757d; 
-        color: white;
-        padding: 10px 20px;  
-        border: none;
-        border-radius: 4px;
-        text-decoration: none;
-        display: inline-block;
-        text-align: center;
-      }
+    .custom-bg {
+      background-color: rgb(255, 123, 0);
+    }
 
-      .btn-secondary:hover {
-        background-color: #5a6268; 
-      }
+    .custom-input-bg {
+      background-color: rgb(255, 0, 76);
+    }
 
-      button.btn-secondary {
-        cursor: pointer;
-      }
-    
-      #myCarousel .carousel-inner {
-        height: 500px; /* Adjust this value to your desired height */
-      }
-      #myCarousel .carousel-item,
-      #myCarousel .bd-placeholder-img,
-      #myCarousel .bg-primary {
-        height: 100%;
-      }
+    .collapsed {
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
 
-      .fixed-size {
-            width: 500px;
-            height: 500px;
-      }
+    .btn-secondary {
+      background-color: #6c757d;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+    }
 
-      .green { background-color: green; }
-        .light-green { background-color: lightgreen; }
-        .yellow { background-color: yellow; }
-        .orange { background-color: orange; }
-        .red { background-color: red; }
+    .btn-secondary:hover {
+      background-color: #5a6268;
+    }
 
-      .centered-content {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          text-align: center; 
-      }
-    
-      .bar-container {
-            margin: 0 auto;            
-            display: flex;
-            width: 10in;
-            height: 40px; 
-            border: 2px solid black; 
+    button.btn-secondary {
+      cursor: pointer;
+    }
+
+    #map {
+      height: 400px;
+      /* Adjust this value as needed */
+      position: relative;
+      z-index: 1000;
+    }
+
+    .custom-tooltip {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: translate(-400%, 0%);
+      /* Adjust these values to center the tooltip */
+      pointer-events: none;
+      /* Ensure it doesn’t block mouse interactions */
+      background-color: white;
+      border: 1px solid black;
+      padding: 5px 10px;
+      display: none;
+      z-index: 1000;
+      color: black;
+    }
+
+    #myCarousel {
+      margin-bottom: 20px;
+      /* Adjust as needed to ensure spacing between carousel and map */
+    }
+
+    #myCarousel .carousel-inner {
+      height: 500px;
+      /* Adjust this value to your desired height */
+    }
+
+    #myCarousel .carousel-item,
+    #myCarousel .bd-placeholder-img,
+    #myCarousel .bg-primary {
+      height: 100%;
+    }
+
+    .fixed-size {
+      width: 500px;
+      height: 500px;
+    }
+
+    .green {
+      background-color: green;
+    }
+
+    .light-green {
+      background-color: lightgreen;
+    }
+
+    .yellow {
+      background-color: yellow;
+    }
+
+    .orange {
+      background-color: orange;
+    }
+
+    .red {
+      background-color: red;
+    }
+
+    .centered-content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .bar-container {
+      margin: 0 auto;
+      display: flex;
+      width: 10in;
+      height: 40px;
+      border: 2px solid black;
+    }
+
+    .three-column-layout {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .left-column,
+    .right-column {
+      flex: 1;
+      padding: 10px;
+    }
+
+    .middle-column {
+      flex: 5;
+      padding: 10px;
+    }
+
+    .bar-container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .centered-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .portion {
+      padding: 10px;
+      border: none solid #ddd;
+      border-radius: 5px;
+    }
+    .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: blue;
+            min-width: 400px;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1001; /* Ensure this is higher than other elements */
         }
 
-    </style>
 
-    
+    @keyframes flash {
+      0% {
+        opacity: 1;
+      }
 
-    </head>
-  <body>
-    <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
-      <symbol id="check2" viewBox="0 0 16 16">
-        <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>
-      </symbol>
-      <symbol id="circle-half" viewBox="0 0 16 16">
-        <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z"/>
-      </symbol>
-      <symbol id="moon-stars-fill" viewBox="0 0 16 16">
-        <path d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z"/>
-        <path d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z"/>
-      </symbol>
-      <symbol id="sun-fill" viewBox="0 0 16 16">
-        <path d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z"/>
-      </symbol>
-    </svg>
+      50% {
+        opacity: 0;
+      }
 
-    <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
-      <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center"
-              id="bd-theme"
-              type="button"
-              aria-expanded="false"
-              data-bs-toggle="dropdown"
-              aria-label="Toggle theme (auto)">
-        <svg class="bi my-1 theme-icon-active" width="1em" height="1em"><use href="#circle-half"></use></svg>
-        <span class="visually-hidden" id="bd-theme-text">Toggle theme</span>
-      </button>
-      <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
-        <li>
-          <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light" aria-pressed="false">
-            <svg class="bi me-2 opacity-50" width="1em" height="1em"><use href="#sun-fill"></use></svg>
-            Light
-            <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
-          </button>
-        </li>
-        <li>
-          <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark" aria-pressed="false">
-            <svg class="bi me-2 opacity-50" width="1em" height="1em"><use href="#moon-stars-fill"></use></svg>
-            Dark
-            <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
-          </button>
-        </li>
-        <li>
-          <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto" aria-pressed="true">
-            <svg class="bi me-2 opacity-50" width="1em" height="1em"><use href="#circle-half"></use></svg>
-            Auto
-            <svg class="bi ms-auto d-none" width="1em" height="1em"><use href="#check2"></use></svg>
-          </button>
-        </li>
-      </ul>
-    </div>
+      100% {
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
 
-    
-<header data-bs-theme="dark">
-  <nav class="navbar navbar-expand-md navbar-light fixed-top bg-blue">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="{% url 'home' %}">
-        <i class="fas fa-house-chimney fa-1x"></i>
-      </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
+    <symbol id="check2" viewBox="0 0 16 16">
+      <path
+        d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z" />
+    </symbol>
+    <symbol id="circle-half" viewBox="0 0 16 16">
+      <path d="M8 15A7 7 0 1 0 8 1v14zm0 1A8 8 0 1 1 8 0a8 8 0 0 1 0 16z" />
+    </symbol>
+    <symbol id="moon-stars-fill" viewBox="0 0 16 16">
+      <path
+        d="M6 .278a.768.768 0 0 1 .08.858 7.208 7.208 0 0 0-.878 3.46c0 4.021 3.278 7.277 7.318 7.277.527 0 1.04-.055 1.533-.16a.787.787 0 0 1 .81.316.733.733 0 0 1-.031.893A8.349 8.349 0 0 1 8.344 16C3.734 16 0 12.286 0 7.71 0 4.266 2.114 1.312 5.124.06A.752.752 0 0 1 6 .278z" />
+      <path
+        d="M10.794 3.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387a1.734 1.734 0 0 0-1.097 1.097l-.387 1.162a.217.217 0 0 1-.412 0l-.387-1.162A1.734 1.734 0 0 0 9.31 6.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387a1.734 1.734 0 0 0 1.097-1.097l.387-1.162zM13.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.156 1.156 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.156 1.156 0 0 0-.732-.732l-.774-.258a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732L13.863.1z" />
+    </symbol>
+    <symbol id="sun-fill" viewBox="0 0 16 16">
+      <path
+        d="M8 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0zm0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13zm8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zM3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8zm10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0zm-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707zM4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708z" />
+    </symbol>
+  </svg>
+
+  <div class="dropdown position-fixed bottom-0 end-0 mb-3 me-3 bd-mode-toggle">
+    <button class="btn btn-bd-primary py-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button"
+      aria-expanded="false" data-bs-toggle="dropdown" aria-label="Toggle theme (auto)">
+      <svg class="bi my-1 theme-icon-active" width="1em" height="1em">
+        <use href="#circle-half"></use>
+      </svg>
+      <span class="visually-hidden" id="bd-theme-text">Toggle theme</span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="bd-theme-text">
+      <li>
+        <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="light"
+          aria-pressed="false">
+          <svg class="bi me-2 opacity-50" width="1em" height="1em">
+            <use href="#sun-fill"></use>
+          </svg>
+          Light
+          <svg class="bi ms-auto d-none" width="1em" height="1em">
+            <use href="#check2"></use>
+          </svg>
+        </button>
+      </li>
+      <li>
+        <button type="button" class="dropdown-item d-flex align-items-center" data-bs-theme-value="dark"
+          aria-pressed="false">
+          <svg class="bi me-2 opacity-50" width="1em" height="1em">
+            <use href="#moon-stars-fill"></use>
+          </svg>
+          Dark
+          <svg class="bi ms-auto d-none" width="1em" height="1em">
+            <use href="#check2"></use>
+          </svg>
+        </button>
+      </li>
+      <li>
+        <button type="button" class="dropdown-item d-flex align-items-center active" data-bs-theme-value="auto"
+          aria-pressed="true">
+          <svg class="bi me-2 opacity-50" width="1em" height="1em">
+            <use href="#circle-half"></use>
+          </svg>
+          Auto
+          <svg class="bi ms-auto d-none" width="1em" height="1em">
+            <use href="#check2"></use>
+          </svg>
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <header data-bs-theme="dark">
+    <nav class="navbar navbar-expand-md navbar-light fixed-top bg-blue">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'home' %}">
+          <i class="fas fa-house-chimney fa-1x"></i>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+          aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          <ul class="navbar-nav me-auto mb-2 mb-md-0">
 
-                <li class="nav-item dropdown">
-                    <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Rankings
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="rankingsDropdown">
-                        <li><a class="dropdown-item" href="{% url 'rankings' %}">All rankings for a state</a></li>
-                        <li><a class="dropdown-item" href="{% url 'indicator_map' %}">Rankings of states by indicator</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item">
-                    <a class="navbar-brand nav-link" href="{% url 'analysis' %}">In depth analysis</a>
-                </li>
-                <li class="nav-item">
-                    <a class="navbar-brand nav-link" href="{% url 'survey' %}">Survey</a>
-                </li>
-                <li class="nav-item">
-                    <a class="navbar-brand nav-link" href="{% url 'index' %}">Framework</a>
-                </li>
-                <li class="nav-item dropdown">
-                  <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      Author
-                  </a>
-                  <ul class="dropdown-menu" aria-labelledby="authorDropdown">
-                      <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
-                      <li><a class="dropdown-item" href="https://scholar.google.com/citations?user=GLLP3h4AAAAJ&hl=en">Google Scholar</a></li>
-                      <li><a class="dropdown-item" href="https://www.linkedin.com/in/duh01/">Linkedin</a></li>
-                      <li><a class="dropdown-item" href="https://www.facebook.com/HUYNHTHEDU">Facebook</a></li>
-                  </ul>
-              </li>
-            </ul>
-            <form class="d-flex bg-info" role="search">
-                <input class="form-control me-2 bg-info" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
+            <li class="nav-item dropdown">
+              <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="rankingsDropdown" role="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                State Economies
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="rankingsDropdown">
+                <li><a class="dropdown-item" href="{% url 'rankings:rankings' %}">All rankings for a state</a></li>
+                <li><a class="dropdown-item" href="{% url 'rankings:indicator_map' %}">Rankings of states by indicator</a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a class="navbar-brand nav-link" href="{% url 'degree' %}">Higher Education</a>
+            </li>
+            <li class="nav-item">
+              <a class="navbar-brand nav-link" href="{% url 'analysis' %}">Analysis</a>
+            </li>
+            <li class="nav-item">
+              <a class="navbar-brand nav-link" href="{% url 'index' %}">Framework</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                Exploring
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="authorDropdown">
+                <li><a class="dropdown-item" href="">Data Science</a></li>
+                <li><a class="dropdown-item" href="">Macroeconomics</a></li>
+                <li><a class="dropdown-item" href="">Microeconomics</a></li>
+                <li><a class="dropdown-item" href="">Public Policy</a></li>
+              </ul>
+            </li>
+            <li class="nav-item dropdown">
+              <a class=" navbar-brand nav-link dropdown-toggle" href="#" id="authorDropdown" role="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+                Author
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="authorDropdown">
+                <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+                <li><a class="dropdown-item" href="https://scholar.google.com/citations?user=GLLP3h4AAAAJ&hl=en">Google
+                    Scholar</a></li>
+                <li><a class="dropdown-item" href="https://www.linkedin.com/in/duh01/">Linkedin</a></li>
+                <li><a class="dropdown-item" href="https://www.facebook.com/HUYNHTHEDU">Facebook</a></li>
+              </ul>
+            </li>
+          </ul>
+          <form class="d-flex" role="search" action="https://www.google.com/search" method="get">
+            <input class="form-control me-2 bg-white" type="search" name="q" placeholder="Search" aria-label="Search" style="color: black;">
+            <button class="btn btn-outline-success" type="submit" style="color: white;">Search</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  </header>
+
+  <main>
+    
+    <br><br>
+
+    <!-- <div class="bar-container"> -->
+    <div class="three-column-layout">
+      <div class="left-column">
+        <div class="portion grey"
+          style="font-weight: bold; text-align: right; font-size: 68px; animation: flash 10s infinite;">
+          Choose your state
+        </div>
+
+      </div>
+      <div class="middle-column">
+        <div id="map">
+          <div id="tooltip" class="custom-tooltip" style="position: absolute; display: none;"></div>
+        </div>
+      </div>
+      <div class="right-column">
+
+        <div class="centered-content portion grey" style="font-weight: bold;">Rankings in color-coded</div>
+        <div class="centered-content portion green" style="flex: 1;">1-10</div>
+        <div class="centered-content portion light-green" style="flex: 1;">11-20</div>
+        <div class="centered-content portion yellow" style="flex: 1;">21-30</div>
+        <div class="centered-content portion orange" style="flex: 1;">31-40</div>
+        <div class="centered-content portion red" style="flex: 1;">41-51</div>
+        <!-- </div> -->
+      </div>
+    </div>
+
+    <br>
+
+    <div class="container marketing">
+      <div class="row">
+        <div class="col-lg-4">
+            <img src="{% static 'images/RK.jpg' %}" class="bd-placeholder-img rounded-circle" width="140" height="140" alt="Your Image">
+            <h2 class="fw-normal">
+                <a>Rankings</a>
+            </h2>
+            <p class="summary collapsed">
+                Rankings of Economic Resilience and Fiscal Sustainability.
+                Indicators used to examine a state's economic position and resilience fall into three categories:(1) Size of
+                the economy; (2) Development level and efficiency; and (3) Economic foundations.
+                Indicators for examining a state's fiscal sustainability are categorized under: (1) Government revenue; (2)
+                Government expenditure; (3) Burdens; and (4) Public debt.
+            </p>
+            <p>
+                <button class="toggleButton btn btn-secondary">Read more</button>
+                <a class="btn btn-secondary" href="{% url 'rankings:rankings' %}">Go to rankings &raquo;</a>
+            </p>
+        </div>
+    
+        <div class="col-lg-4">
+            <img src="{% static 'images/BG.png' %}" class="bd-placeholder-img rounded-circle" width="140" height="140" alt="Your Image">
+            <h2 class="fw-normal">
+                <a>Framework</a>
+            </h2>
+            <p class="summary collapsed">
+                Framework of our approaches in ranking economic resilience and fiscal sustainability.
+                The economic resilience is based on definition of U.S. Economic Development Administration.
+                The fiscal sustainability is based on frameworks of International Monetary Fund.
+                Economic resilience is defined as a region's ability to anticipate, withstand, and recover from various
+                shocks, disruptions, or stresses it may encounter.
+                Fiscal sustainability refers to the capacity to maintain public finances in a credible and serviceable
+                position over the long term.
+            </p>
+            <p>
+                <button class="toggleButton btn btn-secondary">Read more</button>
+                <a class="btn btn-secondary" href="{% url 'index' %}">Go to framework &raquo;</a>
+            </p>
+        </div>
+    
+        <div class="col-lg-4">
+            <img src="{% static 'images/mega.jpg' %}" class="bd-placeholder-img rounded-circle" width="140" height="140" alt="Your Image">
+            <h2 class="fw-normal">
+                <a>Exploring</a>
+            </h2>
+            <p class="summary collapsed">
+              Data plays a crucial role across various fields such as data science, macroeconomics, microeconomics, and public policy. 
+              In data science, data is the foundation for building models, making predictions, and uncovering insights. 
+              It involves collecting, cleaning, and analyzing large datasets to identify patterns and trends that can drive decision-making and innovation.
+            </p>
+            <p>
+                <button class="toggleButton btn btn-secondary">Read more</button>
+                <a class="btn btn-secondary" href="{% url 'index' %}">Exploring more &raquo;</a>
+            </p>
         </div>
     </div>
-</nav>
+    
+    <script>
+    document.querySelectorAll('.toggleButton').forEach(function(button) {
+        button.addEventListener('click', function() {
+            var summary = this.parentElement.previousElementSibling;
+            if (summary.classList.contains('collapsed')) {
+                summary.classList.remove('collapsed');
+                summary.style.webkitLineClamp = 'unset';
+                this.textContent = 'Read less';
+            } else {
+                summary.classList.add('collapsed');
+                summary.style.webkitLineClamp = '3';
+                this.textContent = 'Read more';
+            }
+        });
+    });
+    </script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+      <hr class="featurette-divider">
 
-</header>
+      <div class="row featurette">
+        <div class="col-md-7">
+          <h2 class="featurette-heading fw-normal lh-1">
+            <a href="{% url 'rankings:one_year' 1 %}" style="text-decoration: none;">Exploring all states</a>
+            <span class="text-body-secondary"></span>
+        </h2>
+          <!-- <h2 class="featurette-heading fw-normal lh-1">Exploring all states <span class="text-body-secondary"></span></h2> -->
+          <p class="lead">State rankings are evaluated across several dimensions: the size of the economy, development level and efficiency, and economic foundations. 
+            These dimensions provide a comprehensive view of each state's economic position. 
+            Additionally, fiscal sustainability is assessed through indicators such as government revenue, government expenditure, burdens, and public debt. 
+            These categories help determine a state's ability to maintain healthy public finances and manage economic challenges. 
+            By analyzing these factors, policymakers and stakeholders can gain valuable insights into the strengths and weaknesses of each state, guiding efforts to enhance economic resilience and fiscal stability.</p>
+        </div>
+        <div class="col-md-5">
+          <img src="{% static 'images/USA.jpg' %}"
+            class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500"
+            alt="Description of the image">
+          <!-- <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"/><text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">500x500</text></svg> -->
+        </div>
+      </div>
 
-<main>
+      <hr class="featurette-divider">
+      
+      <div class="row featurette">
+        <div class="col-md-7 order-md-2">
+          <h2 class="featurette-heading fw-normal lh-1">
+            <a href="{% url 'analysis' %}" style="text-decoration: none;">In depth analysis for states</a>
+            <span class="text-body-secondary"></span>
+          </h2>
+          <p class="lead">An in-depth analysis of states to examine their economic resilience and fiscal sustainability involves evaluating various indicators and metrics. 
+            Economic resilience refers to a state's ability to anticipate, withstand, and recover from economic shocks. 
+            Key indicators include the size and diversity of the economy, employment rates, and the presence of robust industries. 
+            Fiscal sustainability, on the other hand, assesses a state's capacity to maintain healthy public finances over the long term. 
+            This involves analyzing government revenue streams, expenditure patterns, debt levels, and fiscal policies.</p>
+        </div>
+        <div class="col-md-5 order-md-1">
+          <img src="{% static 'images/states.png' %}"
+            class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500"
+            alt="Description of the image">
+        </div>
+      </div>
 
-   <div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel" data-bs-interval="5000"> <!-- sliding and time  -->
-    <div class="carousel-indicators">
-        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+      <hr class="featurette-divider">
+
+      <div class="row featurette">
+        <div class="col-md-7">
+          <h2 class="featurette-heading fw-normal lh-1">
+            <a href="{% url 'survey' %}" style="text-decoration: none;">Survey on stakeholders</a>
+            <span class="text-body-secondary"></span>
+          </h2>          
+          <p class="lead">Surveys were conducted to gather opinions from local government representatives on the competitiveness of their localities. 
+            These surveys aimed to convey the viewpoints and opinions of stakeholders regarding the services provided by local governments. 
+            The feedback collected highlights the strengths and areas for improvement in local services, offering valuable insights into how local governments can enhance their competitiveness. 
+            By understanding the perspectives of those directly involved, policymakers can make informed decisions to better serve their communities and foster a more competitive and efficient local government environment.
+          </p>
+        </div>
+        <div class="col-md-5">
+          <img src="{% static 'images/Survey.jpg' %}"
+            class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500"
+            alt="Description of the image">
+        </div>
+      </div>
+
+      <hr class="featurette-divider">
+    </div>
+
+    <div id="myCarousel" class="carousel slide mb-6" data-bs-ride="carousel" data-bs-interval="5000">
+      <!-- sliding and time  -->
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true"
+          aria-label="Slide 1"></button>
         <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
         <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-    </div>
-    <div class="carousel-inner ">
+      </div>
+      <div class="carousel-inner ">
         <div class="carousel-item active bg-primary">
-            <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
-                <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
-            </svg>
-            <div class="container">
-                <div class="carousel-caption text-start">
-                    <h1 >Rankings.</h1>
-                    <p class="opacity-75">Rankings of states in economic indicators.</p>
-                    <p><a class="btn btn-lg btn-info" href="{% url 'rankings' %}">Explore data</a></p>
-                </div>
+          <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
+            <rect width="100%" height="100%" fill="var(--bs-secondary-color)" />
+          </svg>
+          <div class="container">
+            <div class="carousel-caption text-start">
+              <h1>Rankings.</h1>
+              <p class="opacity-75">Rankings of states in economic indicators.</p>
+              <p><a class="btn btn-lg btn-info" href="{% url 'rankings:rankings' %}">Explore data</a></p>
             </div>
+          </div>
         </div>
         <div class="carousel-item  bg-primary">
-            <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
-                <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
-            </svg>
-            <div class="container">
-                <div class="carousel-caption">
-                    <h1>In depth analysis of state</h1>
-                    <p>The economic resilience and fiscal sustainability of each state is analyzed.</p>
-                    <p><a class="btn btn-lg btn-primary" href="{% url 'analysis' %}">Learn more</a></p>
-                </div>
+          <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
+            <rect width="100%" height="100%" fill="var(--bs-secondary-color)" />
+          </svg>
+          <div class="container">
+            <div class="carousel-caption">
+              <h1>In depth analysis of state</h1>
+              <p>The economic resilience and fiscal sustainability of each state is analyzed.</p>
+              <p><a class="btn btn-lg btn-primary" href="{% url 'analysis' %}">Learn more</a></p>
             </div>
+          </div>
         </div>
         <div class="carousel-item bg-primary">
-            <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
-                <rect width="100%" height="100%" fill="var(--bs-secondary-color)"/>
-            </svg>
-            <div class="container">
-                <div class="carousel-caption text-end">
-                    <h1>Framework</h1>
-                    <p>Approaches for generating rankings and analysis.</p>
-                    <p><a class="btn btn-lg btn-primary" href="{% url 'index' %}">Go to fundamental</a></p>
-                </div>
+          <svg class="bd-placeholder-img" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true" preserveAspectRatio="xMidYMid slice" focusable="false">
+            <rect width="100%" height="100%" fill="var(--bs-secondary-color)" />
+          </svg>
+          <div class="container">
+            <div class="carousel-caption text-end">
+              <h1>Framework</h1>
+              <p>Approaches for generating rankings and analysis.</p>
+              <p><a class="btn btn-lg btn-primary" href="{% url 'index' %}">Go to fundamental</a></p>
             </div>
+          </div>
         </div>
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
         <span class="carousel-control-next-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Next</span>
-    </button>
-</div>
-
-<br>
-<div class="bar-container">
-  <div class="centered-content portion grey">Rankings in color-coded ranges:</div>
-  <div class="centered-content portion green" style="flex: 1;">1-10</div>
-  <div class="centered-content portion light-green" style="flex: 1;">11-20</div>
-  <div class="centered-content portion yellow" style="flex: 1;">21-30</div>
-  <div class="centered-content portion orange" style="flex: 1;">31-40</div>
-  <div class="centered-content portion red" style="flex: 1;">41-51</div>
-</div>
-<br>
-  
- <div class="container marketing">
-
-  <div id="map">
-    <!-- <div id="tooltip" class="tooltip"></div>  -->
-    <div id="tooltip" class="custom-tooltip" style="position: absolute; display: none;"></div>
-  </div>
-  
-  <br>
-  <br>
-    <div class="row">
-      <div class="col-lg-4">
-        <img src="{% static 'images/EDA.png' %}" class="bd-placeholder-img rounded-circle" width="140" height="140" alt="Your Image">
-      <h2 class="fw-normal">
-          <a >Rankings</a>
-      </h2>
-
-      <p id="summary" class="collapsed">
-          Rankings of Economic Resilience and Fiscal Sustainability: A Comparative Diagnosis among U.S. States. Rankings of Economic Resilience and Fiscal Sustainability: A Comparative Diagnosis among U.S. States.
-      </p>
-      <p>
-        <button id="toggleButton" class="btn btn-secondary bg-blue">Read more</button>
-          <a class="btn btn-secondary bg-blue" href="{% url 'rankings' %}">Go to rankings &raquo;</a>
-      </p>
-      <script>
-        document.getElementById('toggleButton').addEventListener('click', function() {
-            var summary = document.getElementById('summary');
-            if (summary.classList.contains('collapsed')) {
-                summary.classList.remove('collapsed');
-                this.textContent = 'Read less';
-            } else {
-                summary.classList.add('collapsed');
-                this.textContent = 'Read more';
-            }
-        });
-      </script>        
-      </div>
-
-      <div class="col-lg-4">
-        <img src="{% static 'images/EDA.png' %}" class="bd-placeholder-img rounded-circle" width="140" height="140" alt="Your Image">
-      <h2 class="fw-normal">
-          <a >Surveys</a>
-      </h2>
-
-      <p id="summary" class="collapsed">
-        Opinions of reperesentatives from local governments on competitiveness of their localities.Opinions of reperesentatives from local governments on competitiveness of their localities.
-      </p>
-      <p>
-        <button id="toggleButton" class="btn btn-secondary bg-blue">Read more</button>
-        <a class="btn btn-secondary bg-blue" href="{% url 'survey' %}">Go to surveys &raquo;</a>
-      </p>
-      <script>
-        document.getElementById('toggleButton').addEventListener('click', function() {
-            var summary = document.getElementById('summary');
-            if (summary.classList.contains('collapsed')) {
-                summary.classList.remove('collapsed');
-                this.textContent = 'Read less';
-            } else {
-                summary.classList.add('collapsed');
-                this.textContent = 'Read more';
-            }
-        });
-      </script>        
-      </div>
-
-      <div class="col-lg-4">
-        <img src="{% static 'images/mega.jpg' %}" class="bd-placeholder-img rounded-circle" width="140" height="140" alt="Your Image">
-      <h2 class="fw-normal">
-          <a >Framework</a>
-      </h2>
-
-      <p id="summary" class="collapsed">
-        Framework of our approaches in ranking economic resilience and fiscal sustainability. Framework of our approaches in ranking economic resilience and fiscal sustainability.
-      </p>
-      <p>
-          <button id="toggleButton" class="btn btn-secondary bg-blue">Read more</button>
-          <a class="btn btn-secondary bg-blue" href="{% url 'index' %}">Go to methodology &raquo;</a>
-      </p>
-      <script>
-        document.getElementById('toggleButton').addEventListener('click', function() {
-            var summary = document.getElementById('summary');
-            if (summary.classList.contains('collapsed')) {
-                summary.classList.remove('collapsed');
-                this.textContent = 'Read less';
-            } else {
-                summary.classList.add('collapsed');
-                this.textContent = 'Read more';
-            }
-        });
-      </script>        
-      </div>
+      </button>
     </div>
 
-    <hr class="featurette-divider">
-
-    <div class="row featurette">
-      <div class="col-md-7">
-        <h2 class="featurette-heading fw-normal lh-1">Exploring all states. <span class="text-body-secondary">It’ll blow your mind.</span></h2>
-        <p class="lead">Utah stands out as a leading state in terms of economic improvement and fiscal stability, earning the top spot in the U.S. News s’ best state rankings. Both the economy and fiscal stability sub-categories are ranked 1st, highlighting the state's strong prospects. The Beehive State is also ranked 1st for its economic outlook by Rich States Poor States. Moreover, the Economic Report to the Governor, produced by the Utah Economic Council in collaboration with the David Eccles School of Business, supports this positive outlook..</p>
-      </div>
-      <div class="col-md-5">
-        <img src="{% static 'images/lina.jpg' %}" class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto fixed-size" width="500" height="500" alt="Description of the image">
-        <!-- <svg class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: 500x500" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="var(--bs-secondary-bg)"/><text x="50%" y="50%" fill="var(--bs-secondary-color)" dy=".3em">500x500</text></svg> -->
-      </div>
-    </div>
-
-    <hr class="featurette-divider">
-
-    <div class="row featurette">
-      <div class="col-md-7 order-md-2">
-        <h2 class="featurette-heading fw-normal lh-1">Exploring each state. <span class="text-body-secondary">See for yourself.</span></h2>
-        <p class="lead">Utah stands out as a leading state in terms of economic improvement and fiscal stability, earning the top spot in the U.S. News s’ best state rankings. Both the economy and fiscal stability sub-categories are ranked 1st, highlighting the state's strong prospects. The Beehive State is also ranked 1st for its economic outlook by Rich States Poor States. Moreover, the Economic Report to the Governor, produced by the Utah Economic Council in collaboration with the David Eccles School of Business, supports this positive outlook..</p>
-      </div>
-      <div class="col-md-5 order-md-1">
-        <img src="{% static 'images/USA.jpg' %}" class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" alt="Description of the image">
-      </div>
-    </div>
-
-    <hr class="featurette-divider">
-
-    <div class="row featurette">
-      <div class="col-md-7">
-        <h2 class="featurette-heading fw-normal lh-1">In depth analysis for state. <span class="text-body-secondary">Checkmate.</span></h2>
-        <p class="lead">And yes, this is the last block of representative placeholder content. Again, not really intended to be actually read, simply here to give you a better view of what this would look like with some actual content. Your content.</p>
-      </div>
-      <div class="col-md-5">
-        <img src="{% static 'images/EDA.png' %}" class="bd-placeholder-img bd-placeholder-img-lg featurette-image img-fluid mx-auto" width="500" height="500" alt="Description of the image">
-      </div>
-    </div>
-
-    <hr class="featurette-divider">
 
 
+    <footer class="container">
+      <p class="float-end"><a href="#">Back to top</a></p>
+      <p>&copy; {% now "Y" %} Du Huynh. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+    </footer>
+  </main>
 
-  </div>
 
-  <footer class="container">
-    <p class="float-end"><a href="#">Back to top</a></p>
-    <p>&copy; {% now "Y" %} Du Huynh. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
-  </footer>
-</main>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
- document.addEventListener('DOMContentLoaded', function() {
-    var map = L.map('map', {
-        center: [37.8, -96],
-        zoom: 4,
-        zoomControl: false,
-        scrollWheelZoom: false,
-        doubleClickZoom: false,
-        boxZoom: false,
-        dragging: false
-    });
+    var map = L.map('map').setView([37.8, -96], 4);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
+      maxZoom: 19,
     }).addTo(map);
 
-    var statesData = {{ geojson_data|safe }};
-    console.log("GeoJSON Data:", statesData);  // Log the entire GeoJSON data
+    var statesData = {{ geojson_data| safe }};
+    console.log("GeoJSON Data:", statesData); // Log the entire GeoJSON data
 
     function getColor(rank) {
-        return rank <= 10 ? 'green' :
-               rank <= 20 ? 'lightgreen' :
-               rank <= 30 ? 'yellow' :
-               rank <= 40 ? 'orange' :
-               rank <= 51 ? 'red' :
-                            'grey';
+      return rank <= 10 ? 'green' :
+        rank <= 20 ? 'lightgreen' :
+          rank <= 30 ? 'yellow' :
+            rank <= 40 ? 'orange' :
+              rank <= 51 ? 'red' :
+                'grey';
     }
 
     function style(feature) {
-        console.log("Feature Properties:", feature.properties);  // Log feature properties
-        return {
-            fillColor: getColor(feature.properties.rank),
-            weight: 2,
-            opacity: 1,
-            color: 'white',
-            dashArray: '3',
-            fillOpacity: 0.7
-        };
+      console.log("Feature Properties:", feature.properties); // Log feature properties
+      return {
+        fillColor: getColor(feature.properties.rank),
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.7
+      };
     }
 
     function onEachFeature(feature, layer) {
-    layer.addEventListener('mouseover', showTooltip);
-    layer.addEventListener('mouseout', hideTooltip);
-    layer.addEventListener('click', function() {
+      layer.addEventListener('mouseover', showTooltip);
+      layer.addEventListener('mouseout', hideTooltip); // Ensure hiding when leaving the state
+      layer.addEventListener('click', function () {
         var stateName = feature.properties.name;
-        window.location.href = "{% url 'rankings' %}?state=" + stateName;
-    });
-    console.log("Event listeners added for:", feature.properties.name);
-}
+        window.location.href = "{% url 'rankings:rankings' %}?state=" + stateName;
+      });
+    }
 
-  function showTooltip(e) {
+    function showTooltip(e) {
       var layer = e.target;
       var tooltip = document.getElementById('tooltip');
       var props = layer.feature.properties;
-      console.log("Tooltip Properties:", props);
-      tooltip.innerHTML = props.name + '<br>Rank: ' + props.rank + '<br>Score: ' + props.score.toFixed(1);
-      tooltip.style.display = 'block';
-      tooltip.style.left = e.originalEvent.pageX + 10 + 'px';
-      tooltip.style.top = e.originalEvent.pageY + 10 + 'px';
-      console.log("Tooltip position:", e.originalEvent.pageX, e.originalEvent.pageY);
-  }
 
-    function hideTooltip() {
-        var tooltip = document.getElementById('tooltip');
-        tooltip.style.display = 'none'; // Hide the tooltip
+      // Set tooltip content
+      tooltip.innerHTML = `<b>${props.name}</b><br>Rank: ${props.rank}<br>Score: ${props.score.toFixed(1)}`;
+
+      // Display tooltip
+      tooltip.style.display = 'block';
+
+      // Position tooltip dynamically based on mouse pointer
+      tooltip.style.left = (e.originalEvent.pageX + 15) + 'px'; // Offset by 15px to the right
+      tooltip.style.top = (e.originalEvent.pageY - 50) + 'px'; // Offset by 15px below the pointer
     }
 
-    console.log("GeoJSON Data before adding to map:", statesData);
+    function hideTooltip() {
+      var tooltip = document.getElementById('tooltip');
+      tooltip.style.display = 'none'; // Hide the tooltip
+    }
+
     var geojson = L.geoJson(statesData, {
-        style: style,
-        onEachFeature: onEachFeature
+      style: style,
+      onEachFeature: onEachFeature
     }).addTo(map);
 
-    map.on('mousemove', function(e) {
-        var tooltip = document.getElementById('tooltip');
-        if (tooltip.style.display === 'block') {
-            tooltip.style.left = e.originalEvent.pageX + 10 + 'px';
-            tooltip.style.top = e.originalEvent.pageY + 10 + 'px';
-        }
+    map.on('mousemove', function (e) {
+      var tooltip = document.getElementById('tooltip');
+      if (tooltip.style.display === 'block') {
+        tooltip.style.left = (e.originalEvent.pageX + 15) + 'px'; // Offset by 15px to the right
+        tooltip.style.top = (e.originalEvent.pageY - 50) + 'px'; // Offset by 15px below the pointer
+      }
     });
-  });
-</script>
 
+  </script>
 
-    </body>
-</html> 
+</body>
 
+</html>

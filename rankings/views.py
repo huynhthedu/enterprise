@@ -1293,7 +1293,7 @@ def overall_indicator(request):
     context = data_prepare()
     df = context['df']  # Access the DataFrame from the context dictionary
     year = df['year'].max()
-    print(year)
+    # print(year)
 
 
     context = {
@@ -1390,7 +1390,7 @@ def generate_bar_charts(data):
     pivot_df = pivot_df.fillna(0)
 
     # Print column names to verify
-    print(pivot_df.columns)
+    # print(pivot_df.columns)
 
     # Plot the grouped bar chart
     bar_width = 0.35

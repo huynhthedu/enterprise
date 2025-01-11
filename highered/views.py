@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from data.models import C2023B, Hd2023, Ic2023Ay, RankingsIndicator, Effy2023
+from data.models import C2023B, Hd2023, Ic2023Ay, RankingsIndicator, Effy2023, Adm2023
 from django.db.models import Sum
 import pandas as pd
 import logging
@@ -20,13 +20,42 @@ logger = logging.getLogger(__name__)
 
 def degree(request):
     institutions = list(Hd2023.objects.values_list('instnm', flat=True).distinct().order_by('unitid'))    
-    chosen_institution = request.GET.get('instnm') or (institutions[0] if institutions else None)
+    chosen_institution = request.GET.get('instnm', 'Indiana University-Bloomington')
+    institution_data = list(Hd2023.objects.values('instnm', 'unitid', 'stabbr').distinct())     
+    institution_df = pd.DataFrame(institution_data)   
 
     if request.GET.get('query'):
         query = request.GET['query'].lower()
         suggestions = [inst for inst in institutions if query in inst.lower()]
         return JsonResponse({'suggestions': suggestions})
 
+# I - Admission
+    admission_data = list(Adm2023.objects.filter(year=2023).values())
+    admission_data = pd.DataFrame(admission_data)
+    admission_data['admission_rate'] = admission_data.apply(
+        lambda row: (row['admssn'] / row['applcn'] * 100) if row['applcn'] != 0 else None,
+        axis=1
+    )
+    admission_data['acceptance_rate'] = admission_data.apply(
+        lambda row: (row['enrlt'] / row['admssn'] * 100) if row['admssn'] != 0 else None,
+        axis=1
+    )
+    merged_admission = pd.merge(admission_data, institution_df, how='right', on='unitid')    
+    merged_admission = merged_admission.sort_values(by='admission_rate')
+    merged_admission = merged_admission[merged_admission['admission_rate'] > 0]
+    merged_admission = merged_admission.loc[:, [ 'unitid', 'instnm', 'admission_rate', 'acceptance_rate', 'applcn', 'enrlt' ]]
+    print(merged_admission.head())
+    chosen_admisson = merged_admission[merged_admission['instnm'] == chosen_institution] if chosen_institution else pd.DataFrame()
+    chosen_admisson = chosen_admisson.to_dict(orient='records')
+    merged_admission = merged_admission.to_dict(orient='list')
+    
+    
+    # Print a portion of the dictionary (first 3 entries for each key)
+    portion = {key: value[:3] for key, value in merged_admission.items()}
+    # print(portion)
+
+
+# II - Student
     fields = [
         'unitid', 'cstotlt', 'cstotlm', 'cstotlw', 'csaiant', 'csaianm', 'csaianw', 'csasiat', 'csasiam',
         'csasiaw', 'csbkaat', 'csbkaam','csbkaaw', 'cshispt', 'cshispm', 'cshispw', 'csnhpit', 'csnhpim',
@@ -69,13 +98,13 @@ def degree(request):
         
     ]
 
-    institution_data = list(Hd2023.objects.values('instnm', 'unitid', 'stabbr').distinct())        
+    
     degree_data = list(C2023B.objects.values(*fields))
     student_data = list(Effy2023.objects.annotate(
     effyalev_int=Cast('effyalev', IntegerField())).filter(effyalev_int=1).values(*student_fields))
     # print(len(student_data))
 
-    institution_df = pd.DataFrame(institution_data)
+    
     degree_df = pd.DataFrame(degree_data)
     student_df = pd.DataFrame(student_data)
     # print(degree_df.head())
@@ -286,14 +315,41 @@ def degree(request):
     tuition = pivoted_df[(pivoted_df['instnm'] == chosen_institution) & (pivoted_df['item'] == 'In-state tuition and fees')] if chosen_institution else pd.DataFrame()
     tuition_structure = pivoted_df[
     (pivoted_df['instnm'] == chosen_institution) & 
-    ((pivoted_df['item'] == 'In-state tuition') | 
-     (pivoted_df['item'] == 'Books and supplies') | 
+    ((pivoted_df['item'] == 'Out-of-state tuition') | 
+     (pivoted_df['item'] == 'In-state tuition') | 
      (pivoted_df['item'] == 'On campus, room and board') | 
+     (pivoted_df['item'] == 'Books and supplies') |      
      (pivoted_df['item'] == 'On campus, other expenses'))
     ] if chosen_institution else pd.DataFrame()
     # print(tuition)
 
-     #  Degree graph
+     # Cost by years
+
+    cost_structure = tuition_structure[['item', 'y2021', 'y2022', 'y2023']]
+    cost_structure.rename(columns={'y2021': '2021', 'y2022': '2022', 'y2023': '2023'}, inplace=True)
+    chart_data = cost_structure.to_dict(orient='list')
+    print(chart_data)
+    
+
+    cost_structure.set_index('item', inplace=True)
+
+    # Plot the bar chart with categories by year
+    plt.figure(figsize=(24, 6)) 
+    cost_structure.T.plot(kind='bar')
+    plt.title('Tuition Structure by Year')
+    plt.xlabel('Year')
+    plt.ylabel('Values')
+    plt.xticks(rotation=0)
+    plt.legend(title='Category')
+
+    # Save the plot to a BytesIO object
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+
+    image_cost = base64.b64encode(buffer.read()).decode('utf-8')
+     
+     #  Tutition Structure graph
     fig, ax = plt.subplots()
 
     ax.pie(tuition_structure['y2023'], labels=tuition_structure['item'], autopct='%1.1f%%', startangle=90, wedgeprops=dict(width=0.3))
@@ -315,6 +371,7 @@ def degree(request):
     tuition = tuition.to_dict(orient='records')
     lowest10 = lowest10_rankings.to_dict(orient='records')
 
+
     context = {
         'table_data': merged_table,    
         'students'  : students,
@@ -329,6 +386,11 @@ def degree(request):
         'image_students': image_students,
         'image_degree': image_degree,
         'image_tuition': image_tuition,
+        'image_cost': image_cost,
+        'chart_data':chart_data,
+        'chosen_admission': chosen_admisson,
+        'merged_admission': merged_admission,
+
     }
 
     return render(request, 'highered/degree.html', context)

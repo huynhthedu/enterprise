@@ -8,6 +8,116 @@
 from django.db import models
 
 
+class Adm2023(models.Model):
+    # unitid = models.IntegerField(blank=True, null=False, unique=True, primary_key=True)
+    unitid = models.IntegerField(db_column='UNITID', blank=True, null=False, unique=True, primary_key=True)  # Field name made lowercase.
+    admcon1 = models.IntegerField(db_column='ADMCON1', blank=True, null=True)  # Field name made lowercase.
+    admcon2 = models.IntegerField(db_column='ADMCON2', blank=True, null=True)  # Field name made lowercase.
+    admcon3 = models.IntegerField(db_column='ADMCON3', blank=True, null=True)  # Field name made lowercase.
+    admcon4 = models.IntegerField(db_column='ADMCON4', blank=True, null=True)  # Field name made lowercase.
+    admcon5 = models.IntegerField(db_column='ADMCON5', blank=True, null=True)  # Field name made lowercase.
+    admcon6 = models.IntegerField(db_column='ADMCON6', blank=True, null=True)  # Field name made lowercase.
+    admcon7 = models.IntegerField(db_column='ADMCON7', blank=True, null=True)  # Field name made lowercase.
+    admcon8 = models.IntegerField(db_column='ADMCON8', blank=True, null=True)  # Field name made lowercase.
+    admcon9 = models.IntegerField(db_column='ADMCON9', blank=True, null=True)  # Field name made lowercase.
+    admcon10 = models.IntegerField(db_column='ADMCON10', blank=True, null=True)  # Field name made lowercase.
+    admcon11 = models.IntegerField(db_column='ADMCON11', blank=True, null=True)  # Field name made lowercase.
+    admcon12 = models.IntegerField(db_column='ADMCON12', blank=True, null=True)  # Field name made lowercase.
+    xapplcn = models.CharField(db_column='XAPPLCN', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    applcn = models.IntegerField(db_column='APPLCN', blank=True, null=True)  # Field name made lowercase.
+    xapplcnm = models.CharField(db_column='XAPPLCNM', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    applcnm = models.IntegerField(db_column='APPLCNM', blank=True, null=True)  # Field name made lowercase.
+    xapplcnw = models.CharField(db_column='XAPPLCNW', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    applcnw = models.IntegerField(db_column='APPLCNW', blank=True, null=True)  # Field name made lowercase.
+    xapplcnan = models.CharField(db_column='XAPPLCNAN', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    applcnan = models.IntegerField(db_column='APPLCNAN', blank=True, null=True)  # Field name made lowercase.
+    xapplcnun = models.CharField(db_column='XAPPLCNUN', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    applcnun = models.IntegerField(db_column='APPLCNUN', blank=True, null=True)  # Field name made lowercase.
+    xadmssn = models.CharField(db_column='XADMSSN', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    admssn = models.IntegerField(db_column='ADMSSN', blank=True, null=True)  # Field name made lowercase.
+    xadmssnm = models.CharField(db_column='XADMSSNM', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    admssnm = models.IntegerField(db_column='ADMSSNM', blank=True, null=True)  # Field name made lowercase.
+    xadmssnw = models.CharField(db_column='XADMSSNW', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    admssnw = models.IntegerField(db_column='ADMSSNW', blank=True, null=True)  # Field name made lowercase.
+    xadmssnan = models.CharField(db_column='XADMSSNAN', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    admssnan = models.IntegerField(db_column='ADMSSNAN', blank=True, null=True)  # Field name made lowercase.
+    xadmssnun = models.CharField(db_column='XADMSSNUN', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    admssnun = models.IntegerField(db_column='ADMSSNUN', blank=True, null=True)  # Field name made lowercase.
+    xenrlt = models.CharField(db_column='XENRLT', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    enrlt = models.IntegerField(db_column='ENRLT', blank=True, null=True)  # Field name made lowercase.
+    xenrlm = models.CharField(db_column='XENRLM', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    enrlm = models.IntegerField(db_column='ENRLM', blank=True, null=True)  # Field name made lowercase.
+    xenrlw = models.CharField(db_column='XENRLW', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    enrlw = models.IntegerField(db_column='ENRLW', blank=True, null=True)  # Field name made lowercase.
+    xenrlan = models.CharField(db_column='XENRLAN', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    enrlan = models.IntegerField(db_column='ENRLAN', blank=True, null=True)  # Field name made lowercase.
+    xenrlun = models.CharField(db_column='XENRLUN', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    enrlun = models.IntegerField(db_column='ENRLUN', blank=True, null=True)  # Field name made lowercase.
+    xenrlft = models.CharField(db_column='XENRLFT', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    enrlft = models.IntegerField(db_column='ENRLFT', blank=True, null=True)  # Field name made lowercase.
+    xenrlftm = models.CharField(db_column='XENRLFTM', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    enrlftm = models.IntegerField(db_column='ENRLFTM', blank=True, null=True)  # Field name made lowercase.
+    xenrlftw = models.CharField(db_column='XENRLFTW', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    enrlftw = models.IntegerField(db_column='ENRLFTW', blank=True, null=True)  # Field name made lowercase.
+    xenrlftan = models.CharField(db_column='XENRLFTAN', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    enrlftan = models.IntegerField(db_column='ENRLFTAN', blank=True, null=True)  # Field name made lowercase.
+    xenrlftun = models.CharField(db_column='XENRLFTUN', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    enrlftun = models.IntegerField(db_column='ENRLFTUN', blank=True, null=True)  # Field name made lowercase.
+    xenrlpt = models.CharField(db_column='XENRLPT', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    enrlpt = models.IntegerField(db_column='ENRLPT', blank=True, null=True)  # Field name made lowercase.
+    xenrlptm = models.CharField(db_column='XENRLPTM', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    enrlptm = models.IntegerField(db_column='ENRLPTM', blank=True, null=True)  # Field name made lowercase.
+    xenrlptw = models.CharField(db_column='XENRLPTW', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    enrlptw = models.IntegerField(db_column='ENRLPTW', blank=True, null=True)  # Field name made lowercase.
+    xenrlptan = models.CharField(db_column='XENRLPTAN', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    enrlptan = models.IntegerField(db_column='ENRLPTAN', blank=True, null=True)  # Field name made lowercase.
+    xenrlptun = models.CharField(db_column='XENRLPTUN', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    enrlptun = models.IntegerField(db_column='ENRLPTUN', blank=True, null=True)  # Field name made lowercase.
+    xsatnum = models.CharField(db_column='XSATNUM', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    satnum = models.IntegerField(db_column='SATNUM', blank=True, null=True)  # Field name made lowercase.
+    xsatpct = models.CharField(db_column='XSATPCT', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    satpct = models.IntegerField(db_column='SATPCT', blank=True, null=True)  # Field name made lowercase.
+    xactnum = models.CharField(db_column='XACTNUM', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    actnum = models.IntegerField(db_column='ACTNUM', blank=True, null=True)  # Field name made lowercase.
+    xactpct = models.CharField(db_column='XACTPCT', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    actpct = models.IntegerField(db_column='ACTPCT', blank=True, null=True)  # Field name made lowercase.
+    xsatvr25 = models.CharField(db_column='XSATVR25', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    satvr25 = models.IntegerField(db_column='SATVR25', blank=True, null=True)  # Field name made lowercase.
+    xsatvr50 = models.CharField(db_column='XSATVR50', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    satvr50 = models.IntegerField(db_column='SATVR50', blank=True, null=True)  # Field name made lowercase.
+    xsatvr75 = models.CharField(db_column='XSATVR75', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    satvr75 = models.IntegerField(db_column='SATVR75', blank=True, null=True)  # Field name made lowercase.
+    xsatmt25 = models.CharField(db_column='XSATMT25', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    satmt25 = models.IntegerField(db_column='SATMT25', blank=True, null=True)  # Field name made lowercase.
+    xsatmt50 = models.CharField(db_column='XSATMT50', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    satmt50 = models.IntegerField(db_column='SATMT50', blank=True, null=True)  # Field name made lowercase.
+    xsatmt75 = models.CharField(db_column='XSATMT75', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    satmt75 = models.IntegerField(db_column='SATMT75', blank=True, null=True)  # Field name made lowercase.
+    xactcm25 = models.CharField(db_column='XACTCM25', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    actcm25 = models.IntegerField(db_column='ACTCM25', blank=True, null=True)  # Field name made lowercase.
+    xactcm50 = models.CharField(db_column='XACTCM50', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    actcm50 = models.IntegerField(db_column='ACTCM50', blank=True, null=True)  # Field name made lowercase.
+    xactcm75 = models.CharField(db_column='XACTCM75', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    actcm75 = models.IntegerField(db_column='ACTCM75', blank=True, null=True)  # Field name made lowercase.
+    xacten25 = models.CharField(db_column='XACTEN25', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    acten25 = models.IntegerField(db_column='ACTEN25', blank=True, null=True)  # Field name made lowercase.
+    xacten50 = models.CharField(db_column='XACTEN50', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    acten50 = models.IntegerField(db_column='ACTEN50', blank=True, null=True)  # Field name made lowercase.
+    xacten75 = models.CharField(db_column='XACTEN75', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    acten75 = models.IntegerField(db_column='ACTEN75', blank=True, null=True)  # Field name made lowercase.
+    xactmt25 = models.CharField(db_column='XACTMT25', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    actmt25 = models.IntegerField(db_column='ACTMT25', blank=True, null=True)  # Field name made lowercase.
+    xactmt50 = models.CharField(db_column='XACTMT50', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    actmt50 = models.IntegerField(db_column='ACTMT50', blank=True, null=True)  # Field name made lowercase.
+    xactmt75 = models.CharField(db_column='XACTMT75', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    actmt75_field = models.IntegerField(db_column='ACTMT75   ', blank=True, null=True)  # Field name made lowercase. Field renamed to remove unsuitable characters. Field renamed because it ended with '_'.
+    year = models.IntegerField(db_column='year', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'adm2023'
+
+
 class AnalysisArticle(models.Model):
     id = models.BigAutoField(primary_key=True)
     title = models.CharField(max_length=200)
