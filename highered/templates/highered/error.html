@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admission Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</head>
+<body>
+    <h1>Admission Dashboard</h1>
+    <label for="institution-search">Type an institution:</label>
+    <input type="text" id="institution-search" placeholder="Search for an institution...">
+    <div id="dashboard">
+        <div class="box" onclick="showGraph('applcn', $('#institution-search').val())">Applications: <span id="applications">{{ merged_admission.applcn.0 }}</span></div>
+        <div class="box" onclick="showGraph('admission_rate', $('#institution-search').val())">Admission Rate: <span id="admission_rate">{{ merged_admission.admission_rate.0 }}</span></div>
+        <div class="box" onclick="showGraph('enrlt', $('#institution-search').val())">Enrollments: <span id="enrollments">{{ merged_admission.enrlt.0 }}</span></div>
+        <div class="box" onclick="showGraph('acceptance_rate', $('#institution-search').val())">Acceptance Rate: <span id="acceptance_rate">{{ merged_admission.acceptance_rate.0 }}</span></div>
+    </div>
+    <canvas id="chart"></canvas>
+    <script>
+        const merged_admission = {
+            instnm: {{ merged_admission.instnm|safe }},
+            applcn: {{ merged_admission.applcn|safe }},
+            enrlt: {{ merged_admission.enrlt|safe }},
+            admission_rate: {{ merged_admission.admission_rate|safe }},
+            acceptance_rate: {{ merged_admission.acceptance_rate|safe }}
+        };
+    
+        console.log(merged_admission);  // Verify data in the console
+    
+        let chartInstance = null;  // Global variable to store the chart instance
+        const defaultInstitution = "Indiana University-Bloomington";  // Default chosen institution
+    
+        $(function() {
+            $("#institution-search").autocomplete({
+                source: merged_admission.instnm,
+                select: function(event, ui) {
+                    updateDashboard(ui.item.value);
+                    showGraph('admission_rate', ui.item.value);
+                }
+            });
+    
+            // Set the default institution in the search box
+            $("#institution-search").val(defaultInstitution);
+            updateDashboard(defaultInstitution);
+            // Show the admission rate chart by default
+            showGraph('admission_rate', defaultInstitution);
+        });
+    
+        function updateDashboard(selectedInstitution) {
+            const index = merged_admission.instnm.indexOf(selectedInstitution);
+            document.getElementById('applications').innerText = merged_admission.applcn[index];
+            document.getElementById('admission_rate').innerText = merged_admission.admission_rate[index];
+            document.getElementById('enrollments').innerText = merged_admission.enrlt[index];
+            document.getElementById('acceptance_rate').innerText = merged_admission.acceptance_rate[index];
+        }
+    
+        function showGraph(indicator, selectedInstitution) {
+            console.log(`showGraph called with indicator: ${indicator}`);  // Debug statement
+            console.log(`Data for ${indicator}:`, merged_admission[indicator]);  // Debug statement
+    
+            // Sort the data by the selected indicator
+            const sortedIndices = [...Array(merged_admission[indicator].length).keys()].sort((a, b) => merged_admission[indicator][a] - merged_admission[indicator][b]);
+            const sortedLabels = sortedIndices.map(i => merged_admission.instnm[i]);
+            const sortedData = sortedIndices.map(i => merged_admission[indicator][i]);
+    
+            const ctx = document.getElementById('chart').getContext('2d');
+            const chartData = {
+                labels: sortedLabels,
+                datasets: [{
+                    label: indicator,
+                    data: sortedData,
+                    backgroundColor: sortedLabels.map(label => label === selectedInstitution ? 'rgba(255, 99, 132, 0.2)' : 'rgba(75, 192, 192, 0.2)'),
+                    borderColor: sortedLabels.map(label => label === selectedInstitution ? 'rgba(255, 99, 132, 1)' : 'rgba(75, 192, 192, 1)'),
+                    borderWidth: 1
+                }]
+            };
+    
+            console.log('Chart data:', chartData);  // Debug statement
+    
+            // Destroy the previous chart instance if it exists
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+    
+            // Create a new chart instance
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    scales: {
+                        x: {
+                            ticks: {
+                                display: false  // Remove x-axis labels
+                            }
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

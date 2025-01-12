@@ -4,8 +4,7 @@
 
 <head>
     <title>Rankings v1.0 · Bootstrap v5.3</title>
-    <meta charset="utf-8">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>    
+    <meta charset="utf-8">    
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
@@ -29,6 +28,10 @@
 
     <!-- Scripts -->
     <script src="{% static 'js/color-modes.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
     <Style>
         .bg-blue {
@@ -60,74 +63,6 @@
             text-align: center;
         }
 
-        h3 {
-            color: black;
-            text-decoration: none;
-        }
-
-        .dropdown-menu {
-            display: none;
-            position: absolute;
-            background-color: blue;
-            min-width: 400px;
-            max-height: 200px;
-            overflow-y: auto;
-            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-            z-index: 1001;
-        }
-
-        .form-inline {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            /* Adjust the gap between elements as needed */
-        }
-
-        .form-inline label {
-            margin-right: 5px;
-        }
-
-        .table-container {
-            width: 100%;
-            /* height: 600px;   */
-            overflow-y: auto;
-            margin-left: 1in;
-            margin-right: 1in;
-            margin-top: 20px;
-            position: relative;
-            /* Ensure it has a position property */
-            z-index: 0;
-            /* Set a low z-index value */
-        }
-
-        .autocomplete-suggestions {
-            border: 1px solid #ccc;
-            max-height: 150px;
-            overflow-y: auto;
-            position: absolute;
-            background-color: white;
-            z-index: 1000;
-        }
-
-        .autocomplete-suggestion {
-            padding: 10px;
-            cursor: pointer;
-        }
-
-        .autocomplete-suggestion:hover {
-            background-color: #ddd;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            /* height: 100vh; */
-            margin: 0;
-        }
-
         .dashboard {
             display: flex;
             gap: 20px;
@@ -151,6 +86,12 @@
             text-align: center;
         }
 
+        .application {
+            background-color: #433186;
+            /* Teal */
+            color: white;
+        }
+
         .admissions {
             background-color: #750080;
             /* Teal */
@@ -159,6 +100,12 @@
 
         .enrollment {
             background-color: #6d8000;
+            /* Teal */
+            color: white;
+        }
+
+        .acceptance {
+            background-color: #a58d06;
             /* Teal */
             color: white;
         }
@@ -206,8 +153,8 @@
         }
 
         .chart-container1 img {
-            width: 1200px; /* Adjust the width as needed */
-            height: 600px /* Maintain the aspect ratio */
+            width: 800px; /* Adjust the width as needed */
+            height: 400px /* Maintain the aspect ratio */
         }
 
         .chart1 {
@@ -217,10 +164,6 @@
         }
 
 
-        .container2 {
-            display: flex;
-            justify-content: space-between;
-        }
         .column {
             flex: 1;
             padding: 10px;
@@ -232,6 +175,7 @@
         }
         .center-column {
             flex: 2; /* Twice as wide as the other columns */
+            background-color: lightblue;
         }
 
         .container1 {
@@ -246,354 +190,374 @@
             width: 500px;
         }
 
-        .chart_container3 {
-            margin: 1in;
-        }
-
-        @keyframes flash {
-            0% { opacity: 1; }
-            50% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        .flashing {
-            animation: flash 1s infinite;
-        }
-    </Style>
-    
+</Style>
 
 </head>
-<body>
+<body>    
     <header data-bs-theme="dark">
         <nav class="navbar navbar-expand-md navbar-light fixed-top bg-blue">
             <div class="container-fluid">
-              <a class="navbar-brand" href="{% url 'home' %}">
-                <i class="fas fa-house-chimney fa-1x"></i>
-              </a>
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
-                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-              <div class="collapse navbar-collapse" id="navbarCollapse">
-                <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                  <li class="nav-item">
-                    <a class="navbar-brand nav-link" href="{% url 'rankings:rankings' %}">State Economies</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="navbar-brand nav-link" href="{% url 'degree' %}">Higher Education</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="navbar-brand nav-link" href="{% url 'analysis' %}">Analysis</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="navbar-brand nav-link" href="{% url 'index' %}">Framework</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="navbar-brand nav-link" href="{% url 'index' %}">Exploring</a>
-                  </li>
-                  <li class="nav-item">
-                    <a class="navbar-brand nav-link" href="{% url 'profile' %}">Author</a>
-                  </li>
-                </ul>
-                <form class="d-flex" role="search" action="https://www.google.com/search" method="get">
-                  <input class="form-control me-2 bg-white" type="search" name="q" placeholder="Search" aria-label="Search"
-                    style="color: black;">
-                  <button class="btn btn-outline-success" type="submit" style="color: white;">Search</button>
-                </form>
-              </div>
+                <a class="navbar-brand" href="{% url 'home' %}">
+                    <i class="fas fa-house-chimney fa-1x"></i>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                        <li class="nav-item">
+                            <a class="navbar-brand nav-link" href="{% url 'rankings:rankings' %}">State Economies</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="navbar-brand nav-link" href="{% url 'degree' %}">Higher Education</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="navbar-brand nav-link" href="{% url 'analysis' %}">Analysis</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="navbar-brand nav-link" href="{% url 'index' %}">Framework</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="navbar-brand nav-link" href="{% url 'index' %}">Exploring</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="navbar-brand nav-link" href="{% url 'profile' %}">Author</a>
+                        </li>
+                    </ul>
+                    <form class="d-flex" role="search" action="https://www.google.com/search" method="get">
+                        <input class="form-control me-2 bg-white" type="search" name="q" placeholder="Search"
+                            aria-label="Search" style="color: black;">
+                        <button class="btn btn-outline-success" type="submit" style="color: white;">Search</button>
+                    </form>
+                </div>
             </div>
-          </nav>
+        </nav>
         <br><br><br>    
-    <div class="container">
-        <h1 style="text-align: center;">Key Indicators for {{ chosen_institution }}</h1>
-        <br>
-        <div class = "container1">
-            <div class="form-inline">
-                <form method="get" action="" id="institutionForm">
-                    <label for="instnm">Choose Your Institution:</label>
-                    <input type="text" id="instnm" name="instnm" autocomplete="off" placeholder="Type to search..."
-                        value="{{ chosen_institution }}" onfocus="clearInput(this)" oninput="submitForm()" class="wide-input", style="background-color: blue;">
-                    <div id="suggestions" class="autocomplete-suggestions"></div>
-                    <button type="submit">Submit</button>
-                </form>
+        <div class="container">
+            <h1 style="text-align: center;">Key Indicators for {{ chosen_institution }}</h1>
+            <br>
+            <div class="container1">
+                <div class="form-inline">
+                    <form method="get" action="" id="institutionForm">
+                        <label for="instnm">Choose Your Institution:</label>
+                        <input type="text" id="instnm" name="instnm" autocomplete="off" placeholder="Type to search..."
+                            value="{{ chosen_institution }}" onfocus="clearInput(this)" oninput="submitForm()"
+                            class="wide-input" style="background-color: grey;">
+                        <div id="suggestions" class="autocomplete-suggestions"></div>
+                    </form>
+                </div>
             </div>
-    </div>
-    {% load humanize %}
-
-    <div class="dashboard">
-        {% for row in chosen_admission %}
-        <div class="card_admission admissions"> 
-            <p> Apllications</p>
-            <p>{{ row.applcn |floatformat:0|intcomma }}</p>                        
-        </div>
-        <div class="card_admission admissions"> 
-            <p>Admission rate </p>
-        <p>{{ row.admission_rate |floatformat:2|intcomma }}%</p>
-        </div>                
-        <div class="column center-column">
-            <h2>Admission </h2>
-        </div>
-        <div class="card_admission enrollment">
-            <p>Enrollments </p>
-            <p>{{ row.enrlt |floatformat:0|intcomma }}</p>
-        </div>
-        <div class="card_admission enrollment">
-            <p>Acceptance rate </p>
-            <p>{{ row.acceptance_rate |floatformat:2|intcomma }}% </p>
-        </div>
-        {% endfor %}
-    </div>
-
-    <br>
-
-    <h1>Admission Rates of Institutions</h1>
-    <canvas id="admissionRatesChart" width="800" height="200"></canvas>
-
-    <div class="dashboard">
-        {% for row in students %}
-        <div class="card students">
-            <h2>Students</h2>
-            <p>{{ row.student |floatformat:0|intcomma }}</p>
-            <p>Growth: {{ students_growth }}%</p>
-        </div>
-        <div class="card degrees">
-            <h2>Graduated</h2>
-            <p>{{ row.total_a |floatformat:0|intcomma }}</p>
-            <p>Growth: {{ degrees_growth }}%</p>
-        </div>
-        {% endfor %}
-        {% for row in tuition %}
-        <div class="card tuition">
-            <h2>Tuition</h2>
-            <p>In-state: ${{ row.y2023|floatformat:0|intcomma }} </p>
-            <p>Ranked: {{ row.rankings_tuition|floatformat:0 }}</p>
-        </div>
-        {% endfor %}
-    </div>  
-    <br> 
-
-    <!-- <h1>Ring Charts</h1> -->
-    <div class="chart-container">
-        <div class="chart">
-            <h2 style="text-align: center;">Students Portfolio</h2>
-            <img src="data:image/png;base64,{{ image_students }}" alt="Ring Chart">
-        </div>
-        <div class="chart">
-            <h2 style="text-align: center;">Degree Portfolio</h2>
-            <img src="data:image/png;base64,{{ image_degree }}" alt="Ring Chart">
-        </div>            
-    </div>
-
-    <h2 style="text-align: center;">Cost Categories</h2>          
-    <div class="chart-container1">
+            <br>
+            {% load humanize %}
+            <div class="dashboard">            
+                <div class="card_admission application" onclick="showGraph('applcn', $('#institution-search').val())">
+                    <p>Applications</p>
+                    <p id="applications">{{ merged_admission.applcn|floatformat:0|intcomma }}</p>
+                </div>
+                <div class="card_admission admissions" onclick="showGraph('admission_rate', $('#institution-search').val())">
+                    <p>Admission Rate</p>
+                    <p id="admission_rate">{{ merged_admission.admission_rate|floatformat:2|intcomma }}%</p>
+                </div>
+                <div class="column center-column">
+                    <h2>Admission</h2>
+                </div>
+                <div class="card_admission enrollment" onclick="showGraph('enrlt', $('#institution-search').val())">
+                    <p>Enrollments</p>
+                    <p id="enrollments">{{ merged_admission.enrlt|floatformat:0|intcomma }}</p>
+                </div>
+                <div class="card_admission acceptance" onclick="showGraph('acceptance_rate', $('#institution-search').val())">
+                    <p>Acceptance Rate</p>
+                    <p id="acceptance_rate">{{ merged_admission.acceptance_rate|floatformat:2|intcomma }}%</p>
+                </div>        
+            </div>
         
-        <canvas id="tuitionChart"></canvas>
-    </div>
-    {% for row in data %}
-    <div> {{ row.unitid }}</div>
-
-    {% endfor %}
-
-    <footer class="container">
-        <p class="float-end"><a href={% url 'home' %}>Back to top</a></p>
-        <p>&copy; {% now "Y" %} Du Huynh. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
-    </footer>
-    </div>
-    <!-- Include Bootstrap JavaScript and Popper.js -->
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
-
-    <script>
-        const input = document.getElementById('instnm');
-        const suggestionsBox = document.getElementById('suggestions');
-
-        input.addEventListener('input', () => {
-            const query = input.value;
-
-            if (query.length < 2) {
-                suggestionsBox.innerHTML = '';
-                return;
-            }
-
-            fetch(`?query=${query}`)
-                .then(response => response.json())
-                .then(data => {
-                    const suggestions = data.suggestions;
-                    suggestionsBox.innerHTML = '';
-                    suggestions.forEach(suggestion => {
-                        const div = document.createElement('div');
-                        div.textContent = suggestion;
-                        div.addEventListener('click', () => {
-                            input.value = suggestion;
-                            suggestionsBox.innerHTML = '';
-                        });
-                        suggestionsBox.appendChild(div);
-                    });
-                })
-                .catch(error => console.error('Error fetching suggestions:', error));
-        });
-    </script>
-
-    <script>
-        const chartData = {{ chart_data|safe }};
-        const labels = chartData['item'];
-        const data = {
-            labels: labels,
-            datasets: [
-                {
-                    label: '2021',
-                    data: chartData['2021'],
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: '2022',
-                    data: chartData['2022'],
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: '2023',
-                    data: chartData['2023'],
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }
-            ]
-        };
-
-        const config = {
-            type: 'bar',
-            data: data,
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                        beginAtZero: true
-                    },
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        };
-
-        const tuitionChart = new Chart(
-            document.getElementById('tuitionChart'),
-            config
-        );
-    </script>
-
-    <script>
-        function clearInput(input) {
-            input.value = '';
-            input.onfocus = null; // Remove the onfocus event after clearing the input
-        }
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Ensure data is correctly passed
-            const merged_admission = {{ merged_admission|safe }};
-            const chosenInstitution = "{{ chosen_institution }}";
+            <br><br>
+        
+            <canvas id="chart" width="800" height="200"></canvas>
+        
+            <br><br>
             
-            // Check if data is available
-            if (merged_admission && merged_admission.instnm && merged_admission.admission_rate) {
-                const ctx = document.getElementById('admissionRatesChart').getContext('2d');
-                const labels = merged_admission.instnm;
-                const admissionRates = merged_admission.admission_rate;
-                
-                // Highlight the chosen institution
-                const backgroundColors = labels.map(inst => inst === chosenInstitution ? 'rgba(255, 99, 132, 0.2)' : 'rgba(75, 192, 192, 0.2)');
-                const borderColors = labels.map(inst => inst === chosenInstitution ? 'rgba(255, 99, 132, 1)' : 'rgba(75, 192, 192, 1)');
-                const borderWidths = labels.map(inst => inst === chosenInstitution ? 100 : 1); // Increase the border width for the chosen institution
-                
-                // Custom plugin for flashing effect
-                const flashingPlugin = {
-                    id: 'flashingPlugin',
-                    afterDraw: (chart) => {
-                        const ctx = chart.ctx;
-                        const datasets = chart.data.datasets;
-    
-                        datasets.forEach((dataset, i) => {
-                            const meta = chart.getDatasetMeta(i);
-                            meta.data.forEach((element, index) => {
-                                if (chart.data.labels[index] === chosenInstitution) {
-                                    ctx.save();
-                                    ctx.globalCompositeOperation = 'source-over';
-                                    ctx.fillStyle = 'rgba(255, 99, 132, 0.2)';
-                                    ctx.strokeStyle = 'rgba(255, 99, 132, 1)';
-                                    ctx.lineWidth = 3;
-                                    ctx.beginPath();
-                                    ctx.arc(element.x, element.y, element.width / 2, 0, 2 * Math.PI);
-                                    ctx.fill();
-                                    ctx.stroke();
-                                    ctx.restore();
-                                }
+            <div class="dashboard">
+                {% for row in students %}
+                <div class="card students">
+                    <h2>Students</h2>
+                    <p>{{ row.student|floatformat:0|intcomma }}</p>
+                    <p>Growth: {{ students_growth }}%</p>
+                </div>
+                <div class="card degrees">
+                    <h2>Graduated</h2>
+                    <p>{{ row.total_a|floatformat:0|intcomma }}</p>
+                    <p>Growth: {{ degrees_growth }}%</p>
+                </div>
+                {% endfor %}
+                {% for row in tuition %}
+                <div class="card tuition">
+                    <h2>Tuition</h2>
+                    <p>In-state: ${{ row.y2023|floatformat:0|intcomma }}</p>
+                    <p>Ranked: {{ row.rankings_tuition|floatformat:0 }}</p>
+                </div>
+                {% endfor %}
+            </div>  
+        
+            <div class="chart-container">
+                <div class="chart">
+                    <h2 style="text-align: center;">Students Portfolio</h2>
+                    <img src="data:image/png;base64,{{ image_students }}" alt="Ring Chart">
+                </div>
+                <div class="chart">
+                    <h2 style="text-align: center;">Degree Portfolio</h2>
+                    <img src="data:image/png;base64,{{ image_degree }}" alt="Ring Chart">
+                </div>            
+            </div>
+        
+            <h2 style="text-align: center;">Cost Categories</h2>          
+            <div class="chart-container1">
+                <canvas id="tuitionChart"></canvas>
+            </div>
+        
+            <footer class="container">
+                <p class="float-end"><a href={% url 'home' %}>Back to top</a></p>
+                <p>&copy; {% now "Y" %} Du Huynh. &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></p>
+            </footer>
+        </div>
+
+        <script>
+            const input = document.getElementById('instnm');
+            const suggestionsBox = document.getElementById('suggestions');
+
+            input.addEventListener('input', () => {
+                const query = input.value;
+
+                if (query.length < 2) {
+                    suggestionsBox.innerHTML = '';
+                    return;
+                }
+
+                fetch(`?query=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const suggestions = data.suggestions;
+                        suggestionsBox.innerHTML = '';
+                        suggestions.forEach(suggestion => {
+                            const div = document.createElement('div');
+                            div.textContent = suggestion;
+                            div.addEventListener('click', () => {
+                                input.value = suggestion;
+                                suggestionsBox.innerHTML = '';
+                                submitForm();  // Ensure the form updates when a suggestion is clicked
                             });
+                            suggestionsBox.appendChild(div);
                         });
-                    }
-                };
-    
-                const chart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: 'Admission Rate',
-                            data: admissionRates,
-                            backgroundColor: backgroundColors,
-                            borderColor: borderColors,
-                            borderWidth: borderWidths
-                        }]
+                    })
+                    .catch(error => console.error('Error fetching suggestions:', error));
+            });
+        </script>
+
+
+        <script>
+            const chartData = {{ chart_data|safe }};
+            const labels = chartData['item'];
+            const data = {
+                labels: labels,
+                datasets: [
+                    {
+                        label: '2021',
+                        data: chartData['2021'],
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
                     },
-                    options: {
-                        animation: {
-                            duration: 2000,
-                            easing: 'easeInOutQuad'
+                    {
+                        label: '2022',
+                        data: chartData['2022'],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '2023',
+                        data: chartData['2023'],
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            };
+
+            const config = {
+                type: 'bar',
+                data: data,
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            beginAtZero: true
                         },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            };
+
+            const tuitionChart = new Chart(
+                document.getElementById('tuitionChart'),
+                config
+            );
+        </script>
+
+
+        <script>
+            const merged_admission = {
+                instnm: {{ merged_admission.instnm|safe }},
+                applcn: {{ merged_admission.applcn|safe }},
+                enrlt: {{ merged_admission.enrlt|safe }},
+                admission_rate: {{ merged_admission.admission_rate|safe }},
+                acceptance_rate: {{ merged_admission.acceptance_rate|safe }}
+            };
+
+            console.log(merged_admission);  // Verify data in the console
+
+            let chartInstance = null;  // Global variable to store the chart instance
+            const defaultInstitution = "{{ chosen_institution }}";  // Default chosen institution
+            let selectedInstitution = defaultInstitution;  // Global variable to store the selected institution
+
+            $(function() {
+                $("#instnm").autocomplete({
+                    source: merged_admission.instnm,
+                    select: function(event, ui) {
+                        selectedInstitution = ui.item.value;
+                        updateDashboard(selectedInstitution);
+                        showGraph('admission_rate');
+                    }
+                });
+
+                // Set the default institution in the search box
+                $("#instnm").val(defaultInstitution);
+                updateDashboard(defaultInstitution);
+                // Show the admission rate chart by default
+                showGraph('admission_rate');
+            });
+
+            function clearInput(input) {
+                input.value = '';
+            }
+
+            function submitForm() {
+                const selectedInstitution = $('#instnm').val();
+                updateDashboard(selectedInstitution);
+                showGraph('admission_rate');
+            }
+
+            function updateDashboard(selectedInstitution) {
+                const index = merged_admission.instnm.indexOf(selectedInstitution);
+                if (index !== -1) {
+                    document.getElementById('applications').innerText = formatNumber(merged_admission.applcn[index], 0);
+                    document.getElementById('admission_rate').innerText = formatNumber(merged_admission.admission_rate[index], 2) + '%';
+                    document.getElementById('enrollments').innerText = formatNumber(merged_admission.enrlt[index], 0);
+                    document.getElementById('acceptance_rate').innerText = formatNumber(merged_admission.acceptance_rate[index], 2) + '%';
+                }
+            }
+
+            function formatNumber(num, decimals) {
+                return num.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+            }
+
+            function showGraph(indicator) {
+                console.log(`showGraph called with indicator: ${indicator}`);  // Debug statement
+                console.log(`Data for ${indicator}:`, merged_admission[indicator]);  // Debug statement
+
+                // Define colors for each indicator
+                const colors = {
+                    applcn: 'rgba(67, 49, 134, 0.2)',
+                    enrlt: 'rgba(109, 128, 0, 0.2)',
+                    admission_rate: 'rgba(117, 0, 128, 0.2)',
+                    acceptance_rate: 'rgba(165, 141, 6, 0.2)'
+                };
+
+                const borderColors = {
+                    applcn: 'rgba(67, 49, 134, 1)',
+                    enrlt: 'rgba(109, 128, 0, 1)',
+                    admission_rate: 'rgba(117, 0, 128, 1)',
+                    acceptance_rate: 'rgba(165, 141, 6, 1)'
+                };
+
+                // Map indicators to their labels
+                const labels = {
+                    applcn: 'Applications (All Institutions)',
+                    enrlt: 'Enrollments (All Institutions)',
+                    admission_rate: 'Admission Rate (All Institutions)',
+                    acceptance_rate: 'Acceptance Rate (All Institutions)'
+                };
+
+                // Sort the data by the selected indicator
+                const sortedIndices = [...Array(merged_admission[indicator].length).keys()].sort((a, b) => merged_admission[indicator][a] - merged_admission[indicator][b]);
+                const sortedLabels = sortedIndices.map(i => merged_admission.instnm[i]);
+                const sortedData = sortedIndices.map(i => merged_admission[indicator][i]);
+
+                const ctx = document.getElementById('chart').getContext('2d');
+                const chartData = {
+                    labels: sortedLabels,
+                    datasets: [{
+                        label: labels[indicator],  // Use the mapped label
+                        data: sortedData,
+                        backgroundColor: sortedLabels.map(label => label === selectedInstitution ? 'rgba(255, 0, 0, 0.8)' : colors[indicator]),
+                        borderColor: sortedLabels.map(label => label === selectedInstitution ? 'rgba(255, 0, 0, 1)' : borderColors[indicator]),
+                        borderWidth: sortedLabels.map(label => label === selectedInstitution ? 3 : 1)  // Increase border width for the selected institution
+                    }]
+                };
+
+                console.log('Chart data:', chartData);  // Debug statement
+
+                // Destroy the previous chart instance if it exists
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+
+                // Create a new chart instance with a plugin to draw the label and arrow
+                chartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: chartData,
+                    options: {
                         scales: {
                             x: {
-                                beginAtZero: true,
-                                display: false // Hide the x-axis labels
+                                ticks: {
+                                    display: false  // Remove x-axis labels
+                                }
                             },
                             y: {
                                 beginAtZero: true
                             }
                         },
                         plugins: {
-                            title: {
-                                display: true,
-                                text: `Chosen Institution: ${chosenInstitution}`,
-                                font: {
-                                    size: 18
+                            afterDraw: function(chart) {
+                                const ctx = chart.ctx;
+                                const index = sortedLabels.indexOf(selectedInstitution);
+                                if (index !== -1) {
+                                    const meta = chart.getDatasetMeta(0);
+                                    const bar = meta.data[index];
+                                    const x = bar.x;
+                                    const y = bar.y;
+                                    ctx.save();
+                                    ctx.fillStyle = 'rgba(255, 0, 0, 1)';
+                                    ctx.font = 'bold 12px Arial';
+                                    ctx.fillText(selectedInstitution, x, y - 10);
+                                    ctx.beginPath();
+                                    ctx.moveTo(x, y - 5);
+                                    ctx.lineTo(x, y - 20);
+                                    ctx.lineTo(x - 5, y - 15);
+                                    ctx.moveTo(x, y - 20);
+                                    ctx.lineTo(x + 5, y - 15);
+                                    ctx.strokeStyle = 'rgba(255, 0, 0, 1)';
+                                    ctx.stroke();
+                                    ctx.restore();
                                 }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        let label = context.dataset.label || '';
-                                        if (label) {
-                                            label += ': ';
-                                        }
-                                        label += context.parsed.y;
-                                        if (context.label === chosenInstitution) {
-                                            label += ` (Chosen Institution)`;
-                                        }
-                                        return label;
-                                    }
-                                }
-                            },
-                            flashingPlugin // Include the custom plugin
+                            }
                         }
-                    },
-                    plugins: [flashingPlugin] // Register the custom plugin
+                    }
                 });
-            } else {
-                console.error("Data is not available or incorrectly formatted.");
             }
-        });
-    </script>
-</body>
-</html>
+        </script>
+    </body>
+    </html>

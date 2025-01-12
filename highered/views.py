@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 from django.http import HttpResponse
 from io import BytesIO
 import base64
+from django.template.defaultfilters import floatformat
+from django.contrib.humanize.templatetags.humanize import intcomma
 
 
 # Configure logging
@@ -42,19 +44,13 @@ def degree(request):
     )
     merged_admission = pd.merge(admission_data, institution_df, how='right', on='unitid')    
     merged_admission = merged_admission.sort_values(by='admission_rate')
-    merged_admission = merged_admission[merged_admission['admission_rate'] > 0]
+    merged_admission = merged_admission[(merged_admission['admission_rate'] > 0) & (merged_admission['acceptance_rate'] > 0) 
+                                        & (merged_admission['applcn'] > 0) & (merged_admission['enrlt'] > 0)]
     merged_admission = merged_admission.loc[:, [ 'unitid', 'instnm', 'admission_rate', 'acceptance_rate', 'applcn', 'enrlt' ]]
-    print(merged_admission.head())
     chosen_admisson = merged_admission[merged_admission['instnm'] == chosen_institution] if chosen_institution else pd.DataFrame()
     chosen_admisson = chosen_admisson.to_dict(orient='records')
-    merged_admission = merged_admission.to_dict(orient='list')
+    merged_admission = merged_admission.to_dict(orient='list') 
     
-    
-    # Print a portion of the dictionary (first 3 entries for each key)
-    portion = {key: value[:3] for key, value in merged_admission.items()}
-    # print(portion)
-
-
 # II - Student
     fields = [
         'unitid', 'cstotlt', 'cstotlm', 'cstotlw', 'csaiant', 'csaianm', 'csaianw', 'csasiat', 'csasiam',
@@ -196,7 +192,7 @@ def degree(request):
 
     # print(students)
     merged_table = merged_table.to_dict(orient='records')
-
+    plt.close()
 
     # -------------------
 
@@ -328,7 +324,7 @@ def degree(request):
     cost_structure = tuition_structure[['item', 'y2021', 'y2022', 'y2023']]
     cost_structure.rename(columns={'y2021': '2021', 'y2022': '2022', 'y2023': '2023'}, inplace=True)
     chart_data = cost_structure.to_dict(orient='list')
-    print(chart_data)
+    # print(chart_data)
     
 
     cost_structure.set_index('item', inplace=True)
@@ -365,6 +361,7 @@ def degree(request):
 
     # Encode the image to base64
     image_tuition = base64.b64encode(buffer.read()).decode('utf-8')
+    plt.close()
     # print(pivoted_df.head())
     pivot_data = pivoted_df.to_dict(orient='records')
     top10 = top10_rankings.to_dict(orient='records')
@@ -825,16 +822,38 @@ def students():
     return  context
 
 def check_error(request):
+    institutions = list(Hd2023.objects.values_list('instnm', flat=True).distinct().order_by('unitid'))
+    chosen_institution = request.GET.get('instnm', 'Indiana University-Bloomington')
+    institution_data = list(Hd2023.objects.values('instnm', 'unitid', 'stabbr').distinct())
+    institution_df = pd.DataFrame(institution_data)
 
-    student_data = students()
-    student_data = student_data['table_data']
-    print(student_data.head())
-    # student_data = student_data.loc[(student_data['unitid'] == '151351') & (student_data['unitid'].notnull())]    
-    
+    if request.GET.get('query'):
+        query = request.GET['query'].lower()
+        suggestions = [inst for inst in institutions if query in inst.lower()]
+        return JsonResponse({'suggestions': suggestions})
+
+    admission_data = list(Adm2023.objects.filter(year=2023).values())
+    admission_data = pd.DataFrame(admission_data)
+    admission_data['admission_rate'] = admission_data.apply(
+        lambda row: (row['admssn'] / row['applcn'] * 100) if row['applcn'] != 0 else None,
+        axis=1
+    )
+    admission_data['acceptance_rate'] = admission_data.apply(
+        lambda row: (row['enrlt'] / row['admssn'] * 100) if row['admssn'] != 0 else None,
+        axis=1
+    )
+    merged_admission = pd.merge(admission_data, institution_df, how='right', on='unitid')
+    merged_admission = merged_admission.sort_values(by='admission_rate')
+    merged_admission = merged_admission[(merged_admission['admission_rate'] > 0) & (merged_admission['acceptance_rate'] > 0)]
+    merged_admission = merged_admission.loc[:, ['unitid', 'instnm', 'admission_rate', 'acceptance_rate', 'applcn', 'enrlt']]
+    print(merged_admission.head())
+    print(len(merged_admission))
+    chosen_admission = merged_admission[merged_admission['instnm'] == chosen_institution] if chosen_institution else pd.DataFrame()
+    chosen_admission = chosen_admission.to_dict(orient='records')
+    merged_admission = merged_admission.to_dict(orient='list')
 
     context = {
-        'table_data': student_data,
-        'tuition': tuition,
+        'merged_admission': merged_admission,
+        'chosen_institution': chosen_institution,
     }
-
     return render(request, 'highered/error.html', context)

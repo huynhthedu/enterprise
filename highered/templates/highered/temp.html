@@ -52,10 +52,6 @@
             height: auto;
         }
 
-        /* body {
-            color: black;
-        } */
-
         .centered-content {
             display: flex;
             flex-direction: column;
@@ -236,6 +232,7 @@
         }
         .center-column {
             flex: 2; /* Twice as wide as the other columns */
+            background-color: lightblue;
         }
 
         .container1 {
@@ -297,17 +294,17 @@
         <div class="container">
             <h1 style="text-align: center;">Key Indicators for {{ chosen_institution }}</h1>
             <br>
-            <div class = "container1">
+            <div class="container1">
                 <div class="form-inline">
                     <form method="get" action="" id="institutionForm">
                         <label for="instnm">Choose Your Institution:</label>
                         <input type="text" id="instnm" name="instnm" autocomplete="off" placeholder="Type to search..."
-                            value="{{ chosen_institution }}" onfocus="clearInput(this)" oninput="submitForm()" class="wide-input", style="background-color: blue;">
+                            value="{{ chosen_institution }}" onfocus="clearInput(this)" oninput="submitForm()"
+                            class="wide-input" style="background-color: grey;">
                         <div id="suggestions" class="autocomplete-suggestions"></div>
-                        <button type="submit">Submit</button>
                     </form>
                 </div>
-        </div>
+            </div>
         
             <br>
             
