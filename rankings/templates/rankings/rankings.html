@@ -266,13 +266,6 @@
             display: block;
         }
 
-        /* dropdown m */
-        /* .dropdownm {
-            position: relative;
-            z-index: 1000;  
-            background-color: white;  
-        } */
-
         .dropdownm-toggle {
             background-color: white;
             color: black;
@@ -308,12 +301,6 @@
         background-color: yellow; /* Change this to your preferred highlight color */
         }
 
-        /* .chart-container1 {
-            position: absolute;
-            top: 0;
-            left: 0;
-        } */
-
         .container1 {
             display: flex;
             width: calc(100% - 2in); /* Adjust width to account for margins */
@@ -343,20 +330,43 @@
             justify-content: center;
             align-items: center;
         }
-        
-        .container2 {
+
+        .two-column-layout {
             display: flex;
-            justify-content: space-between;
         }
-        .column {
+        .left-column {
             flex: 1;
-            padding: 10px;
-            border: 1px solid #ccc;
-            text-align: center;
+            background-color: lightblue;
         }
-        .center-column {
-            flex: 2; /* Twice as wide as the other columns */
+        .right-column {
+            flex: 2;
+            background-color: lightgreen;
         }
+
+        .three-row-layout {
+            display: flex;
+            flex-direction: column;
+        }
+        .block {
+             display: flex;
+            flex-direction: column; /* Arrange children in a column */
+            align-items: center; /* Center the content horizontally */
+            justify-content: center; /* Center the content vertically */
+            height: 100px;
+            width: 50%;
+            margin: 10px auto;
+        }
+        .block1 {
+            background-color: rgb(184, 201, 206);
+        }
+        .block2 {
+            background-color: rgb(200, 207, 200);
+        }
+        .block3 {
+            background-color: rgb(148, 148, 161);
+        }
+        
+        
     </style>
 </head>
 <body>
@@ -436,6 +446,37 @@
     </form>
     <br>
     <br>
+    <div class="two-column-layout">
+        <div class="left-column">
+            <div class="three-row-layout">
+                <div class="block block1">
+                    {% for score in gdp %}
+                    <p> GDP: {{ score.value2|floatformat:0|intcomma }}</p>
+                    <p> Growth: {{ score.growth|floatformat:2|intcomma }}</p>
+                    {% endfor %}
+                </div>
+
+                <div class="block block3">
+                    {% for score in employment %}
+                    <p> Employment {{ score.value2|floatformat:0|intcomma }}</p>
+                    <p> Growth: {{ score.growth|floatformat:2|intcomma }}</p>
+                    {% endfor %}
+                </div>
+                <div class="block block2">
+                    {% for score in revenue %}
+                    <p> Budget Revenue {{ score.value2|floatformat:0|intcomma }}</p>
+                    <p> Growth: {{ score.growth|floatformat:2|intcomma }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="right-column">
+            <div style="width: 75%; margin: auto;">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
 
 <div class="bar-container">
     <div class="centered-content portion grey">Rankings in color-coded ranges:</div>
@@ -750,6 +791,38 @@
             var indicator = this.innerText;
             console.log("Clicked indicator:", indicator); // Debugging log
             renderChart(indicator, '{{ selected_state }}');
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var data = {{ gdp_pc|safe }};
+        var labels = data.map(item => item.indicator);
+        var values = data.map(item => item.value2);
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: values,
+                    backgroundColor: ['blue', 'green']
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
         });
     });
 </script>

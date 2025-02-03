@@ -1181,18 +1181,32 @@ def dashboard_view(request):
     weighted_avg_scores_selected_state = weighted_avg_scores[weighted_avg_scores['state'] == selected_state]
     weighted_avg_scores_state_selected_state = weighted_avg_scores_state[weighted_avg_scores_state['state'] == selected_state]
     df_selected_state = df[df['state'] == selected_state]
+    gdp = df[(df['state'] == selected_state) & (df['group'] == 'E14')]
+    revenue = df[(df['state'] == selected_state) & (df['group'] == 'E41')]
+    employment = df[(df['state'] == selected_state) & (df['group'] == 'E12')]
+    gdp_pc = df[(df['state'] == selected_state) & ((df['group'] == 'E21') | (df['group'] == 'E23'))]
+    # print(gdp)
+    # print(revenue)
 
     df_selected_state['value2'] = df_selected_state.apply(format_value, axis=1)
 
     df1_dict = df_selected_state.to_dict(orient='records')
+    # print(df1_dict)
     df2_dict = weighted_avg_scores_selected_state.to_dict(orient='records')
     df3_dict = weighted_avg_scores_state_selected_state.to_dict(orient='records')
     df4_dict = map_color.to_dict(orient='records')
+    gdp = gdp.to_dict(orient='records')
+    revenue = revenue.to_dict(orient='records')
+    employment = employment.to_dict(orient='records')
+    gdp_pc = gdp_pc.to_dict(orient='records')
+    # print(gdp_pc)
+
 
 
     context = data_prepare()
     data = context['df'][context['df']['state'] == selected_state]
     year = data['year'].max()
+    # print(data)
     
     # Generate pie charts
     pie_charts_url = generate_pie_charts(data)
@@ -1215,8 +1229,12 @@ def dashboard_view(request):
         'year2': year2,
         'warning_message': warning_message,
         'plot_urls': plot_urls,
-        'pie_charts_url': pie_charts_url,  # Add the pie charts URL to the context
-        'bar_charts_url': bar_charts_url,  # Add the pie charts URL to the context
+        'pie_charts_url': pie_charts_url,   
+        'bar_charts_url': bar_charts_url,  
+        'gdp': gdp,
+        'revenue': revenue,
+        'employment': employment,
+        'gdp_pc': gdp_pc,
     })
 
     return render(request, 'rankings/rankings.html', context)
@@ -1240,18 +1258,6 @@ def get_indicator_data(request):
     values = data['value'].tolist()
 
     return JsonResponse({'years': years, 'values': values, 'default_indicator': default_indicator})
-
-
-# def get_year_data(request):
-#     indicator = request.GET.get('indicator')
-#     year = request.GET.get('year')
-
-#     data = Indicator.objects.filter(indicator=indicator, year=year).order_by('state')
-#     states = list(data.values_list('state', flat=True))
-#     values = list(data.values_list('value', flat=True))
-
-#     return JsonResponse({'states': states, 'values': values})
-
 
 
 def get_year_data(request):
