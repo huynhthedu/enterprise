@@ -32,7 +32,7 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
 
 
 # ALLOWED_HOSTS = ['127.0.0.1', 'duhtvn.pythonanywhere.com']
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "duhuynh.us, 127.0.0.1, localhost, octopus-app-j5qep.ondigitalocean.app").split(",")
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "duhuynh.us,127.0.0.1,localhost,octopus-app-j5qep.ondigitalocean.app").split(",")
 
 DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
 
