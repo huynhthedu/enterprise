@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = [
-    # path('data/', include('data.urls')),
+    path('vietnam/', include('vietnam.urls')),
     path('', homepage.views.home, name='home'), 
     path('highered/', include('highered.urls')),
     path('framework/', include('framework.urls')),

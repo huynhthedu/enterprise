@@ -429,6 +429,7 @@ def calculations(year1, year2):
     # Create a DataFrame
     df = pd.DataFrame(data)    
     df = df.dropna()    
+    
  
     # 3. Canculate new indicatiors by ratios of existing indicators and add to the dataframe
     new_groups = {
@@ -467,6 +468,7 @@ def calculations(year1, year2):
     new_rows_df = pd.DataFrame(new_rows)
     df = pd.concat([df, new_rows_df], ignore_index=True)
     df.loc[df['group'] == 'E66', 'value'] *= 100
+    
 
 
     # 4. Calculate growth between the two selected years for each indicator
@@ -492,6 +494,7 @@ def calculations(year1, year2):
     group_name = GroupName.objects.all().values('index', 'name')
     group_name_df = pd.DataFrame(list(group_name))
     df = pd.merge(df, indicators_df, on=['group'])
+   
 
 
     def calculate_scores(state_values, key_values):
@@ -517,7 +520,8 @@ def calculations(year1, year2):
     # Drop specific rows
     groups_to_drop = ['E65', 'E22', 'E24', 'E15']
     df = df[~df['group'].isin(groups_to_drop)]    
-
+    # print(df)
+    
     # Apply the calculate_scores function with the key field
     try:
         df['score1'] = df.groupby(['group']).apply(lambda x: calculate_scores(x['value1'], x['key'])).reset_index(level=0, drop=True)
@@ -526,10 +530,17 @@ def calculations(year1, year2):
     except Exception as e:
         print("Error during groupby and apply operations:", e)    
 
+    
+
     df['rank1'] = df.groupby(['group'])['score1'].rank(ascending=False)
     df['rankgr'] =df.groupby(['group'])['score_gr'].rank(ascending=False)
     df['rank2'] = df.groupby(['group'])['score2'].rank(ascending=False)
-    
+    # print(df)
+
+    df_sorted = df.sort_values(by='rank2')
+
+    # Print the sorted DataFrame
+    print(df_sorted)
         
     #6. Calculate weighted scores by groups of indicators, and overall then rankings 
 
@@ -574,7 +585,7 @@ def calculations(year1, year2):
 
     except Exception as e:
         print(f"An error occurred: {e}")
-
+    # print(df)
     context = {
         'df': df,
         'weighted_avg_scores': weighted_avg_scores,
@@ -1114,12 +1125,14 @@ def dashboard_view(request):
 
     # Order the DataFrame by group
     df = df.sort_values(by='group')
+    # print(df)
 
     # Draw separate horizontal bar charts for value2 of all indicators and sort them in descending order
     plot_urls = []
     for indicator in selected_indicators:
         fig, ax = plt.subplots(figsize=(16, 24))  # Increase figure size
         indicator_df = df[df['indicator'] == indicator].sort_values(by='value2', ascending=True)
+        
         
         # Skip plotting if indicator_df is empty
         if indicator_df.empty:
@@ -1187,6 +1200,7 @@ def dashboard_view(request):
     gdp_pc = df[(df['state'] == selected_state) & ((df['group'] == 'E21') | (df['group'] == 'E23'))]
     # print(gdp)
     # print(revenue)
+    # print(weighted_avg_scores_selected_state)
 
     df_selected_state['value2'] = df_selected_state.apply(format_value, axis=1)
 
