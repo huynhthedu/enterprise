@@ -69,8 +69,8 @@ def calculations(year1, year2):
     new_rows_df = pd.DataFrame(new_rows)
     df = pd.concat([df, new_rows_df], ignore_index=True)
     # df.loc[df['group'] == 'E66', 'value'] *= 100
-    
-
+    df.loc[df['group'].isin(['E1201', 'E1207', 'E1208', 'E1210', 'E1302', 'E1109']), 'value'] /= 1000    
+    df.loc[df['group'].isin(['E1110', 'E1102', 'E1807']), 'value'] *= 100 
 
     # 4. Calculate growth between the two selected years for each indicator
     df = df.pivot_table(index=['group', 'id' ], columns='year', values='value').reset_index()
@@ -168,7 +168,9 @@ def calculations(year1, year2):
     df['weighted_score1'] = df['score1'] * df['weight']
     df['weighted_score_gr'] = df['score_gr'] * df['weight']
     df['weighted_score2'] = df['score2'] * df['weight']
-    
+    df['choice'] = df['index'].str[:2]
+    df_com = df[df['choice'].isin(['E2'])]
+    df = df[df['choice'].isin(['E1'])]
     # print(df)
     # Function to calculate weighted averages with division by zero check
    
@@ -187,6 +189,7 @@ def calculations(year1, year2):
                 'weighted_avg_score2': x['weighted_score2'].sum() / weight_sum
             })
         # Initialize variables to avoid UnboundLocalError
+    # Economic Size and Development level
     weighted_avg_scores = pd.DataFrame()
     weighted_avg_scores_province = pd.DataFrame()
     # Calculate the overall weighted average score and growth score for each group and year
@@ -211,14 +214,49 @@ def calculations(year1, year2):
 
     except Exception as e:
         print(f"An error occurred: {e}")
+    df.loc[df['group'].isin(['E1201', 'E1207', 'E1208', 'E1210']), 'unit'] = 'Tỷ đồng'
+    df.loc[df['group'].isin(['E1109']), 'unit'] = 'Phần trăm'
+    df.loc[df['group'].isin(['E1302']), 'unit'] = 'Nghìn người'
     print(df)
-    print(weighted_avg_scores)
+    # print(weighted_avg_scores)
     # print(weighted_avg_scores_province)
+    # Competitiveness    
+    weighted_avg_scores_c = pd.DataFrame()
+    weighted_avg_scores_province_c = pd.DataFrame()
+    # Calculate the overall weighted average score and growth score for each group and year
+    try:
+        weighted_avg_scores_c = df_com.groupby(['index', 'province']).apply(calculate_weighted_avg).reset_index()
+        # print(weighted_avg_scores)
+        weighted_avg_scores_province_c = df_com.groupby(['index_main', 'province']).apply(calculate_weighted_avg).reset_index()        
+        # print(weighted_avg_scores_province)
+
+        # Merge with group_name_df to get the names
+        # weighted_avg_scores['group_prefix'] = weighted_avg_scores['group'].str[:3]
+        # weighted_avg_scores = pd.merge(weighted_avg_scores, group_name_df, left_on='group_prefix', right_on='id')     
+        # print(weighted_avg_scores)           
+        weighted_avg_scores_c['weighted_rank1'] = weighted_avg_scores_c.groupby(['index'])['weighted_avg_score1'].rank(ascending=False)
+        weighted_avg_scores_c['weighted_rank_gr'] = weighted_avg_scores_c.groupby(['index'])['weighted_avg_score_gr'].rank(ascending=False)
+        weighted_avg_scores_c['weighted_rank2'] = weighted_avg_scores_c.groupby(['index'])['weighted_avg_score2'].rank(ascending=False)
+        weighted_avg_scores_province_c['weighted_province_rank1'] = weighted_avg_scores_province_c.groupby(['index_main'])['weighted_avg_score1'].rank(ascending=False)
+        weighted_avg_scores_province_c['weighted_province_rank_gr'] = weighted_avg_scores_province_c.groupby(['index_main'])['weighted_avg_score_gr'].rank(ascending=False)
+        weighted_avg_scores_province_c['weighted_province_rank2'] = weighted_avg_scores_province_c.groupby(['index_main'])['weighted_avg_score2'].rank(ascending=False)
+
+        weighted_avg_scores_c = pd.merge(weighted_avg_scores_c, group_name_df, left_on='index', right_on='id')     
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
+    df_com.loc[df_com['group'].isin(['E1201', 'E1207', 'E1208', 'E1210']), 'unit'] = 'Tỷ đồng'
+    df_com.loc[df_com['group'].isin(['E1109']), 'unit'] = 'Phần trăm'
+    df_com.loc[df_com['group'].isin(['E1302']), 'unit'] = 'Nghìn người'
+    print(df_com)
 
     context = {
         'df': df,
         'weighted_avg_scores': weighted_avg_scores,
         'weighted_avg_scores_province': weighted_avg_scores_province,
+        'df_com': df_com,
+        'weighted_avg_scores_c': weighted_avg_scores_c,
+        'weighted_avg_scores_province_c': weighted_avg_scores_province_c,
     }
     return context
 
@@ -256,7 +294,7 @@ def vietnam(request):
             warning_message = "Invalid year format. Please enter valid numbers for years."
 
     def format_value(row):
-        if row['unit'] == 'Percent':
+        if row['unit'] == 'Phần trăm':
             return f"{row['value2']:.2f}"
         else:
             return f"{row['value2']:,.0f}"
@@ -317,15 +355,62 @@ def vietnam(request):
     df2_dict = weighted_avg_scores_selected_province.to_dict(orient='records')
     df3_dict = weighted_avg_scores_province_selected_province.to_dict(orient='records')
     df4_dict = map_color.to_dict(orient='records')
+    
+    # Competiveness    
+    calculations_result_c = calculations(year1, year2)
+    df_com = calculations_result_c['df_com']
+    weighted_avg_scores_c = calculations_result_c['weighted_avg_scores_c']
+    weighted_avg_scores_province_c = calculations_result_c['weighted_avg_scores_province_c']
+    map_color = calculations_result_c['weighted_avg_scores_province_c']
 
+    # Order the DataFrame by group
+    df_com = df_com.sort_values(by='group')
+    
 
+    # Draw separate horizontal bar charts for value2 of all indicators and sort them in descending order
+    plot_urls = []
+    for indicator in selected_indicators:
+        fig, ax = plt.subplots(figsize=(16, 24))  # Increase figure size
+        indicator_df_c = df_com[df_com['indicators'] == indicator].sort_values(by='value2', ascending=True)
+        # print(indicator_df)
+        # Skip plotting if indicator_df is empty
+        if indicator_df_c.empty:
+            print(f"No data available for indicator: {indicator}")
+            continue
 
+        # Create a new column combining state names and rank2 with no decimal
+        indicator_df_c['province_rank'] = indicator_df_c.apply(lambda row: f"{row['province']} {int(row['rank2'])}", axis=1)
+        
+        bars = ax.barh(indicator_df_c['province_rank'], indicator_df_c['value2'], label=indicator)
+        
+       
+    # Prepare context for rendering
+    weighted_avg_scores_selected_province_c = weighted_avg_scores_c[weighted_avg_scores_c['province'] == selected_province]
+    weighted_avg_scores_province_selected_province_c = weighted_avg_scores_province_c[weighted_avg_scores_province_c['province'] == selected_province]
+    df_selected_province_c = df_com[df_com['province'] == selected_province]
+    
+
+    df_selected_province_c['value2'] = df_selected_province_c.apply(format_value, axis=1)
+    # print(df_selected_province)
+    # print(df_selected_province.columns)
+    # print(weighted_avg_scores_selected_province)
+    # print(weighted_avg_scores_province_selected_province)
+
+    df1_dict_c = df_selected_province_c.to_dict(orient='records')
+    # print(df1_dict)
+    df2_dict_c = weighted_avg_scores_selected_province_c.to_dict(orient='records')
+    df3_dict_c = weighted_avg_scores_province_selected_province_c.to_dict(orient='records')
+    df4_dict_c = map_color.to_dict(orient='records')
     
     context ={
         'df': df,
         'df1': df1_dict,
         'df2': df2_dict,
         'df3': df3_dict,
+        'df_com': df_com,
+        'df1_c': df1_dict_c,
+        'df2_c': df2_dict_c,
+        'df3_c': df3_dict_c,
         'provinces': provinces,
         'years': years,
         'db4': df4_dict,

@@ -481,7 +481,7 @@
     </div>
     {% endif %}
 </div>
-<!-- <h2 style="margin-left: 1in; font-weight: bold;">I - XẾP HẠNG TỔNG THỂ</h2> -->
+<h2 style="margin-left: 1in; font-weight: bold;">I - XẾP HẠNG NỀN KINH TẾ</h2>
 <div class="container-wrapper">
     <div class="table-container">
         <table border="1">
@@ -554,6 +554,80 @@
         </table>
     </div>
 </div>
+
+<h2 style="margin-left: 1in; font-weight: bold;">II - XẾP HẠNG NĂNG LỰC CẠNH TRANH</h2>
+<div class="container-wrapper">
+    <div class="table-container">
+        <table border="1">
+            <thead class="bg-primary">
+                <tr>            
+                    <th class="bg-primary text-white col-indicator" style="text-align: left;">Chỉ tiêu</th>
+                    <th class="bg-primary text-white col-rank">{{ year1 }}</th>
+                    <th class="bg-primary text-white col-rank">Tăng trưởng</th>
+                    <th class="bg-primary text-white col-rank">{{ year2 }}</th>
+                    <th class="bg-primary text-white col-value">Điểm số {{ year2 }}</th>
+                    <th class="bg-primary text-white col-value">Giá trị {{ year2 }}</th>
+                    <th class="bg-primary text-white col-unit">Đơn vị</th>
+                </tr>
+            </thead>
+
+            {% for score in df3_c %}
+            <tr>    
+                <td><strong> Xếp hạng chung</strong></td>            
+                <td class="column-uniform col-rank {% if score.weighted_province_rank1  <= 9 %}rank-green{% elif score.weighted_province_rank1  <= 18 %}rank-light-green{% elif score.weighted_province_rank1  <= 27 %}rank-yellow-green{% elif score.weighted_province_rank1  <= 36 %}rank-yellow{% elif score.weighted_province_rank1  <= 45 %}rank-gold{% elif score.weighted_province_rank1  <= 54 %}rank-orange{% else %}rank-red{% endif %}">
+                    <strong>{{ score.weighted_province_rank1|floatformat:0 }}</strong>
+                </td>
+                <td class="column-uniform col-rank {% if score.weighted_province_rank_gr  <= 9 %}rank-green{% elif score.weighted_province_rank_gr  <= 18 %}rank-light-green{% elif score.weighted_province_rank_gr  <= 27 %}rank-yellow-green{% elif score.weighted_province_rank_gr  <= 36 %}rank-yellow{% elif score.weighted_province_rank_gr  <= 45 %}rank-gold{% elif score.weighted_province_rank_gr  <= 54 %}rank-orange{% else %}rank-red{% endif %}">
+                    <strong>{{ score.weighted_province_rank_gr|floatformat:0 }}</strong>
+                </td>
+                <td class="column-uniform col-rank {% if score.weighted_province_rank2  <= 9 %}rank-green{% elif score.weighted_province_rank2  <= 18 %}rank-light-green{% elif score.weighted_province_rank2  <= 27 %}rank-yellow-green{% elif score.weighted_province_rank2  <= 36 %}rank-yellow{% elif score.weighted_province_rank2  <= 45 %}rank-gold{% elif score.weighted_province_rank2  <= 54 %}rank-orange{% else %}rank-red{% endif %}">
+                    <strong>{{ score.weighted_province_rank2|floatformat:0 }}</strong>
+                </td>
+                <td class="center-align col-value">{{ score.weighted_avg_score2|floatformat:1|intcomma }}</td>
+                <td><strong></strong></td>
+                <td><strong></td>
+            </tr>        
+            {% endfor %}
+
+            {% for item in df2_c %}
+            <tr>           
+                <td class="grey-background"><strong>{{ item.name }}</strong></td>
+                <td class="column-uniform col-rank {% if item.weighted_rank1 <= 9 %}rank-green{% elif item.weighted_rank1 <= 18 %}rank-light-green{% elif item.weighted_rank1 <= 27 %}rank-yellow-green{% elif item.weighted_rank1  <= 36 %}rank-yellow{% elif item.weighted_rank1 <= 45 %}rank-gold{% elif item.weighted_rank1  <= 54 %}rank-orange{% else %}rank-red{% endif %}">
+                    <strong>{{ item.weighted_rank1|floatformat:0 }}</strong>
+                </td>
+                <td class="column-uniform col-rank {% if item.weighted_rank_gr  <= 9 %}rank-green{% elif item.weighted_rank_gr  <= 18 %}rank-light-green{% elif item.weighted_rank_gr  <= 27 %}rank-yellow-green{% elif item.weighted_rank_gr  <= 36 %}rank-yellow{% elif item.weighted_rank_gr <= 45 %}rank-gold{% elif item.weighted_rank_gr  <= 54 %}rank-orange{% else %}rank-red{% endif %}">
+                    <strong>{{ item.weighted_rank_gr|floatformat:0 }}</strong>
+                </td>
+                <td class="column-uniform col-rank {% if item.weighted_rank2  <= 9 %}rank-green{% elif item.weighted_rank2  <= 18 %}rank-light-green{% elif item.weighted_rank2  <= 27 %}rank-yellow-green{% elif item.weighted_rank2  <= 36 %}rank-yellow{% elif item.weighted_rank2 <= 45 %}rank-gold{% elif item.weighted_rank2  <= 54 %}rank-orange{% else %}rank-red{% endif %}">
+                    <strong>{{ item.weighted_rank2|floatformat:0 }}</strong>
+                </td> 
+                <td class="center-align col-value grey-background"> <strong>{{ item.weighted_avg_score2|floatformat:1|intcomma }} </strong></td>
+                <td class="grey-background"><strong></strong></td>
+                <td class="grey-background"><strong></strong></td>
+            </tr>
+            {% for data in df1_c %}
+                {% if data.index == item.index %}
+                <tr>        
+                    <td style="padding-left: 2em;" class="col-indicator {% if data.indicators == default_indicator %}highlight{% endif %}" id="indicator-{{ data.indicators }}">{{ data.indicators }}</td>
+                    <td class="column-uniform col-rank {% if data.rank1 <= 9 %}rank-green{% elif data.rank1 <= 18 %}rank-light-green{% elif data.rank1 <= 27 %}rank-yellow-green{% elif data.rank1  <= 36 %}rank-yellow{% elif data.rank1 <= 45 %}rank-gold{% elif data.rank1  <= 54 %}rank-orange{% else %}rank-red{% endif %}">
+                        {{ data.rank1|floatformat:0 }}
+                    </td>
+                    <td class="column-uniform col-rank {% if data.rankgr <= 9 %}rank-green{% elif data.rankgr <= 18 %}rank-light-green{% elif data.rankgr <= 27 %}rank-yellow-green{% elif data.rankgr  <= 36 %}rank-yellow{% elif data.rankgr <= 45 %}rank-gold{% elif data.rankgr  <= 54 %}rank-orange{% else %}rank-red{% endif %}">
+                        {{ data.rankgr|floatformat:0 }}
+                    </td>
+                    <td class="column-uniform col-rank {% if data.rank2 <= 9 %}rank-green{% elif data.rank2 <= 18 %}rank-light-green{% elif data.rank2 <= 27 %}rank-yellow-green{% elif data.rank2  <= 36 %}rank-yellow{% elif data.rank2 <= 45 %}rank-gold{% elif data.rank2  <= 54 %}rank-orange{% else %}rank-red{% endif %}">
+                        {{ data.rank2|floatformat:0 }}
+                    </td>
+                    <td class="center-align col-value">{{ data.score2|floatformat:1|intcomma }}</td>
+                    <td class="right-align col-value">{{ data.value2 }}</td>
+                    <td style="padding-left: 2em;" class="col-indicator">{{ data.unit }}</td>                
+                </tr>
+                {% endif %}
+            {% endfor %}
+            {% endfor %}
+        </table>
+    </div>
+</div>
 <br>
 <br>
 
@@ -583,170 +657,7 @@
     let chart; // Declare chart variable outside the event listener
     let horizontalChart; // Declare horizontal chart variable outside the event listener
 
-    // Function to render the chart
-    function renderChart(indicator, state) {
-        fetch(`/rankings/get_indicator_data/?indicator=${indicator}&state=${state}`)
-            .then(response => response.json())
-            .then(data => {
-                console.log("Received data:", data); // Debugging log
-                var ctx = document.getElementById('indicatorChart').getContext('2d');
-                
-                // If a chart already exists, destroy it before creating a new one
-                if (chart) {
-                    chart.destroy();
-                }
-
-                chart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: data.years,
-                        datasets: [{
-                            label: indicator,
-                            data: data.values,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        plugins: {
-                            datalabels: {
-                                anchor: 'end',
-                                align: 'top',
-                                formatter: function(value) {
-                                    return value.toLocaleString();
-                                },
-                                color: 'black'
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        },
-                        onClick: function(evt, item) {
-                            if (item.length > 0) {
-                                var year = data.years[item[0].index];
-                                console.log("Clicked year:", year); // Debugging log
-                                fetch(`/rankings/get_year_data/?indicator=${indicator}&year=${year}`)
-                                    .then(response => response.json())
-                                    .then(yearData => {
-                                        console.log("Received year data:", yearData); // Debugging log
-                                        
-                                        // Sort the data by values in descending order
-                                        const sortedData = yearData.states.map((state, index) => ({
-                                            state: state,
-                                            value: yearData.values[index]
-                                        })).sort((a, b) => b.value - a.value);
-
-                                        const sortedStates = sortedData.map(item => item.state);
-                                        const sortedValues = sortedData.map(item => item.value);
-
-                                        var ctxHorizontal = document.getElementById('horizontalChart').getContext('2d');
-                                        
-                                        // If a horizontal chart already exists, destroy it before creating a new one
-                                        if (horizontalChart) {
-                                            horizontalChart.destroy();
-                                        }
-
-                                        horizontalChart = new Chart(ctxHorizontal, {
-                                            type: 'bar',
-                                            data: {
-                                                labels: sortedStates,
-                                                datasets: [{
-                                                    label: `${indicator} in ${year}`,
-                                                    data: sortedValues,
-                                                    backgroundColor: sortedStates.map(state => state === '{{ selected_state }}' ? 'rgba(255, 99, 132, 0.2)' : 'rgba(153, 102, 255, 0.2)'),
-                                                    borderColor: sortedStates.map(state => state === '{{ selected_state }}' ? 'rgba(255, 99, 132, 1)' : 'rgba(153, 102, 255, 1)'),
-                                                    borderWidth: 1
-                                                }]
-                                            },
-                                            options: {
-                                                indexAxis: 'y',
-                                                plugins: {
-                                                    datalabels: {
-                                                        anchor: 'end',
-                                                        align: 'right',
-                                                        formatter: function(value) {
-                                                            return value.toLocaleString();
-                                                        },
-                                                        color: 'black'
-                                                    }
-                                                },
-                                                scales: {
-                                                    x: {
-                                                        beginAtZero: true
-                                                    }
-                                                }
-                                            }
-                                        });
-
-                                        // Highlight the chosen year in the first graph
-                                        chart.data.datasets[0].backgroundColor = chart.data.labels.map(label => label === year ? 'rgba(255, 99, 132, 0.2)' : 'rgba(75, 192, 192, 0.2)');
-                                        chart.update();
-                                    })
-                                    .catch(error => console.error("Error fetching year data:", error)); // Debugging log
-                            }
-                        }
-                    }
-                });
-
-                // Change the background color of the clicked indicator
-                document.querySelectorAll('.col-indicator').forEach(function(cell) {
-                    cell.style.backgroundColor = ''; // Reset background color
-                });
-                document.getElementById(`indicator-${indicator}`).style.backgroundColor = 'lightblue'; // Set new background color
-            })
-            .catch(error => console.error("Error fetching data:", error)); // Debugging log
-    }
-
-    // Fetch and render the default indicator data on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        const defaultIndicator = '{{ default_indicator }}';
-        const selectedState = '{{ selected_state }}';
-        renderChart(defaultIndicator, selectedState);
-    });
-
-    // Add event listeners to indicator cells
-    document.querySelectorAll('.col-indicator').forEach(function(cell) {
-        cell.addEventListener('click', function() {
-            var indicator = this.innerText;
-            console.log("Clicked indicator:", indicator); // Debugging log
-            renderChart(indicator, '{{ selected_state }}');
-        });
-    });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var data = {{ gdp_pc|safe }};
-        var labels = data.map(item => item.indicator);
-        var values = data.map(item => item.value2);
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: values,
-                    backgroundColor: ['blue', 'green']
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-    });
+    
 </script>
 
 <!-- Include Bootstrap JavaScript and Popper.js -->
