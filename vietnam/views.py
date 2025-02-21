@@ -248,7 +248,7 @@ def calculations(year1, year2):
     df_com.loc[df_com['group'].isin(['E1201', 'E1207', 'E1208', 'E1210']), 'unit'] = 'Tỷ đồng'
     df_com.loc[df_com['group'].isin(['E1109']), 'unit'] = 'Phần trăm'
     df_com.loc[df_com['group'].isin(['E1302']), 'unit'] = 'Nghìn người'
-    print(df_com)
+    # print(df_com)
 
     context = {
         'df': df,
