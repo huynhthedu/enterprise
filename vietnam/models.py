@@ -10,7 +10,7 @@ class VnData(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'VN_data'
+        db_table = 'vn_data'
 
 
 class VnIndicators(models.Model):
@@ -24,7 +24,7 @@ class VnIndicators(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'VN_indicators'
+        db_table = 'vn_indicators'
 
 
 class VnProvince(models.Model):
@@ -34,7 +34,7 @@ class VnProvince(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'VN_province'
+        db_table = 'vn_province'
 
 class VnGroup(models.Model):
     id = models.CharField(db_column='id', max_length=50, blank=True, null=False, unique=True, primary_key=True)  # Field name made lowercase.
@@ -45,4 +45,4 @@ class VnGroup(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'VN_group'
+        db_table = 'vn_group'

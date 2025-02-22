@@ -540,7 +540,7 @@ def calculations(year1, year2):
     df_sorted = df.sort_values(by='rank2')
 
     # Print the sorted DataFrame
-    print(df_sorted)
+    # print(df_sorted)
         
     #6. Calculate weighted scores by groups of indicators, and overall then rankings 
 
