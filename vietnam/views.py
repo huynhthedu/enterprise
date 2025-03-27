@@ -72,6 +72,8 @@ def calculations(year1, year2):
     # df.loc[df['group'] == 'E66', 'value'] *= 100
     df.loc[df['group'].isin(['E1103', 'E1104', 'E1302', 'E2302', 'E2303', 'E2601', 'E2802', 'E2801', "E2901", 'E2902']), 'value'] /= 1000    
     df.loc[df['group'].isin(['E1110', 'E1207', 'E1807', 'E2505', 'E2603']), 'value'] *= 100 
+    df.loc[df['group'].isin(['E1202']), 'value'] *= .012 
+    df.loc[df['group'].isin(['E2903']), 'value'] *= .012 
 
     # 4. Calculate growth between the two selected years for each indicator
     df = df.pivot_table(index=['group', 'id' ], columns='year', values='value').reset_index()
@@ -218,6 +220,7 @@ def calculations(year1, year2):
     df.loc[df['group'].isin(['E1103', 'E1104', 'E2302', 'E2303', 'E1302']), 'unit'] = 'Nghìn tỷ đồng'
     df.loc[df['group'].isin(['E1109']), 'unit'] = 'Phần trăm'
     df.loc[df['group'].isin([ 'E2803']), 'unit'] = 'Nghìn người'
+    df.loc[df['group'].isin([ 'E1202']), 'unit'] = 'Triệu đồng/người/năm'
     # print(df)
     # print(weighted_avg_scores)
     # print(weighted_avg_scores_province)
@@ -249,6 +252,7 @@ def calculations(year1, year2):
     df_com.loc[df_com['group'].isin(['E2302', 'E2303', 'E2601', 'E2802', 'E1207', 'E1208', 'E1210', 'E2801', 'E2901', 'E2902']), 'unit'] = 'Nghìn tỷ đồng'
     df_com.loc[df_com['group'].isin(['E1109']), 'unit'] = 'Phần trăm'
     df_com.loc[df_com['group'].isin(['E1302', 'E2803']), 'unit'] = 'Nghìn người'
+    df_com.loc[df_com['group'].isin(['E2903']), 'unit'] = 'Triệu đồng/người/năm'    
     # print(df_com)
 
     context = {
