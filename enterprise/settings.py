@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'framework',
     'data',
     'highered',
+    #"rest_framework",
     'vietnam',
     'rankings.apps.RankingsConfig',
     'django.contrib.humanize',

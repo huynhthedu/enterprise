@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from data.models import C2023B, Hd2023, Ic2023Ay, RankingsIndicator, Effy2023, Adm2023
+from data.models import C2023B, Hd2023, Ic2023Ay, RankingsIndicator, Effy2023, Adm2023, State, Sector
 from django.db.models import Sum
 import pandas as pd
 import logging
@@ -15,6 +15,11 @@ from io import BytesIO
 import base64
 from django.template.defaultfilters import floatformat
 from django.contrib.humanize.templatetags.humanize import intcomma
+import zipfile
+import io
+import requests
+import numpy as np
+
 
 
 # Configure logging
@@ -857,3 +862,150 @@ def check_error(request):
         'chosen_institution': chosen_institution,
     }
     return render(request, 'highered/error.html', context)
+
+
+# DIRECT DATA
+HD_URL = "https://nces.ed.gov/ipeds/datacenter/data/HD2023.zip"
+ADM_BASE_URL = "https://nces.ed.gov/ipeds/datacenter/data/ADM{}.zip"
+
+# Function to download and extract CSV from ZIP URL
+def download_and_extract_csv(url, file_name):
+    response = requests.get(url)
+    if response.status_code == 200:
+        with zipfile.ZipFile(io.BytesIO(response.content)) as z:
+            with z.open(file_name) as f:
+                return pd.read_csv(f, encoding="latin1", dtype=str)
+    return None
+
+# Fetch institution names
+def get_institution_names():
+    hd_data = download_and_extract_csv(HD_URL, "hd2023.csv")
+    return hd_data[['UNITID', 'INSTNM', 'STABBR', 'SECTOR']].dropna()
+
+# Fetch admissions data for all years
+def get_admission_data():
+    all_data = []
+    for year in range(1980, 2024):
+        file_name = f"adm{year}.csv"
+        url = ADM_BASE_URL.format(year)
+        df = download_and_extract_csv(url, file_name)
+        if df is not None:
+            df["YEAR"] = year
+            print(f"Loaded {year}: {len(df)} rows")  # Debugging
+            all_data.append(df[['UNITID', 'APPLCN', 'ADMSSN', 'ENRLT', 'SATVR25', 'YEAR']])
+    return pd.concat(all_data, ignore_index=True)
+
+
+# Process and merge data
+def get_processed_data():
+    institutions = get_institution_names()
+    admissions = get_admission_data()
+    
+    # Convert numeric columns
+    admissions[['APPLCN', 'ADMSSN', 'ENRLT']] = admissions[['APPLCN', 'ADMSSN', 'ENRLT']].apply(pd.to_numeric, errors='coerce')
+    
+    # Compute rates safely
+    admissions["ADMISSIONRATE"] = (
+        admissions["ADMSSN"] / admissions["APPLCN"]
+    ).replace([np.inf, -np.inf], np.nan).fillna(0).round(4) * 100
+
+    admissions["ENROLLMENTRATE"] = (
+        admissions["ENRLT"] / admissions["ADMSSN"]
+    ).replace([np.inf, -np.inf], np.nan).fillna(0).round(4) * 100
+    
+    # Merge with institution names
+    merged_data = admissions.merge(institutions, on="UNITID", how="left")
+    
+    # Print missing values for debugging
+    print("Missing values after merge:\n", merged_data.isnull().sum())
+
+    # Remove only rows where UNITID or YEAR is missing, keep others
+    cleaned_data = merged_data.dropna(subset=["UNITID", "YEAR", "INSTNM", "APPLCN", "ADMSSN", "ENRLT"])
+    
+    # Debugging: Check if years are still missing
+    print("Years available in cleaned data:", sorted(cleaned_data["YEAR"].unique()))
+
+    return cleaned_data
+
+
+
+# View for the dashboard
+def institution_view(request):
+    institutions = get_institution_names()
+    institutions_list = institutions.to_dict(orient="records")
+
+    # Set default institution as "University of Mississippi" if none is selected
+    default_instnm = "University of Mississippi"
+    selected_instnm = request.GET.get("institution", default_instnm)
+
+    # Load processed data
+    data = get_processed_data()
+
+    # Find the selected institution's details
+    selected_inst = institutions[institutions["INSTNM"] == selected_instnm]
+    if selected_inst.empty:
+        return JsonResponse({"error": "Institution not found"}, status=404)
+
+    unitid = selected_inst["UNITID"].values[0]
+    sector = selected_inst["SECTOR"].values[0]
+    state = selected_inst["STABBR"].values[0]
+
+    # Get latest year data for the selected institution
+    latest_year = data["YEAR"].max()
+    latest_inst_data = data[(data["UNITID"] == unitid) & (data["YEAR"] == latest_year)]
+    latest_admission_rate = latest_inst_data["ADMISSIONRATE"].values[0] if not latest_inst_data.empty else 0
+
+    # Compute min/max for gauge chart based on different filters
+    all_rates = data[data["YEAR"] == latest_year]["ADMISSIONRATE"]
+    state_rates = data[(data["YEAR"] == latest_year) & (data["STABBR"] == state)]["ADMISSIONRATE"]
+    sector_rates = data[(data["YEAR"] == latest_year) & (data["SECTOR"] == sector)]["ADMISSIONRATE"]
+
+    min_max_rates = {
+        "all": [all_rates.max(), all_rates.min()],
+        "state": [state_rates.max(), state_rates.min()] if not state_rates.empty else [0, 100],
+        "sector": [sector_rates.max(), sector_rates.min()] if not sector_rates.empty else [0, 100]
+    }
+
+    return render(request, "highered/institution.html", {
+        "institutions": institutions_list,
+        "selected_institution": selected_instnm,
+        "latest_year": latest_year,
+        "latest_admission_rate": latest_admission_rate,
+        "min_max_rates": min_max_rates
+    })
+
+
+# API endpoint for fetching admission data
+def fetch_admission_data(request):
+    instnm = request.GET.get("instnm")  # Get selected institution name
+    if not instnm:
+        return JsonResponse({"error": "No institution selected"}, status=400)
+
+    # Load institution and admissions data
+    data = get_processed_data()
+    institutions = get_institution_names()
+
+    # Find the selected institution's UNITID, sector, and state
+    selected_inst = institutions[institutions["INSTNM"] == instnm]
+    if selected_inst.empty:
+        return JsonResponse({"error": "Institution not found"}, status=404)
+
+    unitid = selected_inst["UNITID"].values[0]
+    sector = selected_inst["SECTOR"].values[0]
+    state = selected_inst["STABBR"].values[0]
+
+    # Data for selected institution (Original Graph)
+    institution_data = data[data["UNITID"] == unitid][["YEAR", "ADMSSN", "ENRLT", "ADMISSIONRATE", "ENROLLMENTRATE"]].sort_values("YEAR")
+
+    # Filter for institutions in the same sector and state (Comparison Graph)
+    sector_state_institutions = institutions[(institutions["SECTOR"] == sector) & (institutions["STABBR"] == state)]
+    unitid_list = sector_state_institutions["UNITID"].tolist()
+
+    comparison_data = data[data["UNITID"].isin(unitid_list)][["INSTNM", "YEAR", "ADMISSIONRATE"]]
+
+    return JsonResponse({
+        "institution_data": institution_data.to_dict(orient="records"),
+        "comparison_data": comparison_data.to_dict(orient="records"),
+    }, safe=False)
+
+

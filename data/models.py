@@ -847,6 +847,23 @@ class RankingsState(models.Model):
         managed = False
         db_table = 'rankings_state'
 
+class Sector(models.Model):    
+    sector = models.IntegerField(blank=True, null=False, unique=True, primary_key=True)    
+    name = models.TextField(blank=True, null=True)   
+
+    class Meta:
+        managed = False
+        db_table = 'sector'
+
+class State(models.Model):    
+    sta_id = models.IntegerField(blank=True, null=False, unique=True, primary_key=True)
+    region = models.TextField(blank=True, null=True)
+    stabbr = models.TextField(blank=True, null=True)
+    name = models.TextField(blank=True, null=True)   
+
+    class Meta:
+        managed = False
+        db_table = 'state'
 
 class SurveyBusiness(models.Model):
     id = models.BigAutoField(primary_key=True)
