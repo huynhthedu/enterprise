@@ -70,8 +70,8 @@ def calculations(year1, year2):
     new_rows_df = pd.DataFrame(new_rows)
     df = pd.concat([df, new_rows_df], ignore_index=True)
     # df.loc[df['group'] == 'E66', 'value'] *= 100
-    df.loc[df['group'].isin(['E1103', 'E1104', 'E1302', 'E2302', 'E2303', 'E2601', 'E2802']), 'value'] /= 1000    
-    df.loc[df['group'].isin(['E1110', 'E1807', 'E2505']), 'value'] *= 100 
+    df.loc[df['group'].isin(['E1103', 'E1104', 'E1302', 'E2302', 'E2303', 'E2601', 'E2802', 'E2801', "E2901", 'E2902']), 'value'] /= 1000    
+    df.loc[df['group'].isin(['E1110', 'E1207', 'E1807', 'E2505', 'E2603']), 'value'] *= 100 
 
     # 4. Calculate growth between the two selected years for each indicator
     df = df.pivot_table(index=['group', 'id' ], columns='year', values='value').reset_index()
@@ -215,7 +215,7 @@ def calculations(year1, year2):
 
     except Exception as e:
         print(f"An error occurred: {e}")
-    df.loc[df['group'].isin(['E1103', 'E1104', 'E2302', 'E2303', 'E1302']), 'unit'] = 'Tỷ đồng'
+    df.loc[df['group'].isin(['E1103', 'E1104', 'E2302', 'E2303', 'E1302']), 'unit'] = 'Nghìn tỷ đồng'
     df.loc[df['group'].isin(['E1109']), 'unit'] = 'Phần trăm'
     df.loc[df['group'].isin([ 'E2803']), 'unit'] = 'Nghìn người'
     # print(df)
@@ -246,7 +246,7 @@ def calculations(year1, year2):
 
     except Exception as e:
         print(f"An error occurred: {e}")
-    df_com.loc[df_com['group'].isin(['E2302', 'E2303', 'E2601', 'E2802', 'E1207', 'E1208', 'E1210']), 'unit'] = 'Tỷ đồng'
+    df_com.loc[df_com['group'].isin(['E2302', 'E2303', 'E2601', 'E2802', 'E1207', 'E1208', 'E1210', 'E2801', 'E2901', 'E2902']), 'unit'] = 'Nghìn tỷ đồng'
     df_com.loc[df_com['group'].isin(['E1109']), 'unit'] = 'Phần trăm'
     df_com.loc[df_com['group'].isin(['E1302', 'E2803']), 'unit'] = 'Nghìn người'
     # print(df_com)
