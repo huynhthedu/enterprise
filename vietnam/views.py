@@ -74,6 +74,7 @@ def calculations(year1, year2):
     df.loc[df['group'].isin(['E1110', 'E1207', 'E1807', 'E2505', 'E2603']), 'value'] *= 100 
     df.loc[df['group'].isin(['E1202']), 'value'] *= .012 
     df.loc[df['group'].isin(['E2903']), 'value'] *= .012 
+    # testing
 
     # 4. Calculate growth between the two selected years for each indicator
     df = df.pivot_table(index=['group', 'id' ], columns='year', values='value').reset_index()
