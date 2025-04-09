@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'framework',
     'data',
     'highered',
+    'final_project',
     #"rest_framework",
     'vietnam',
     'rankings.apps.RankingsConfig',

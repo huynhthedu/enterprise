@@ -26,7 +26,7 @@ urlpatterns = [
     path('highered/', include('highered.urls')),
     path('framework/', include('framework.urls')),
     path('rankings/', include('rankings.urls')), 
-    # path('dashboard/', include('dashboard.urls')),
+    path('final_project/', include('final_project.urls')),
     path("survey/", include("survey.urls")),    
     path('analysis/', include('analysis.urls')),
     path('admin/', admin.site.urls),
